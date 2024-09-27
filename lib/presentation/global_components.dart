@@ -45,15 +45,48 @@ SizedBox homeAppbar() {
   );
 }
 
-Container navbar() {
-  return Container(
-    height: 114,
-    width: double.infinity,
-    color: Colors.transparent,
-    child: Row(
-      children: [Text("asdsadasdsadasd")],
-    ),
-  );
+Stack navbar(String state) {
+  return Stack(
+      fit: StackFit.loose,
+      alignment: Alignment.bottomCenter,
+      children: [
+        Positioned(
+          bottom: 30,
+          // right: dou,
+          // width: double.infinity,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 23, vertical: 24),
+            decoration: ShapeDecoration(
+              color: ColorNeutral.black,
+              shape: SmoothRectangleBorder(
+                borderRadius: SmoothBorderRadius(
+                  cornerRadius:55,
+                  cornerSmoothing: 0,
+                ),
+              ),
+            ),
+            child: Wrap(
+              spacing: 26,
+              direction: Axis.horizontal,
+              children: [
+                IconButton(
+                  onPressed: () => {},
+                  icon: SvgPicture.asset("assets/icon/calendar-bold.svg"),
+                ),
+                IconButton(
+                  onPressed: () => {},
+                  icon: SvgPicture.asset("assets/icon/home.svg"),
+                ),
+                IconButton(
+                  onPressed: () => {},
+                  icon: SvgPicture.asset("assets/icon/category-bold.svg"),
+                ),
+                // Text("sadasd")
+              ],
+            ),
+          ),
+        ),
+      ]);
 }
 
 IconButton iconButtonCustom(String assetLocation,
