@@ -15,6 +15,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: navbar("home"),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: RefreshIndicator(
         color: ColorNeutral.black,
         onRefresh: () async {

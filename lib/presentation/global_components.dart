@@ -47,7 +47,6 @@ SizedBox homeAppbar() {
 
 Stack navbar(String state) {
   return Stack(
-      fit: StackFit.loose,
       alignment: Alignment.bottomCenter,
       children: [
         Positioned(
@@ -55,12 +54,12 @@ Stack navbar(String state) {
           // right: dou,
           // width: double.infinity,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 23, vertical: 24),
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
             decoration: ShapeDecoration(
               color: ColorNeutral.black,
               shape: SmoothRectangleBorder(
                 borderRadius: SmoothBorderRadius(
-                  cornerRadius:55,
+                  cornerRadius: 55,
                   cornerSmoothing: 0,
                 ),
               ),
