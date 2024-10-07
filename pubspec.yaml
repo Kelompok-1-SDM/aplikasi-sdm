@@ -37,6 +37,11 @@ dependencies:
   figma_squircle: ^0.5.3
   flutter_svg: ^2.0.10+1
   table_calendar: ^3.0.9
+  animations: ^2.0.2
+
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.19.0  # Add this package for internationalization
 
 dev_dependencies:
   flutter_test:
@@ -118,6 +123,8 @@ flutter:
           weight: 300
         - asset: assets/fonts/PlusJakartaSans-Regular.ttf
           weight: 400
+        - asset: assets/fonts/PlusJakartaSans-Medium.ttf
+          weight: 500
         - asset: assets/fonts/PlusJakartaSans-SemiBold.ttf
           weight: 600
         - asset: assets/fonts/PlusJakartaSans-Bold.ttf

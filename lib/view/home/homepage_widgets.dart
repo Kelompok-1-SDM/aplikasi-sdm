@@ -5,15 +5,17 @@ import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/material.dart';
 
 class Navbar extends StatelessWidget {
-  final BuildContext context;
   final NavbarState state;
   final Function(int) onItemSelected;
 
-  const Navbar(this.context,
-      {super.key, required this.state, required this.onItemSelected});
+  const Navbar({
+    super.key,
+    required this.state,
+    required this.onItemSelected,
+  });
 
   @override
-  Widget build(BuildContext _) {
+  Widget build(BuildContext context) {
     return Stack(alignment: Alignment.bottomCenter, children: [
       Positioned(
         bottom: 30,
@@ -32,38 +34,59 @@ class Navbar extends StatelessWidget {
             spacing: 26,
             direction: Axis.horizontal,
             children: [
-              CustomIconButton(
-                context,
-                "assets/icon/calendar-bold.svg",
-                onPressed: () => {
-                  onItemSelected(1),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                transitionBuilder: (Widget child, Animation<double> animation) {
+                  return ScaleTransition(scale: animation, child: child);
                 },
-                size: IconSize.large,
-                padding: EdgeInsets.zero,
-                colorBackground: ColorNeutral.black,
-                isSelected: state == NavbarState.calendar,
+                child: CustomIconButton(
+                  key: ValueKey(
+                      state == NavbarState.calendar), // Unique Key for state
+                  "assets/icon/calendar-bold.svg",
+                  onPressed: () => {
+                    onItemSelected(0),
+                  },
+                  size: IconSize.large,
+                  padding: EdgeInsets.zero,
+                  colorBackground: ColorNeutral.black,
+                  isSelected: state == NavbarState.calendar,
+                ),
               ),
-              CustomIconButton(
-                context,
-                "assets/icon/home.svg",
-                onPressed: () => {
-                  onItemSelected(0),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                transitionBuilder: (Widget child, Animation<double> animation) {
+                  return ScaleTransition(scale: animation, child: child);
                 },
-                size: IconSize.large,
-                padding: EdgeInsets.zero,
-                colorBackground: ColorNeutral.black,
-                isSelected: state == NavbarState.home,
+                child: CustomIconButton(
+                  key: ValueKey(
+                      state == NavbarState.home), // Unique Key for state
+                  "assets/icon/home.svg",
+                  onPressed: () => {
+                    onItemSelected(1),
+                  },
+                  size: IconSize.large,
+                  padding: EdgeInsets.zero,
+                  colorBackground: ColorNeutral.black,
+                  isSelected: state == NavbarState.home,
+                ),
               ),
-              CustomIconButton(
-                context,
-                "assets/icon/category-bold.svg",
-                onPressed: () => {
-                  onItemSelected(2),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                transitionBuilder: (Widget child, Animation<double> animation) {
+                  return ScaleTransition(scale: animation, child: child);
                 },
-                size: IconSize.large,
-                padding: EdgeInsets.zero,
-                colorBackground: ColorNeutral.black,
-                isSelected: state == NavbarState.task,
+                child: CustomIconButton(
+                  key: ValueKey(
+                      state == NavbarState.task), // Unique Key for state
+                  "assets/icon/category-bold.svg",
+                  onPressed: () => {
+                    onItemSelected(2),
+                  },
+                  size: IconSize.large,
+                  padding: EdgeInsets.zero,
+                  colorBackground: ColorNeutral.black,
+                  isSelected: state == NavbarState.task,
+                ),
               ),
             ],
           ),
@@ -73,19 +96,17 @@ class Navbar extends StatelessWidget {
   }
 }
 
-CustomCard currentTask(BuildContext context) {
-  return CustomCard(
-    context,
+CustomCardContent currentTask(ThemeData theme) {
+  return CustomCardContent(
     header: [
       Text(
         "Tugas yang sedang berlangsung",
-        style: Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 14),
+        style: theme.textTheme.bodySmall!.copyWith(fontSize: 14),
       ),
     ],
     title: "Pemateri Semminar Teknnologi Informasi",
     actionIcon: [
       CustomIconButton(
-        context,
         "assets/icon/category.svg",
         colorBackground: ColorNeutral.black,
         isSelected: true,
@@ -94,22 +115,19 @@ CustomCard currentTask(BuildContext context) {
     colorBackground: ColorNeutral.white,
     descIcon: [
       CustomIconButton(
-        context,
         "assets/icon/location.svg",
         colorBackground: Colors.transparent,
         text: "Auditorium Lt. 8, Teknik Sipil",
       )
     ],
-    otherWidget: [LiveChatButton(context)],
+    otherWidget: [LiveChatButton()],
   );
 }
 
-CustomCard homeCard(BuildContext context) {
-  return CustomCard(
-    context,
+CustomCardContent homeCard(ThemeData theme) {
+  return CustomCardContent(
     header: [
       CustomIconButton(
-        context,
         "assets/icon/calendar.svg",
         colorBackground: Colors.transparent,
         iconColorCustom: ColorNeutral.gray,
@@ -121,28 +139,28 @@ CustomCard homeCard(BuildContext context) {
     // title: nukll,
     actionIcon: [
       CustomIconButton(
-        context,
         "assets/icon/share.svg",
+        onPressed: () => {},
         colorBackground: ColorNeutral.white,
       ),
       CustomIconButton(
-        context,
         "assets/icon/calendar.svg",
+        onPressed: () => {},
         colorBackground: ColorNeutral.black,
       )
     ],
     otherWidget: [
       Text(
         "Kamu memiliki",
-        style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
+        style: theme.textTheme.bodyMedium!.copyWith(fontSize: 16),
       ),
       Text(
         "5 Kegiatan di Bulan September 🔥",
         softWrap: true,
         textWidthBasis: TextWidthBasis.parent,
-        style: Theme.of(context).textTheme.displayMedium!.copyWith(
-              fontSize: 32,
-            ),
+        style: theme.textTheme.displayMedium!.copyWith(
+          fontSize: 32,
+        ),
       ),
       Divider(
         color: ColorNeutral.gray,
@@ -153,12 +171,10 @@ CustomCard homeCard(BuildContext context) {
   );
 }
 
-CustomCard statsCard(BuildContext context) {
-  return CustomCard(
-    context,
+CustomCardContent statsCard(ThemeData theme) {
+  return CustomCardContent(
     header: [
       CustomIconButton(
-        context,
         "assets/icon/stats.svg",
         // padding: EdgeInsets.symmetric(vertical: 14, horizontal: 12),
         colorBackground: ColorNeutral.black,
@@ -166,15 +182,15 @@ CustomCard statsCard(BuildContext context) {
     ],
     actionIcon: [
       CustomIconButton(
-        context,
         "assets/icon/share.svg",
+        onPressed: () => {},
         colorBackground: ColorNeutral.background,
       )
     ],
     otherWidget: [
       Text(
         "Statistik",
-        style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14),
+        style: theme.textTheme.bodyMedium!.copyWith(fontSize: 14),
       ),
       Stack(
         children: [
@@ -188,30 +204,20 @@ CustomCard statsCard(BuildContext context) {
                 children: [
                   TextSpan(
                     text: "Ardian           ,kamu\ntelah melakukan\n",
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium!
-                        .copyWith(fontSize: 36),
+                    style: theme.textTheme.bodyMedium!.copyWith(fontSize: 36),
                   ),
                   TextSpan(
                     text: "40 penugasan\n",
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium!
+                    style: theme.textTheme.bodyMedium!
                         .copyWith(fontSize: 36, fontWeight: FontWeight.bold),
                   ),
                   TextSpan(
                     text: "dalam",
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium!
-                        .copyWith(fontSize: 36),
+                    style: theme.textTheme.bodyMedium!.copyWith(fontSize: 36),
                   ),
                   TextSpan(
                     text: " setahun ini",
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium!
+                    style: theme.textTheme.bodyMedium!
                         .copyWith(fontSize: 36, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -227,7 +233,6 @@ CustomCard statsCard(BuildContext context) {
         children: [
           Text("Ketuk untuk melihat lebih detail"),
           CustomIconButton(
-            context,
             "assets/icon/arrow-45.svg",
             size: IconSize.small,
             padding: EdgeInsets.zero,

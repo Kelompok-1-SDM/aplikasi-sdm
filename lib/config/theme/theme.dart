@@ -15,13 +15,20 @@ ThemeData mainTheme() {
     ),
     textTheme: const TextTheme(
       displayLarge: TextStyle(
-          fontWeight: FontWeight.w700,
-          fontFamily: 'Plus Jakarta',
-          color: ColorNeutral.black),
+        fontWeight: FontWeight.w700,
+        fontFamily: 'Plus Jakarta',
+        color: ColorNeutral.black,
+      ),
       displayMedium: TextStyle(
-          fontWeight: FontWeight.w600,
-          fontFamily: 'Plus Jakarta',
-          color: ColorNeutral.black),
+        fontWeight: FontWeight.w600,
+        fontFamily: 'Plus Jakarta',
+        color: ColorNeutral.black,
+      ),
+      titleMedium: TextStyle(
+        fontWeight: FontWeight.w500,
+        fontFamily: 'Plus Jakarta',
+        color: ColorNeutral.black,
+      ),
       bodyMedium: TextStyle(
         fontFamily: 'Plus Jakarta',
         fontWeight: FontWeight.w400,
@@ -33,5 +40,6 @@ ThemeData mainTheme() {
         color: ColorNeutral.black,
       ),
     ),
+    shadowColor: ColorNeutral.black.withOpacity(0.15),
   );
 }

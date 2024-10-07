@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/config/const.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
@@ -14,18 +15,19 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
 
   final List<Widget> _pages = [
-    HomeScreen(), // Your current home screen content
-    Kalender(),
-    DaftarTugas(),
+    const Kalender(key: ValueKey('kalender')),
+    const HomeScreen(key: ValueKey('home')),
+    const DaftarTugas(key: ValueKey('tasks')),
   ];
 
   bool _isForward = true;
+
   void _onItemTapped(int index) {
     setState(() {
-      _isForward = index > _selectedIndex; // Determines the slide direction
+      _isForward = index > _selectedIndex;
       _selectedIndex = index;
     });
   }
@@ -34,38 +36,27 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: Navbar(
-        context,
         state: NavbarState.values[_selectedIndex],
         onItemSelected:
             _onItemTapped, // Pass the function to handle tab selection
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: Stack(
-        children: [
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 500),
-            transitionBuilder: (Widget child, Animation<double> animation) {
-              final slideAnimation = Tween<Offset>(
-                begin: _isForward
-                    ? const Offset(1.0, 0.0)
-                    : const Offset(
-                        -1.0, 0.0), // Right-to-left or left-to-right slide
-                end: Offset.zero,
-              ).animate(animation);
-
-              return SlideTransition(
-                position: slideAnimation,
-                child: child,
-              );
-            },
-            child: IndexedStack(
-              key: ValueKey<int>(
-                  _selectedIndex), // Important for AnimatedSwitcher to work correctly
-              index: _selectedIndex,
-              children: _pages,
-            ),
-          ),
-        ],
+      body: PageTransitionSwitcher(
+        duration: const Duration(milliseconds: 500),
+        reverse: !_isForward, // Reverse animation when going backward
+        transitionBuilder: (
+          Widget child,
+          Animation<double> primaryAnimation,
+          Animation<double> secondaryAnimation,
+        ) {
+          return SharedAxisTransition(
+            animation: primaryAnimation,
+            secondaryAnimation: secondaryAnimation,
+            transitionType: SharedAxisTransitionType.horizontal,
+            child: child,
+          );
+        },
+        child: _pages[_selectedIndex],
       ),
     );
   }
@@ -84,54 +75,60 @@ class _HomeScreenState extends State<HomeScreen> {
     return RefreshIndicator(
       color: ColorNeutral.black,
       onRefresh: () async {
+        // Do something when refreshed
         return Future<void>.delayed(const Duration(seconds: 3));
       },
       child: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 61),
         child: Column(
           children: [
-            HomeAppBar(context),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Wrap(
-                spacing: 13,
-                direction: Axis.vertical,
-                children: [
-                  // HomeAppBar(context),
-                  const SizedBox(
-                    width: double.maxFinite,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 7),
-                        Text(
-                          "Halo 👋 Ardian",
-                          style: TextStyle(
-                              fontWeight: FontWeight.w300, fontSize: 20),
-                        ),
-                        Text(
-                          "Mulai hari dengan\nmenjadi lebih produktif!",
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500, fontSize: 24),
-                        ),
-                      ],
+              child: SizedBox(
+                width: double.infinity,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    HomeAppBar(),
+                    SizedBox(
+                      width: double.maxFinite,
+                      child: Wrap(
+                        direction: Axis.vertical,
+                        crossAxisAlignment: WrapCrossAlignment.start,
+                        children: [
+                          Text(
+                            "Halo 👋 Ardian",
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall!
+                                .copyWith(fontSize: 20),
+                          ),
+                          Text(
+                            "Mulai hari dengan\nmenjadi lebih produktif!",
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(fontSize: 24),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             const SizedBox(
               height: 13,
             ),
-            homeCard(context),
+            homeCard(Theme.of(context)),
             const SizedBox(
               height: 13,
             ),
-            currentTask(context),
+            currentTask(Theme.of(context)),
             const SizedBox(
               height: 13,
             ),
-            taskTawaranCard(context,
+            tawaranTugasCard(Theme.of(context),
                 title: "Pengawasan ujian masuk maba",
                 tanggal: "12 Januari 2025, 08:00-12:00",
                 lokasi: "Online",
@@ -140,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(
               height: 13,
             ),
-            taskTawaranCard(context,
+            tawaranTugasCard(Theme.of(context),
                 title: "Pemateri Seminar",
                 tanggal: "30 September, 09:00-13:00",
                 lokasi: "Aula Pertamina",
@@ -149,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(
               height: 13,
             ),
-            statsCard(context),
+            statsCard(Theme.of(context)),
             const SizedBox(
               height: 13,
             ),

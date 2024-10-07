@@ -3,6 +3,7 @@ import 'package:aplikasi_manajemen_sdm/config/const.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class ProfileIcon extends StatelessWidget {
   final String assetLocation;
@@ -10,24 +11,28 @@ class ProfileIcon extends StatelessWidget {
   final Color borderColor;
   final VoidCallback? onPressed;
 
-  const ProfileIcon(this.assetLocation,
-      {super.key,
-      this.imageSize = 48,
-      this.borderColor = ColorPrimary.green,
-      this.onPressed});
+  const ProfileIcon(
+    this.assetLocation, {
+    super.key,
+    this.imageSize = 44,
+    this.borderColor =
+        ColorPrimary.green, // Replace with your ColorPrimary.green
+    this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // was sized box
-    return GestureDetector(
+    return InkWell(
+      borderRadius:
+          BorderRadius.circular(imageSize / 2), // Ensure it's circular
       onTap: onPressed,
-      child: DecoratedBox(
+      child: Container(
         decoration: BoxDecoration(
           color: borderColor,
           shape: BoxShape.circle,
         ),
         child: Padding(
-          padding: const EdgeInsets.all(2.0),
+          padding: const EdgeInsets.all(2),
           child: ClipOval(
             child: Image.asset(
               assetLocation,
@@ -43,35 +48,30 @@ class ProfileIcon extends StatelessWidget {
 }
 
 class HomeAppBar extends StatelessWidget {
-  final BuildContext context;
-  const HomeAppBar(this.context, {super.key});
+  const HomeAppBar({super.key});
 
   @override
-  Widget build(BuildContext _) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 16,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        Wrap(
-          children: [
-            CustomIconButton(
-              context,
-              "assets/icon/notification.svg",
-              colorBackground: ColorNeutral.white,
-              size: IconSize.medium,
-            ),
-            SizedBox(
-              width: 16,
-            ),
-            ProfileIcon("assets/icon/profile.png")
-          ],
+        CustomIconButton(
+          "assets/icon/notification.svg",
+          colorBackground: ColorNeutral.white,
+          onPressed: () => {},
+          size: IconSize.medium,
         ),
+        ProfileIcon(
+          "assets/icon/profile.png",
+          onPressed: () => {print('Hako')},
+        )
       ],
     );
   }
 }
 
 class CustomIconButton extends StatelessWidget {
-  final BuildContext context;
   final String? text;
   final double size;
   final String assetLocation;
@@ -82,7 +82,7 @@ class CustomIconButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final bool isSelected;
 
-  const CustomIconButton(this.context, this.assetLocation,
+  const CustomIconButton(this.assetLocation,
       {super.key,
       required this.colorBackground,
       this.padding = const EdgeInsets.all(12),
@@ -94,7 +94,7 @@ class CustomIconButton extends StatelessWidget {
       this.iconColorCustom});
 
   @override
-  Widget build(BuildContext _) {
+  Widget build(BuildContext context) {
     Color iconColor;
 
     if (colorBackground == ColorNeutral.black ||
@@ -117,9 +117,10 @@ class CustomIconButton extends StatelessWidget {
     );
 
     if (text == null) {
-      return IconButton(
+      return IconButton.filled(
         padding: padding,
         isSelected: isSelected,
+        iconSize: size,
         selectedIcon: Container(
           decoration: const BoxDecoration(
             shape: BoxShape.circle,
@@ -154,6 +155,7 @@ class CustomIconButton extends StatelessWidget {
     return TextButton.icon(
       onPressed: onPressed,
       style: ButtonStyle(
+        iconSize: WidgetStateProperty.all(size),
         alignment: Alignment.centerLeft,
         padding: WidgetStateProperty.all(EdgeInsets.zero),
         elevation: WidgetStateProperty.all(0),
@@ -174,20 +176,18 @@ class CustomIconButton extends StatelessWidget {
   }
 }
 
-class CustomCard extends StatelessWidget {
-  final BuildContext context;
+class CustomCardContent extends StatelessWidget {
   final List<Widget> header;
   final String? title;
   final String? description;
   final Color colorBackground;
-  final List<Widget>? actionIcon;
-  final List<Widget>? iconText;
-  final List<Widget>? descIcon;
+  final List<CustomIconButton>? actionIcon;
+  final List<CustomIconButton>? descIcon;
   final List<String>? crumbs;
   final List<Widget>? otherWidget;
+  final VoidCallback? onPressed;
 
-  const CustomCard(
-    this.context, {
+  const CustomCardContent({
     super.key,
     required this.header,
     this.title,
@@ -196,27 +196,20 @@ class CustomCard extends StatelessWidget {
     this.actionIcon,
     this.descIcon,
     this.crumbs,
-    this.iconText,
     this.otherWidget,
+    this.onPressed,
   });
 
   @override
-  Widget build(BuildContext _) {
+  Widget build(BuildContext context) {
     // Check if crumbs are null before using them
     List<Widget> crumbsWidget =
-        crumbs?.map((it) => _crumbWidget(it)).toList() ?? [];
+        crumbs?.map((it) => _crumbWidget(it, context)).toList() ?? [];
     double maxWidth = MediaQuery.of(context).size.width - 70;
 
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      elevation: 0,
-      shape: SmoothRectangleBorder(
-        borderRadius: SmoothBorderRadius(
-          cornerRadius: 40,
-          cornerSmoothing: 0.6,
-        ),
-      ),
-      color: colorBackground,
+    return GenericCard(
+      backgroundColor: colorBackground,
+      onPressed: onPressed,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 19, horizontal: 20),
         child: SizedBox(
@@ -225,7 +218,7 @@ class CustomCard extends StatelessWidget {
             spacing: 8,
             direction: Axis.vertical,
             crossAxisAlignment: WrapCrossAlignment.start,
-            // clipBehavior: Clip.,
+            clipBehavior: Clip.antiAlias,
             children: [
               SizedBox(
                 width: maxWidth,
@@ -253,11 +246,15 @@ class CustomCard extends StatelessWidget {
                     child: it,
                   ),
                 ),
-              Wrap(
-                alignment: WrapAlignment.start,
-                direction: Axis.horizontal,
-                spacing: 7,
-                children: crumbsWidget,
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: maxWidth),
+                child: Wrap(
+                  alignment: WrapAlignment.start,
+                  direction: Axis.horizontal,
+                  spacing: 7,
+                  runSpacing: 8,
+                  children: crumbsWidget,
+                ),
               ),
             ],
           ),
@@ -266,26 +263,24 @@ class CustomCard extends StatelessWidget {
     );
   }
 
-  Stack _cardHeader() {
-    return Stack(
-      fit: StackFit.loose,
-      alignment: Alignment.centerLeft,
+  Row _cardHeader() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Wrap(
           children: header, // Left-aligned header content
         ),
         if (actionIcon != null)
-          Positioned(
-            right: 0,
-            child: Wrap(
-              children: actionIcon!, // Right-aligned action icons
-            ),
-          )
+          Wrap(
+            spacing: 12,
+            children: actionIcon!, // Right-aligned action icons
+          ),
       ],
     );
   }
 
-  Container _crumbWidget(String title) {
+  Container _crumbWidget(String title, BuildContext context) {
     Color textColor = ColorNeutral.black, crumbsBackground;
     switch (colorBackground) {
       case ColorNeutral.white:
@@ -312,6 +307,7 @@ class CustomCard extends StatelessWidget {
       ),
       child: Text(
         title,
+        textAlign: TextAlign.center,
         style: Theme.of(context).textTheme.displayMedium!.copyWith(
               fontSize: 16,
               color: textColor,
@@ -321,59 +317,87 @@ class CustomCard extends StatelessWidget {
   }
 }
 
-class LiveChatButton extends StatelessWidget {
-  final BuildContext context;
-  const LiveChatButton(this.context, {super.key});
+class GenericCard extends StatelessWidget {
+  final VoidCallback? onPressed;
+  final Color backgroundColor;
+  final Widget child;
+  final bool wasElevated;
+
+  const GenericCard(
+      {super.key,
+      this.onPressed,
+      this.backgroundColor = ColorNeutral.white,
+      required this.child,
+      this.wasElevated = false});
 
   @override
-  Widget build(BuildContext _) {
-    return Card(
-      elevation: 0,
-      shape: SmoothRectangleBorder(
-        borderRadius: SmoothBorderRadius(
-          cornerRadius: 45,
-          cornerSmoothing: 0.6,
-        ),
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.all(
+        Radius.circular(60),
       ),
-      color: ColorNeutral.black,
+      onTap: onPressed,
+      child: Card.filled(
+        clipBehavior: Clip.antiAlias,
+        elevation: wasElevated ? 5 : 0,
+        shape: SmoothRectangleBorder(
+          borderRadius: SmoothBorderRadius(
+            cornerRadius: 40,
+            cornerSmoothing: 0.6,
+          ),
+        ),
+        color: backgroundColor,
+        child: child,
+      ),
+    );
+  }
+}
+
+class CustomBigButton extends StatelessWidget {
+  final Color buttonColor;
+  final String? buttonLabel;
+  final VoidCallback onPressed;
+  final EdgeInsets padding;
+  final bool wasIconOnRight;
+  final CustomIconButton? icon;
+  final List<Widget> otherWidget;
+  final bool wasElevated;
+
+  const CustomBigButton({
+    super.key,
+    this.wasElevated = false,
+    this.buttonColor = ColorNeutral.black,
+    this.icon,
+    this.buttonLabel,
+    required this.onPressed,
+    this.wasIconOnRight = false,
+    required this.otherWidget,
+    this.padding = const EdgeInsets.all(8),
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GenericCard(
+      backgroundColor: buttonColor,
+      wasElevated: wasElevated,
+      onPressed: onPressed,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        padding: padding,
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            SizedBox(
-              width: 133,
-              child: Stack(
-                alignment: Alignment.centerLeft,
-                children: [
-                  Positioned(child: ProfileIcon("assets/icon/profile-1.png")),
-                  Positioned(
-                      left: 40,
-                      child: ProfileIcon("assets/icon/profile-2.png")),
-                  Positioned(
-                      left: 80,
-                      child: ProfileIcon("assets/icon/profile-3.png")),
-                ],
+            if (icon != null && !wasIconOnRight) icon!,
+            if (buttonLabel == null) ...otherWidget,
+            if (buttonLabel != null)
+              Text(
+                buttonLabel!,
+                style: Theme.of(context)
+                    .textTheme
+                    .displayLarge!
+                    .copyWith(fontSize: 24),
               ),
-            ),
-            Container(
-              padding: const EdgeInsets.only(right: 10),
-              child: const Text(
-                "Live chat",
-                style: TextStyle(
-                    color: ColorNeutral.white,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 20),
-              ),
-            ),
-            CustomIconButton(
-              context,
-              "assets/icon/chat.svg",
-              size: IconSize.large,
-              // padding: EdgeInsets.all(12),
-              colorBackground: ColorNeutral.gray,
-              onPressed: () => {},
-            )
+            if (icon != null && wasIconOnRight) icon!,
           ],
         ),
       ),
@@ -381,23 +405,494 @@ class LiveChatButton extends StatelessWidget {
   }
 }
 
-CustomCard taskTawaranCard(BuildContext context,
-    {required String title,
-    required String tanggal,
-    required String lokasi,
-    required List<String> tags,
-    required Color backgroundColor}) {
-  return CustomCard(
-    context,
+class LiveChatButton extends StatelessWidget {
+  const LiveChatButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomBigButton(
+      wasIconOnRight: true,
+      otherWidget: [
+        SizedBox(
+          width: 134,
+          child: Stack(
+            alignment: Alignment.centerLeft,
+            children: [
+              Positioned(
+                child: ProfileIcon(
+                  "assets/icon/profile-1.png",
+                  imageSize: 50,
+                ),
+              ),
+              Positioned(
+                left: 40,
+                child: ProfileIcon(
+                  "assets/icon/profile-2.png",
+                  imageSize: 50,
+                ),
+              ),
+              Positioned(
+                left: 80,
+                child: ProfileIcon(
+                  "assets/icon/profile-3.png",
+                  imageSize: 50,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const Text(
+          "Live chat",
+          style: TextStyle(
+              color: ColorNeutral.white,
+              fontWeight: FontWeight.w700,
+              fontSize: 20),
+        )
+      ],
+      onPressed: () => {},
+      icon: CustomIconButton(
+        "assets/icon/chat.svg",
+        size: IconSize.large,
+        colorBackground: ColorNeutral.gray,
+      ),
+    );
+  }
+}
+
+class CustomTextField extends StatefulWidget {
+  final String label;
+  final String hint;
+  final bool isPassword;
+  final TextInputType inputType;
+  final IconData customIcon;
+  final TextEditingController? controller;
+
+  const CustomTextField({
+    super.key,
+    required this.label,
+    this.isPassword = false,
+    this.inputType = TextInputType.text,
+    this.customIcon = Icons.visibility_off,
+    required this.hint,
+    this.controller, // Default icon for password
+  });
+
+  @override
+  _CustomTextFieldState createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+  bool _obscureText = true;
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize controller: Use the provided one or create a new one
+    _controller = widget.controller ?? TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    // Dispose of the controller if it was created here
+    if (widget.controller == null) {
+      _controller.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(left: 12),
+          child: Text(
+            widget.label,
+            style:
+                Theme.of(context).textTheme.titleMedium!.copyWith(fontSize: 14),
+          ),
+        ),
+        SizedBox(height: 8),
+        TextField(
+          obscureText: widget.isPassword ? _obscureText : false,
+          keyboardType: widget.inputType,
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 18,
+            ),
+            hintText: widget.hint,
+            hintStyle:
+                Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 16),
+            border: OutlineInputBorder(
+              borderRadius: SmoothBorderRadius(
+                cornerRadius: 28, // Adjust as needed
+                cornerSmoothing: 0.6, // Smoothness level
+              ),
+              borderSide: BorderSide(
+                  color: ColorNeutral.black, width: 1), // Outline color
+            ),
+            suffixIcon: widget.isPassword
+                ? Padding(
+                    padding: const EdgeInsets.only(right: 20),
+                    child: IconButton(
+                      icon: Icon(
+                        _obscureText ? widget.customIcon : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscureText = !_obscureText;
+                        });
+                      },
+                    ),
+                  )
+                : null,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// Custom TableCalendar class
+class CustomTableCalendar extends StatefulWidget {
+  final Map<DateTime, List<Event>> events;
+
+  const CustomTableCalendar({super.key, required this.events});
+
+  @override
+  _CustomTableCalendarState createState() => _CustomTableCalendarState();
+}
+
+class _CustomTableCalendarState extends State<CustomTableCalendar>
+    with SingleTickerProviderStateMixin {
+  DateTime _selectedDay = DateTime.now();
+  DateTime _focusedDay = DateTime.now(); // To control focused month
+  DateTime _currentDay = DateTime.now(); // To track the current day
+  late AnimationController _controller; // For animations
+  bool _showButton = false; // To control button visibility
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GenericCard(
+      child: Column(
+        children: [
+          // The TableCalendar widget
+          TableCalendar(
+            locale: 'id_ID',
+            firstDay: DateTime.utc(2020, 1, 1),
+            lastDay: DateTime.utc(2030, 12, 31),
+            focusedDay: _focusedDay,
+            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+            onDaySelected: (selectedDay, focusedDay) {
+              setState(() {
+                _selectedDay = selectedDay;
+                _focusedDay =
+                    focusedDay; // Update focused day to prevent month jump
+              });
+            },
+            onPageChanged: (focusedDay) {
+              setState(() {
+                _focusedDay =
+                    focusedDay; // Update focused day when changing month
+                _showButton = _focusedDay.month != _currentDay.month ||
+                    _focusedDay.year != _currentDay.year;
+              });
+            },
+            startingDayOfWeek: StartingDayOfWeek.sunday,
+            headerStyle: HeaderStyle(
+              formatButtonVisible: false,
+              titleCentered: true,
+              leftChevronIcon: Icon(Icons.chevron_left),
+              rightChevronIcon: Icon(Icons.chevron_right),
+              titleTextStyle:
+                  Theme.of(context).textTheme.displayLarge!.copyWith(
+                        fontSize: 20,
+                      ),
+            ),
+            daysOfWeekStyle: DaysOfWeekStyle(
+              weekdayStyle: Theme.of(context)
+                  .textTheme
+                  .titleMedium!
+                  .copyWith(fontSize: 14),
+              weekendStyle: Theme.of(context)
+                  .textTheme
+                  .titleMedium!
+                  .copyWith(fontSize: 14),
+            ),
+            calendarStyle: CalendarStyle(
+              todayDecoration: BoxDecoration(
+                color: ColorNeutral.black,
+                shape: BoxShape.circle,
+              ),
+              selectedDecoration: BoxDecoration(
+                color: ColorNeutral.black,
+                shape: BoxShape.circle,
+              ),
+              markerDecoration: BoxDecoration(
+                color: ColorNeutral.black,
+                shape: BoxShape.circle,
+              ),
+              markersMaxCount: 1,
+              markerSizeScale: 0.3,
+              outsideDaysVisible: false,
+              defaultTextStyle:
+                  Theme.of(context).textTheme.titleMedium!.copyWith(
+                        fontSize: 18,
+                      ),
+            ),
+            eventLoader: (day) => widget.events[day] ?? [],
+            calendarBuilders: CalendarBuilders(
+              markerBuilder: (context, date, events) {
+                if (events.isNotEmpty) {
+                  final event = events.first as Event;
+                  return _buildEventMarker(event.type);
+                }
+                return null;
+              },
+            ),
+          ),
+          SizedBox(height: 16),
+          // Footer explaining colors
+          _buildFooter(),
+        ],
+      ),
+    );
+  }
+
+  // Method to build the event markers
+  Widget _buildEventMarker(String eventType) {
+    switch (eventType) {
+      case 'upcoming':
+        return _eventCircleMarker(ColorPrimary.green);
+      case 'completed':
+        return _eventCircleMarker(ColorPrimary.blue);
+      case 'missed':
+        return _eventCircleMarker(ColorPrimary.orange);
+      default:
+        return SizedBox.shrink();
+    }
+  }
+
+  // Helper method to build event circle marker
+  Widget _eventCircleMarker(Color color) {
+    return Container(
+      // margin: const EdgeInsets.symmetric(horizontal: 1.5),
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+      ),
+      width: 8.0,
+      height: 8.0,
+    );
+  }
+
+  // Footer explaining event color meanings
+  Widget _buildFooter() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 30, bottom: 24),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildColorIndicator(ColorPrimary.green, 'Acara yang mendatang'),
+              _buildColorIndicator(
+                  ColorPrimary.blue, 'Acara yang sudah dilaksanakan'),
+              _buildColorIndicator(
+                  ColorPrimary.orange, 'Acara yang tidak dihadiri'),
+            ],
+          ),
+          if (_showButton)
+            AnimatedPositioned(
+              duration: const Duration(milliseconds: 300),
+              left: _showButton
+                  ? 0
+                  : 100, // Adjust left position based on visibility
+              child: ElevatedButton(
+                onPressed: _goToCurrentDate,
+                style: ElevatedButton.styleFrom(
+                  shape: CircleBorder(),
+                  padding: EdgeInsets.all(16),
+                  backgroundColor: ColorNeutral.black,
+                ),
+                child: Text(
+                  '${_currentDay.day}',
+                  style: TextStyle(color: ColorNeutral.white, fontSize: 16),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  // Helper method to build the color explanation
+  Widget _buildColorIndicator(Color color, String label) {
+    return Row(
+      children: [
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
+        ),
+        SizedBox(width: 8),
+        Text(label),
+      ],
+    );
+  }
+
+  // Method to navigate to the current date
+  void _goToCurrentDate() {
+    setState(() {
+      _focusedDay = _currentDay; // Set focused day to current day
+      _selectedDay = _currentDay; // Update selected day
+      _showButton = false; // Hide button after navigating to current date
+    });
+  }
+}
+
+// Event class to represent each event
+class Event {
+  final String type;
+  Event(this.type);
+}
+
+class CustomBottomSheet extends StatelessWidget {
+  final Widget? child;
+  final Text title;
+  final String? desc;
+  final List<CustomBigButton> button;
+
+  const CustomBottomSheet({
+    super.key,
+    required this.child,
+    required this.title,
+    this.desc,
+    required this.button,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 29),
+      decoration: ShapeDecoration(
+        color: ColorNeutral.white,
+        shape: SmoothRectangleBorder(
+          borderRadius: SmoothBorderRadius.only(
+            topLeft: SmoothRadius(cornerRadius: 40, cornerSmoothing: 0.6),
+            topRight: SmoothRadius(cornerRadius: 40, cornerSmoothing: 0.6),
+          ),
+        ),
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.5,
+            ),
+            child: IntrinsicHeight(
+              // Makes the container shrink to fit its content
+              child: Column(
+                children: [
+                  // Pull handle at the top of the BottomSheet
+                  Container(
+                    width: 62,
+                    height: 7,
+                    decoration: BoxDecoration(
+                      color: ColorNeutral.background,
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                      top: 21,
+                      left: 29,
+                      right: 29,
+                      bottom: 62,
+                    ),
+                    child: Column(
+                      children: [
+                        title,
+                        SizedBox(
+                          height: 12,
+                        ),
+                        if (desc != null)
+                          Text(
+                            desc!,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                  fontSize: 14,
+                                ),
+                          ),
+                        SizedBox(height: 20),
+                        if (child != null) child!,
+                        SizedBox(
+                          height: 56,
+                        ),
+                        ...button.map(
+                          (it) => Padding(
+                            padding: EdgeInsets.only(top: 10),
+                            child: it,
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+CustomCardContent tawaranTugasCard(
+  ThemeData theme, {
+  required String title,
+  required String tanggal,
+  required String lokasi,
+  required List<String> tags,
+  required Color backgroundColor,
+}) {
+  return CustomCardContent(
     header: [
       Text(
         "Kamu mendapat tawaran penugasan",
-        style: Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 14),
+        style: theme.textTheme.bodySmall!.copyWith(fontSize: 14),
       ),
     ],
     actionIcon: [
       CustomIconButton(
-        context,
         "assets/icon/arrow-45.svg",
         size: IconSize.medium,
         padding: EdgeInsets.zero,
@@ -408,14 +903,12 @@ CustomCard taskTawaranCard(BuildContext context,
     title: title,
     descIcon: [
       CustomIconButton(
-        context,
         "assets/icon/calendar.svg",
         colorBackground: Colors.transparent,
         iconColorCustom: ColorNeutral.gray,
         text: tanggal,
       ),
       CustomIconButton(
-        context,
         "assets/icon/location.svg",
         colorBackground: Colors.transparent,
         iconColorCustom: ColorNeutral.gray,
@@ -423,5 +916,28 @@ CustomCard taskTawaranCard(BuildContext context,
       )
     ],
     crumbs: tags,
+  );
+}
+
+void callBottomSheet(
+  BuildContext context, {
+  child,
+  required title,
+  required List<CustomBigButton> button,
+  String? description,
+}) {
+  showModalBottomSheet(
+    context: context,
+    backgroundColor:
+        Colors.transparent, // Transparent background for custom shape
+    builder: (context) {
+      return CustomBottomSheet(
+        child: child,
+        title: title,
+        desc: description,
+        button: button,
+      ); // Content defined below
+    },
+    isScrollControlled: true, // Allows control over the BottomSheet's height
   );
 }

@@ -1,4 +1,4 @@
-enum NavbarState { home, calendar, task }
+enum NavbarState { calendar, home, task }
 
 abstract class IconSize {
   static const double small = 20;
