@@ -1,5 +1,7 @@
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
+import 'package:aplikasi_manajemen_sdm/view/home/homepage_widgets.dart';
+import 'package:aplikasi_manajemen_sdm/view/kalender/kalender_widget.dart';
 import 'package:flutter/material.dart';
 
 class Kalender extends StatefulWidget {
@@ -54,7 +56,8 @@ class _KalenderState extends State<Kalender> {
               height: 24,
             ),
             CustomBottomSheet(
-              child: GenericCard(child: Container()),
+              maxHeight: double.maxFinite,
+              child: currentTaskKalender(Theme.of(context)),
             ),
           ],
         ),

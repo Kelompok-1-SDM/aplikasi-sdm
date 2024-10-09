@@ -120,7 +120,11 @@ CustomCardContent currentTask(ThemeData theme) {
         text: "Auditorium Lt. 8, Teknik Sipil",
       )
     ],
-    otherWidget: [LiveChatButton()],
+    otherWidget: [
+      LiveChatButton(
+        withText: true,
+      )
+    ],
   );
 }
 

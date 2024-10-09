@@ -212,21 +212,21 @@ class CustomCardContent extends StatelessWidget {
       onPressed: onPressed,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 19, horizontal: 20),
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width,
-          child: Wrap(
-            spacing: 8,
-            direction: Axis.vertical,
-            crossAxisAlignment: WrapCrossAlignment.start,
-            clipBehavior: Clip.antiAlias,
-            children: [
-              SizedBox(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: SizedBox(
                 width: maxWidth,
                 height: 50,
                 child: _cardHeader(),
               ),
-              if (title != null)
-                SizedBox(
+            ),
+            if (title != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: SizedBox(
                   width: maxWidth,
                   child: Text(
                     title!,
@@ -238,15 +238,22 @@ class CustomCardContent extends StatelessWidget {
                     maxLines: 2,
                   ),
                 ),
-              if (descIcon != null) ...descIcon!,
-              if (otherWidget != null)
-                ...otherWidget!.map(
-                  (it) => SizedBox(
-                    width: maxWidth,
+              ),
+            if (descIcon != null)
+              ...descIcon!.map((it) => Padding(
+                    padding: const EdgeInsets.only(top: 8),
                     child: it,
-                  ),
+                  )),
+            if (otherWidget != null)
+              ...otherWidget!.map(
+                (it) => Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: it,
                 ),
-              ConstrainedBox(
+              ),
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: maxWidth),
                 child: Wrap(
                   alignment: WrapAlignment.start,
@@ -256,8 +263,8 @@ class CustomCardContent extends StatelessWidget {
                   children: crumbsWidget,
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -332,22 +339,24 @@ class GenericCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.all(
-        Radius.circular(60),
-      ),
-      onTap: onPressed,
-      child: Card.filled(
-        clipBehavior: Clip.antiAlias,
-        elevation: wasElevated ? 5 : 0,
-        shape: SmoothRectangleBorder(
-          borderRadius: SmoothBorderRadius(
-            cornerRadius: 40,
-            cornerSmoothing: 0.6,
-          ),
+    return Material(
+      child: InkWell(
+        borderRadius: BorderRadius.all(
+          Radius.circular(60),
         ),
-        color: backgroundColor,
-        child: child,
+        onTap: onPressed,
+        child: Card.filled(
+          clipBehavior: Clip.antiAlias,
+          elevation: wasElevated ? 5 : 0,
+          shape: SmoothRectangleBorder(
+            borderRadius: SmoothBorderRadius(
+              cornerRadius: 40,
+              cornerSmoothing: 0.6,
+            ),
+          ),
+          color: backgroundColor,
+          child: child,
+        ),
       ),
     );
   }
@@ -406,7 +415,8 @@ class CustomBigButton extends StatelessWidget {
 }
 
 class LiveChatButton extends StatelessWidget {
-  const LiveChatButton({super.key});
+  final bool withText;
+  const LiveChatButton({super.key, required this.withText});
 
   @override
   Widget build(BuildContext context) {
@@ -441,13 +451,14 @@ class LiveChatButton extends StatelessWidget {
             ],
           ),
         ),
-        const Text(
-          "Live chat",
-          style: TextStyle(
-              color: ColorNeutral.white,
-              fontWeight: FontWeight.w700,
-              fontSize: 20),
-        )
+        if (withText)
+          Text(
+            "Live chat",
+            style: TextStyle(
+                color: ColorNeutral.white,
+                fontWeight: FontWeight.w700,
+                fontSize: 20),
+          )
       ],
       onPressed: () => {},
       icon: CustomIconButton(
@@ -611,7 +622,7 @@ class _CustomTableCalendarState extends State<CustomTableCalendar>
             onPageChanged: (focusedDay) {
               setState(() {
                 _focusedDay =
-                    focusedDay; // Update focused day when changing month
+                    focusedDay; // Update focused day when changing month jasdgjasdg
                 _showButton = _focusedDay.month != _currentDay.month ||
                     _focusedDay.year != _currentDay.year;
               });
@@ -785,6 +796,7 @@ class CustomBottomSheet extends StatelessWidget {
   final Widget? child;
   final Text? title;
   final String? desc;
+  final double? maxHeight;
   final List<CustomBigButton>? button;
 
   const CustomBottomSheet({
@@ -793,10 +805,12 @@ class CustomBottomSheet extends StatelessWidget {
     this.title,
     this.desc,
     this.button,
+    this.maxHeight,
   });
 
   @override
   Widget build(BuildContext context) {
+    double? maxx = maxHeight ?? MediaQuery.of(context).size.height * 0.5;
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(vertical: 12, horizontal: 29),
@@ -813,7 +827,7 @@ class CustomBottomSheet extends StatelessWidget {
         builder: (context, constraints) {
           return ConstrainedBox(
             constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.5,
+              maxHeight: maxx!,
             ),
             child: IntrinsicHeight(
               // Makes the container shrink to fit its content
@@ -872,6 +886,39 @@ class CustomBottomSheet extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class ImageLoader extends StatelessWidget {
+  final String imageUrl;
+  final VoidCallback? onPressed;
+  const ImageLoader({super.key, required this.imageUrl, this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.all(
+        Radius.circular(60),
+      ),
+      onTap: onPressed,
+      child: Container(
+        width: 25,
+        height: 25,
+        decoration: ShapeDecoration(
+          image: DecorationImage(
+            image: NetworkImage(imageUrl),
+            fit: BoxFit.fill,
+          ),
+          shape: OvalBorder(
+            side: BorderSide(
+              width: 1,
+              strokeAlign: BorderSide.strokeAlignCenter,
+              color: Color(0xFF748EFE),
+            ),
+          ),
+        ),
       ),
     );
   }

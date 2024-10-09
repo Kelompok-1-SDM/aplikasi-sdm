@@ -1,78 +1,46 @@
-import 'package:aplikasi_manajemen_sdm/config/const.dart';
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
 import 'package:flutter/material.dart';
 
-CustomCardContent statsCard(ThemeData theme) {
+CustomCardContent currentTaskKalender(ThemeData theme) {
   return CustomCardContent(
     header: [
-      CustomIconButton(
-        "assets/icon/stats.svg",
-        // padding: EdgeInsets.symmetric(vertical: 14, horizontal: 12),
-        colorBackground: ColorNeutral.black,
-      )
+      Text(
+        "Tugas yang sedang berlangsung",
+        style: theme.textTheme.bodySmall!.copyWith(fontSize: 14),
+      ),
     ],
+    title: "Pemateri Semminar Teknnologi Informasi",
     actionIcon: [
       CustomIconButton(
-        "assets/icon/share.svg",
-        onPressed: () => {},
-        colorBackground: ColorNeutral.background,
+        "assets/icon/category.svg",
+        colorBackground: ColorNeutral.black,
+        isSelected: true,
+      )
+    ],
+    colorBackground: ColorPrimary.orange,
+    descIcon: [
+      CustomIconButton(
+        "assets/icon/location.svg",
+        colorBackground: Colors.transparent,
+        text: "Auditorium Lt. 8, Teknik Sipil",
       )
     ],
     otherWidget: [
-      Text(
-        "Statistik",
-        style: theme.textTheme.bodyMedium!.copyWith(fontSize: 14),
-      ),
-      Stack(
-        children: [
-          Positioned(
-            left: 118,
-            child: ProfileIcon("assets/icon/profile.png"),
-          ),
-          Positioned(
-            child: RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: "Ardian           ,kamu\ntelah melakukan\n",
-                    style: theme.textTheme.bodyMedium!.copyWith(fontSize: 36),
-                  ),
-                  TextSpan(
-                    text: "40 penugasan\n",
-                    style: theme.textTheme.bodyMedium!
-                        .copyWith(fontSize: 36, fontWeight: FontWeight.bold),
-                  ),
-                  TextSpan(
-                    text: "dalam",
-                    style: theme.textTheme.bodyMedium!.copyWith(fontSize: 36),
-                  ),
-                  TextSpan(
-                    text: " setahun ini",
-                    style: theme.textTheme.bodyMedium!
-                        .copyWith(fontSize: 36, fontWeight: FontWeight.bold),
-                  ),
-                ],
+      Container(
+        child: Stack(
+          children: [
+            Positioned(
+              child: Image.asset(
+                "assets/icon/event.jpg",
               ),
-            ),
-          ),
-        ],
+            )
+          ],
+        ),
       ),
-      Wrap(
-        direction: Axis.horizontal,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: 4,
-        children: [
-          Text("Ketuk untuk melihat lebih detail"),
-          CustomIconButton(
-            "assets/icon/arrow-45.svg",
-            size: IconSize.small,
-            padding: EdgeInsets.zero,
-            colorBackground: ColorNeutral.black,
-          )
-        ],
-      )
+      LiveChatButton(
+        withText: false,
+      ),
     ],
-    crumbs: ["🧑‍🏫 Pemateri", "⚖️ Juri", "🤖 AI"],
   );
 }
