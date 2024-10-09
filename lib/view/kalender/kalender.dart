@@ -33,7 +33,7 @@ class _KalenderState extends State<Kalender> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 22),
               child: SizedBox(
                 width: double.infinity,
                 child: Column(
@@ -50,33 +50,12 @@ class _KalenderState extends State<Kalender> {
                 ),
               ),
             ),
+            SizedBox(
+              height: 24,
+            ),
             CustomBottomSheet(
-                child: Container(),
-                title: Text("asdhkasdh"),
-                button: [
-                  CustomBigButton(
-                      onPressed: () => {}, otherWidget: [Text("askdsakd")])
-                ]),
-            // Calendar Section
-
-            // Task Section
-            // ListView(
-            //   children: [
-            //     Padding(
-            //       padding: const EdgeInsets.all(8.0),
-            //       child: TaskCard(),
-            //     ),
-            //     Padding(
-            //       padding: const EdgeInsets.all(8.0),
-            //       child: Center(
-            //         child: Text(
-            //           "Belum ada tugas lain",
-            //           style: TextStyle(fontSize: 16, color: Colors.grey),
-            //         ),
-            //       ),
-            //     ),
-            //   ],
-            // ),
+              child: GenericCard(child: Container()),
+            ),
           ],
         ),
       ),

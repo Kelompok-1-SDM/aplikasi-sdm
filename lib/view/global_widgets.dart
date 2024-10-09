@@ -64,7 +64,7 @@ class HomeAppBar extends StatelessWidget {
         ),
         ProfileIcon(
           "assets/icon/profile.png",
-          onPressed: () => {print('Hako')},
+          onPressed: () => {Navigator.pushNamed(context, "/profile")},
         )
       ],
     );
@@ -707,7 +707,7 @@ class _CustomTableCalendarState extends State<CustomTableCalendar>
   // Footer explaining event color meanings
   Widget _buildFooter() {
     return Padding(
-      padding: const EdgeInsets.only(left: 30, bottom: 24),
+      padding: const EdgeInsets.only(left: 30, bottom: 24, right: 30),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -783,16 +783,16 @@ class Event {
 
 class CustomBottomSheet extends StatelessWidget {
   final Widget? child;
-  final Text title;
+  final Text? title;
   final String? desc;
-  final List<CustomBigButton> button;
+  final List<CustomBigButton>? button;
 
   const CustomBottomSheet({
     super.key,
     required this.child,
-    required this.title,
+    this.title,
     this.desc,
-    required this.button,
+    this.button,
   });
 
   @override
@@ -837,7 +837,7 @@ class CustomBottomSheet extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        title,
+                        if (title != null) title!,
                         SizedBox(
                           height: 12,
                         ),
@@ -857,12 +857,13 @@ class CustomBottomSheet extends StatelessWidget {
                         SizedBox(
                           height: 56,
                         ),
-                        ...button.map(
-                          (it) => Padding(
-                            padding: EdgeInsets.only(top: 10),
-                            child: it,
-                          ),
-                        )
+                        if (button != null)
+                          ...button!.map(
+                            (it) => Padding(
+                              padding: EdgeInsets.only(top: 10),
+                              child: it,
+                            ),
+                          )
                       ],
                     ),
                   )
