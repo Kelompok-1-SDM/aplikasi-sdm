@@ -48,38 +48,6 @@ class ProfileIcon extends StatelessWidget {
   }
 }
 
-class HomeAppBar extends StatelessWidget {
-  const HomeAppBar({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        CustomIconButton(
-          "assets/icon/notification.svg",
-          colorBackground: ColorNeutral.white,
-          onPressed: () => {},
-          size: IconSize.medium,
-        ),
-        SizedBox(
-          width: 16,
-        ),
-        ProfileIcon(
-          "assets/icon/profile.png",
-          onPressed: () => {
-            Navigator.pushNamed(
-              context,
-              "/profile",
-            )
-          },
-        )
-      ],
-    );
-  }
-}
-
 class CustomIconButton extends StatelessWidget {
   final String? text;
   final double size;
@@ -346,6 +314,7 @@ class CustomCardContent extends StatelessWidget {
 class GenericCard extends StatelessWidget {
   final VoidCallback? onPressed;
   final Color backgroundColor;
+  final bool wasFromButton;
   final Widget child;
   final bool wasElevated;
 
@@ -354,7 +323,8 @@ class GenericCard extends StatelessWidget {
       this.onPressed,
       this.backgroundColor = ColorNeutral.white,
       required this.child,
-      this.wasElevated = false});
+      this.wasElevated = false,
+      this.wasFromButton = false});
 
   @override
   Widget build(BuildContext context) {
@@ -369,7 +339,7 @@ class GenericCard extends StatelessWidget {
         shape: SmoothRectangleBorder(
           borderRadius: SmoothBorderRadius(
             cornerRadius: 40,
-            cornerSmoothing: 0.6,
+            cornerSmoothing: wasFromButton ? 0 : .6,
           ),
         ),
         color: backgroundColor,
@@ -410,6 +380,7 @@ class CustomBigButton extends StatelessWidget {
             ? ColorNeutral.white
             : ColorNeutral.black);
     return GenericCard(
+      wasFromButton: true,
       backgroundColor: buttonColor,
       wasElevated: wasElevated,
       onPressed: onPressed,
