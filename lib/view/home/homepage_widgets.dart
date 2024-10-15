@@ -16,84 +16,158 @@ class Navbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(alignment: Alignment.bottomCenter, children: [
-      Positioned(
-        bottom: 30,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-          decoration: ShapeDecoration(
-            color: ColorNeutral.black,
-            shape: SmoothRectangleBorder(
-              borderRadius: SmoothBorderRadius(
-                cornerRadius: 55,
-                cornerSmoothing: 0,
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: [
+        // Positioned(
+        //   bottom: 140,
+        //   child: Container(
+        //     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        //     decoration: ShapeDecoration(
+        //       color: ColorNeutral.black,
+        //       shape: SmoothRectangleBorder(
+        //         borderRadius: SmoothBorderRadius(
+        //           cornerRadius: 24,
+        //           cornerSmoothing: 0,
+        //         ),
+        //       ),
+        //     ),
+        //     child: Wrap(
+        //       spacing: 26,
+        //       direction: Axis.horizontal,
+        //       children: [
+        //         AnimatedSwitcher(
+        //           duration: const Duration(milliseconds: 300),
+        //           transitionBuilder:
+        //               (Widget child, Animation<double> animation) {
+        //             return ScaleTransition(scale: animation, child: child);
+        //           },
+        //           child: TextButton(
+        //             key: ValueKey(
+        //                 state == NavbarState.calendar), // Unique Key for state
+        //             onPressed: () => {},
+        //             child: Text("Ditugaskan"),
+        //           ),
+        //         ),
+        //         AnimatedSwitcher(
+        //           duration: const Duration(milliseconds: 300),
+        //           transitionBuilder:
+        //               (Widget child, Animation<double> animation) {
+        //             return ScaleTransition(scale: animation, child: child);
+        //           },
+        //           child: TextButton(
+        //             key: ValueKey(
+        //                 state == NavbarState.calendar), // Unique Key for state
+        //             onPressed: () => {},
+        //             child: Text("Histori"),
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //   ),
+        // ),
+        Positioned(
+          bottom: 30,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+            decoration: ShapeDecoration(
+              color: ColorNeutral.black,
+              shape: SmoothRectangleBorder(
+                borderRadius: SmoothBorderRadius(
+                  cornerRadius: 55,
+                  cornerSmoothing: 0,
+                ),
               ),
             ),
-          ),
-          child: Wrap(
-            spacing: 26,
-            direction: Axis.horizontal,
-            children: [
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                transitionBuilder: (Widget child, Animation<double> animation) {
-                  return ScaleTransition(scale: animation, child: child);
-                },
-                child: CustomIconButton(
-                  key: ValueKey(
-                      state == NavbarState.calendar), // Unique Key for state
-                  "assets/icon/calendar-bold.svg",
-                  onPressed: () => {
-                    onItemSelected(0),
+            child: Wrap(
+              spacing: 26,
+              direction: Axis.horizontal,
+              children: [
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  transitionBuilder:
+                      (Widget child, Animation<double> animation) {
+                    return ScaleTransition(scale: animation, child: child);
                   },
-                  size: IconSize.large,
-                  padding: EdgeInsets.zero,
-                  colorBackground: ColorNeutral.black,
-                  isSelected: state == NavbarState.calendar,
+                  child: CustomIconButton(
+                    key: ValueKey(
+                        state == NavbarState.calendar), // Unique Key for state
+                    "assets/icon/calendar-bold.svg",
+                    onPressed: () => {
+                      onItemSelected(0),
+                    },
+                    size: IconSize.large,
+                    padding: EdgeInsets.zero,
+                    colorBackground: ColorNeutral.black,
+                    isSelected: state == NavbarState.calendar,
+                  ),
                 ),
-              ),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                transitionBuilder: (Widget child, Animation<double> animation) {
-                  return ScaleTransition(scale: animation, child: child);
-                },
-                child: CustomIconButton(
-                  key: ValueKey(
-                      state == NavbarState.home), // Unique Key for state
-                  "assets/icon/home.svg",
-                  onPressed: () => {
-                    onItemSelected(1),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  transitionBuilder:
+                      (Widget child, Animation<double> animation) {
+                    return ScaleTransition(scale: animation, child: child);
                   },
-                  size: IconSize.large,
-                  padding: EdgeInsets.zero,
-                  colorBackground: ColorNeutral.black,
-                  isSelected: state == NavbarState.home,
+                  child: CustomIconButton(
+                    key: ValueKey(
+                        state == NavbarState.home), // Unique Key for state
+                    "assets/icon/home.svg",
+                    onPressed: () => {
+                      onItemSelected(1),
+                    },
+                    size: IconSize.large,
+                    padding: EdgeInsets.zero,
+                    colorBackground: ColorNeutral.black,
+                    isSelected: state == NavbarState.home,
+                  ),
                 ),
-              ),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                transitionBuilder: (Widget child, Animation<double> animation) {
-                  return ScaleTransition(scale: animation, child: child);
-                },
-                child: CustomIconButton(
-                  key: ValueKey(
-                      state == NavbarState.task), // Unique Key for state
-                  "assets/icon/category-bold.svg",
-                  onPressed: () => {
-                    onItemSelected(2),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  transitionBuilder:
+                      (Widget child, Animation<double> animation) {
+                    return ScaleTransition(scale: animation, child: child);
                   },
-                  size: IconSize.large,
-                  padding: EdgeInsets.zero,
-                  colorBackground: ColorNeutral.black,
-                  isSelected: state == NavbarState.task,
+                  child: CustomIconButton(
+                    key: ValueKey(
+                        state == NavbarState.task), // Unique Key for state
+                    "assets/icon/category-bold.svg",
+                    onPressed: () => {
+                      onItemSelected(2),
+                    },
+                    size: IconSize.large,
+                    padding: EdgeInsets.zero,
+                    colorBackground: ColorNeutral.black,
+                    isSelected: state == NavbarState.task,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
-    ]);
+      ],
+    );
   }
+}
+
+SizedBox headline(ThemeData theme) {
+  return SizedBox(
+    width: double.maxFinite,
+    child: Wrap(
+      direction: Axis.vertical,
+      crossAxisAlignment: WrapCrossAlignment.start,
+      children: [
+        Text(
+          "Halo 👋 Ardian",
+          style: theme.textTheme.bodySmall!.copyWith(fontSize: 20),
+        ),
+        Text(
+          "Mulai hari dengan\nmenjadi lebih produktif!",
+          style:
+              theme.textTheme.titleMedium!.copyWith(fontSize: 24),
+        ),
+      ],
+    ),
+  );
 }
 
 CustomCardContent currentTask(ThemeData theme) {
@@ -143,7 +217,7 @@ CustomCardContent homeCard(ThemeData theme) {
     // title: nukll,
     actionIcon: [
       CustomIconButton(
-        "assets/icon/share.svg",
+        Icons.share,
         onPressed: () => {},
         colorBackground: ColorNeutral.white,
       ),
@@ -186,7 +260,7 @@ CustomCardContent statsCard(ThemeData theme) {
     ],
     actionIcon: [
       CustomIconButton(
-        "assets/icon/share.svg",
+        Icons.share,
         onPressed: () => {},
         colorBackground: ColorNeutral.background,
       )
@@ -200,18 +274,21 @@ CustomCardContent statsCard(ThemeData theme) {
         children: [
           Positioned(
             left: 118,
-            child: ProfileIcon("assets/icon/profile.png"),
+            child: ProfileIcon(
+              "assets/icon/profile.png",
+              imageSize: 60,
+            ),
           ),
           Positioned(
             child: RichText(
               text: TextSpan(
                 children: [
                   TextSpan(
-                    text: "Ardian           ,kamu\ntelah melakukan\n",
+                    text: "Ardian           ,kamu telah melakukan ",
                     style: theme.textTheme.bodyMedium!.copyWith(fontSize: 36),
                   ),
                   TextSpan(
-                    text: "40 penugasan\n",
+                    text: "40 penugasan ",
                     style: theme.textTheme.bodyMedium!
                         .copyWith(fontSize: 36, fontWeight: FontWeight.bold),
                   ),
@@ -233,7 +310,7 @@ CustomCardContent statsCard(ThemeData theme) {
       Wrap(
         direction: Axis.horizontal,
         crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: 4,
+        spacing: 8,
         children: [
           Text("Ketuk untuk melihat lebih detail"),
           CustomIconButton(

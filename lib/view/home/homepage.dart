@@ -88,43 +88,22 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: double.infinity,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    HomeAppBar(),
-                    SizedBox(
-                      width: double.maxFinite,
-                      child: Wrap(
-                        direction: Axis.vertical,
-                        crossAxisAlignment: WrapCrossAlignment.start,
-                        children: [
-                          Text(
-                            "Halo 👋 Ardian",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall!
-                                .copyWith(fontSize: 20),
-                          ),
-                          Text(
-                            "Mulai hari dengan\nmenjadi lebih produktif!",
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(fontSize: 24),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                  children: [HomeAppBar(), headline(Theme.of(context))],
                 ),
               ),
             ),
             const SizedBox(
               height: 13,
             ),
-            homeCard(Theme.of(context)),
+            homeCard(
+              Theme.of(context),
+            ),
             const SizedBox(
               height: 13,
             ),
-            currentTask(Theme.of(context)),
+            currentTask(
+              Theme.of(context),
+            ),
             const SizedBox(
               height: 13,
             ),

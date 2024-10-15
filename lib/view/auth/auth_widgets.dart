@@ -54,7 +54,7 @@ GenericCard authCard(ThemeData theme, TextEditingController nipController,
 Padding loginButton(ThemeData theme, VoidCallback login, VoidCallback belumPunyaAkun) {
   return Padding(
     padding: EdgeInsets.symmetric(
-      horizontal: 120,
+      horizontal: 64,
     ),
     child: Column(
       children: [
