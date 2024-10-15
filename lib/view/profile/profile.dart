@@ -25,29 +25,40 @@ class _ProfilePageState extends State<ProfilePage> {
           padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 61),
           child: Column(
             children: [
-              // Padding(
-              //   padding: const EdgeInsets.only(left: 8),
-              //   child: Row(
-              //     children: [
-              //       CustomIconButton(
-              //         Icons.chevron_left_rounded,
-              //         colorBackground: ColorNeutral.white,
-              //         size: IconSize.medium,
-              //         onPressed: () => {Navigator.pop(context)},
-              //       ),
-              //     ],
-              //   ),
-              // ),
-              // ProfileIcon(
-              //   "assets/icon/profile.png",
-              //   imageSize: 130,
-              // ),
-              // SizedBox(
-              //   height: 13,
-              // ),
-              // profileCard(
-              //   Theme.of(context),
-              // ),
+              Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: Row(
+                  children: [
+                    CustomIconButton(
+                      Icons.chevron_left_rounded,
+                      colorBackground: ColorNeutral.white,
+                      size: IconSize.medium,
+                      onPressed: () => {Navigator.pop(context)},
+                    ),
+                  ],
+                ),
+              ),
+              Stack(
+                children: [
+                  ProfileIcon(
+                    "assets/icon/profile.png",
+                    imageSize: 130,
+                  ),
+                  Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: CustomIconButton(Icons.edit_outlined,
+                    size: IconSize.small,
+                        colorBackground: ColorNeutral.white),
+                  )
+                ],
+              ),
+              SizedBox(
+                height: 13,
+              ),
+              profileCard(
+                Theme.of(context),
+              ),
               // SizedBox(
               //   height: 13,
               // ),
