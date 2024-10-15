@@ -89,13 +89,13 @@ class CustomIconButton extends StatelessWidget {
   final bool wasTextInRight;
   final EdgeInsetsGeometry padding;
   final VoidCallback? onPressed;
-  final bool isSelected;
+  final bool isNotSelectable;
 
   const CustomIconButton(this.assetLocation,
       {super.key,
       required this.colorBackground,
       this.padding = const EdgeInsets.all(12),
-      this.isSelected = true,
+      this.isNotSelectable = true,
       this.size = 24.0, // Default icon size for optimization
       this.onPressed,
       this.text,
@@ -137,7 +137,7 @@ class CustomIconButton extends StatelessWidget {
       return IconButton(
         padding: padding,
         iconSize: size,
-        isSelected: isSelected,
+        isSelected: isNotSelectable,
         selectedIcon: CircleAvatar(
           backgroundColor: Colors.transparent,
           radius: size / 2,
@@ -157,6 +157,7 @@ class CustomIconButton extends StatelessWidget {
 
     return TextButton.icon(
       onPressed: onPressed,
+      iconAlignment: wasTextInRight ? IconAlignment.end : IconAlignment.start,
       style: ButtonStyle(
         padding: WidgetStateProperty.all(EdgeInsets.zero),
         backgroundColor: WidgetStateProperty.all(colorBackground),
@@ -164,7 +165,7 @@ class CustomIconButton extends StatelessWidget {
       icon: SizedBox(
         height: size,
         width: size,
-        child: wasTextInRight ? unSelectedIcon : icon,
+        child: isNotSelectable ? unSelectedIcon : icon,
       ),
       label: Text(
         text!,
@@ -214,65 +215,69 @@ class CustomCardContent extends StatelessWidget {
       child: Padding(
         padding:
             const EdgeInsets.only(top: 25, bottom: 30, left: 20, right: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: 50,
-                maxWidth: maxWidth,
+        child: SizedBox(
+          height: height,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: 50,
+                  maxWidth: maxWidth,
+                ),
+                child: _cardHeader(),
               ),
-              child: _cardHeader(),
-            ),
-            if (title != null)
+              if (title != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: SizedBox(
+                    width: maxWidth,
+                    child: Text(
+                      title!,
+                      softWrap: true,
+                      overflow: TextOverflow.ellipsis,
+                      style:
+                          Theme.of(context).textTheme.displayMedium!.copyWith(
+                                fontSize: 32,
+                              ),
+                      maxLines: 2,
+                    ),
+                  ),
+                ),
+              if (description != null)
+                Text(
+                  description!,
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                        fontSize: 14,
+                      ),
+                ),
+              if (descIcon != null)
+                ...descIcon!.map((it) => Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: it,
+                    )),
+              if (otherWidget != null)
+                ...otherWidget!.map(
+                  (it) => Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: it,
+                  ),
+                ),
               Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: SizedBox(
-                  width: maxWidth,
-                  child: Text(
-                    title!,
-                    softWrap: true,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.displayMedium!.copyWith(
-                          fontSize: 32,
-                        ),
-                    maxLines: 2,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: maxWidth),
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    direction: Axis.horizontal,
+                    spacing: 7,
+                    runSpacing: 8,
+                    children: crumbsWidget,
                   ),
                 ),
               ),
-            if (description != null)
-              Text(
-                description!,
-                style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                      fontSize: 14,
-                    ),
-              ),
-            if (descIcon != null)
-              ...descIcon!.map((it) => Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: it,
-                  )),
-            if (otherWidget != null)
-              ...otherWidget!.map(
-                (it) => Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: it,
-                ),
-              ),
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: maxWidth),
-                child: Wrap(
-                  alignment: WrapAlignment.start,
-                  direction: Axis.horizontal,
-                  spacing: 7,
-                  runSpacing: 8,
-                  children: crumbsWidget,
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -494,7 +499,7 @@ class CustomTextField extends StatefulWidget {
   final String hint;
   final bool isPassword;
   final TextInputType inputType;
-  final IconData customIcon;
+  final IconData? customIcon;
   final TextEditingController? controller;
 
   const CustomTextField({
@@ -502,7 +507,7 @@ class CustomTextField extends StatefulWidget {
     required this.label,
     this.isPassword = false,
     this.inputType = TextInputType.text,
-    this.customIcon = Icons.visibility_off,
+    this.customIcon,
     required this.hint,
     this.controller, // Default icon for password
   });
@@ -564,19 +569,25 @@ class _CustomTextFieldState extends State<CustomTextField> {
               borderSide: BorderSide(
                   color: ColorNeutral.black, width: 1), // Outline color
             ),
-            suffixIcon: widget.isPassword
+            suffixIcon: widget.isPassword || widget.customIcon != null
                 ? Padding(
                     padding: const EdgeInsets.only(right: 20),
                     child: IconButton(
-                      icon: Icon(
-                        _obscureText ? widget.customIcon : Icons.visibility,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscureText = !_obscureText;
-                        });
-                      },
-                    ),
+                        icon: Icon(
+                          widget.customIcon ??
+                              (widget.isPassword
+                                  ? (_obscureText
+                                      ? Icons.visibility_off
+                                      : Icons.visibility)
+                                  : null),
+                        ),
+                        onPressed: widget.isPassword
+                            ? () {
+                                setState(() {
+                                  _obscureText = !_obscureText;
+                                });
+                              }
+                            : null),
                   )
                 : null,
           ),

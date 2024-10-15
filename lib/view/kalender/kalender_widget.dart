@@ -199,7 +199,10 @@ class _CustomTableCalendarState extends State<CustomTableCalendar>
           ),
         ),
         SizedBox(width: 8),
-        Text(label, style: TextStyle(fontSize: 10),),
+        Text(
+          label,
+          style: TextStyle(fontSize: 10),
+        ),
       ],
     );
   }
@@ -299,7 +302,7 @@ CustomCardContent currentTaskKalender(ThemeData theme) {
       CustomIconButton(
         "assets/icon/category.svg",
         colorBackground: ColorNeutral.black,
-        isSelected: true,
+        isNotSelectable: true,
       )
     ],
     colorBackground: ColorPrimary.orange,

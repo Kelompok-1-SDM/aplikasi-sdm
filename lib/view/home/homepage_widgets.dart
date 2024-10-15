@@ -99,7 +99,7 @@ class Navbar extends StatelessWidget {
                     size: IconSize.large,
                     padding: EdgeInsets.zero,
                     colorBackground: ColorNeutral.black,
-                    isSelected: state == NavbarState.calendar,
+                    isNotSelectable: state == NavbarState.calendar,
                   ),
                 ),
                 AnimatedSwitcher(
@@ -118,7 +118,7 @@ class Navbar extends StatelessWidget {
                     size: IconSize.large,
                     padding: EdgeInsets.zero,
                     colorBackground: ColorNeutral.black,
-                    isSelected: state == NavbarState.home,
+                    isNotSelectable: state == NavbarState.home,
                   ),
                 ),
                 AnimatedSwitcher(
@@ -137,7 +137,7 @@ class Navbar extends StatelessWidget {
                     size: IconSize.large,
                     padding: EdgeInsets.zero,
                     colorBackground: ColorNeutral.black,
-                    isSelected: state == NavbarState.task,
+                    isNotSelectable: state == NavbarState.task,
                   ),
                 ),
               ],
@@ -162,8 +162,7 @@ SizedBox headline(ThemeData theme) {
         ),
         Text(
           "Mulai hari dengan\nmenjadi lebih produktif!",
-          style:
-              theme.textTheme.titleMedium!.copyWith(fontSize: 24),
+          style: theme.textTheme.titleMedium!.copyWith(fontSize: 24),
         ),
       ],
     ),
@@ -183,7 +182,7 @@ CustomCardContent currentTask(ThemeData theme) {
       CustomIconButton(
         "assets/icon/category.svg",
         colorBackground: ColorNeutral.black,
-        isSelected: true,
+        isNotSelectable: true,
       )
     ],
     colorBackground: ColorNeutral.white,
