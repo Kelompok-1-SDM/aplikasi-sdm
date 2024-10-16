@@ -366,65 +366,17 @@ CustomCardContent seminarCard(ThemeData theme) {
         ],
       ),
       const SizedBox(height: 16),
-      Stack(
-        children: [
-          Container(
-            height: 180,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              image: DecorationImage(
-                image: AssetImage("assets/icon/event.jpg"),
-                // fit: BoxFit.cover,
-              ),
-              // ImageLoader(imageUrl: ("assets/icon/event.jpg"), author: "", authorUrl: "", caption: "Masih sepi nih"),
-            ),
-          ),
-          Positioned(
-            bottom: 8,
-            left: 8,
-            child: Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.6),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                children: [
-                  // ImageLoader(imageUrl: "assets\icon\event.jpg", caption: "Masih sepi nih", author: "", authorUrl: "",),
-                  Icon(Icons.person, color: Colors.white),
-                  const SizedBox(width: 4),
-                  Text(
-                    "Masih sepi nih...",
-                    style: theme.textTheme.bodyMedium!
-                        .copyWith(color: Colors.white),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-      const SizedBox(height: 16),
-      Row(
-        children: [
-          CircleAvatar(
-            backgroundImage: AssetImage("assets/icon/profile1.png"),
-          ),
-          const SizedBox(width: 4),
-          CircleAvatar(
-            backgroundImage: AssetImage("assets/icon/profile2.png"),
-          ),
-          const SizedBox(width: 4),
-          CircleAvatar(
-            backgroundImage: AssetImage("assets/icon/profile3.png"),
-          ),
-        ],
+      ImageLoader(
+        author: "Andika",
+        imageUrl: "assets/icon/event.jpg",
+        caption: 'Masih sepi nihh',
+        authorUrl: 'assets/icon/profile-1.png',
       ),
       const SizedBox(height: 16),
       // Add the LiveChatButton here
-      LiveChatButton(withText: false,), 
+      LiveChatButton(
+        withText: false,
+      ),
     ],
-    crumbs: ["🧑‍🏫 Pemateri", "⚖️ Juri", "🤖 AI"],
   );
 }
-
