@@ -59,10 +59,12 @@ class _KalenderState extends State<Kalender> {
             CustomBottomSheet(
               maxHeight: double.infinity,
               padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-              child: currentTaskKalender(
-                Theme.of(context),
-              ),
-            ),
+              child: Column(
+                children: [
+                  seminarCard(Theme.of(context)),
+                  SizedBox(height: 200,)
+                ],
+              )),
           ],
         ),
       ),
