@@ -20,8 +20,7 @@ class _CustomTableCalendarState extends State<CustomTableCalendar>
   DateTime _selectedDay = DateTime.now();
   DateTime _focusedDay = DateTime.now(); // To control focused month
   final DateTime _currentDay = DateTime.now(); // To track the current day
-  late AnimationController _controller; // For animations
-  bool _showButton = false; // To control button visibility
+  late AnimationController _controller;bool _showButton = false;
 
   @override
   void initState() {

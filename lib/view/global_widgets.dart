@@ -607,69 +607,55 @@ class CustomBottomSheet extends StatelessWidget {
           ),
         ),
       ),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: maxx,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Pull handle at the top of the BottomSheet
+          Container(
+            width: 62,
+            height: 7,
+            decoration: BoxDecoration(
+              color: ColorNeutral.background,
+              borderRadius: BorderRadius.circular(3),
             ),
-            child: IntrinsicHeight(
-              // Makes the container shrink to fit its content
-              child: Column(
-                children: [
-                  // Pull handle at the top of the BottomSheet
-                  Container(
-                    width: 62,
-                    height: 7,
-                    decoration: BoxDecoration(
-                      color: ColorNeutral.background,
-                      borderRadius: BorderRadius.circular(3),
-                    ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(
+              top: 21,
+              left: 29,
+              right: 29,
+              bottom: 62,
+            ),
+            child: Column(
+              children: [
+                if (title != null) title!,
+                SizedBox(
+                  height: 12,
+                ),
+                if (desc != null)
+                  Text(
+                    desc!,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          fontSize: 14,
+                        ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(
-                      top: 21,
-                      left: 29,
-                      right: 29,
-                      bottom: 62,
-                    ),
-                    child: Column(
-                      children: [
-                        if (title != null) title!,
-                        SizedBox(
-                          height: 12,
-                        ),
-                        if (desc != null)
-                          Text(
-                            desc!,
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium!
-                                .copyWith(
-                                  fontSize: 14,
-                                ),
-                          ),
-                        SizedBox(height: 20),
-                        if (child != null) child!,
-                        SizedBox(
-                          height: 56,
-                        ),
-                        if (button != null)
-                          ...button!.map(
-                            (it) => Padding(
-                              padding: EdgeInsets.only(top: 10),
-                              child: it,
-                            ),
-                          )
-                      ],
+                SizedBox(height: 20),
+                if (child != null) child!,
+                SizedBox(
+                  height: 56,
+                ),
+                if (button != null)
+                  ...button!.map(
+                    (it) => Padding(
+                      padding: EdgeInsets.only(top: 10),
+                      child: it,
                     ),
                   )
-                ],
-              ),
+              ],
             ),
-          );
-        },
+          )
+        ],
       ),
     );
   }
