@@ -125,7 +125,7 @@ class CustomIconButton extends StatelessWidget {
 
     return TextButton.icon(
       onPressed: onPressed,
-      iconAlignment: wasTextInRight ? IconAlignment.end : IconAlignment.start,
+      iconAlignment: wasTextInRight ? IconAlignment.start : IconAlignment.end,
       style: ButtonStyle(
         padding: WidgetStateProperty.all(EdgeInsets.zero),
         backgroundColor: WidgetStateProperty.all(colorBackground),
@@ -356,6 +356,7 @@ class CustomBigButton extends StatelessWidget {
   final EdgeInsets padding;
   final bool wasIconOnRight;
   final CustomIconButton? icon;
+  final double maxWidth;
   final List<Widget> otherWidget;
   final bool wasElevated;
   final Color? customLabelColor;
@@ -371,6 +372,7 @@ class CustomBigButton extends StatelessWidget {
     required this.otherWidget,
     this.padding = const EdgeInsets.all(8),
     this.customLabelColor,
+    this.maxWidth = double.infinity,
   });
 
   @override
@@ -379,30 +381,33 @@ class CustomBigButton extends StatelessWidget {
         (buttonColor == ColorNeutral.black
             ? ColorNeutral.white
             : ColorNeutral.black);
-    return GenericCard(
-      wasFromButton: true,
-      backgroundColor: buttonColor,
-      wasElevated: wasElevated,
-      onPressed: onPressed,
-      child: Padding(
-        padding: padding,
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            if (icon != null && !wasIconOnRight) icon!,
-            if (buttonLabel == null) ...otherWidget,
-            if (buttonLabel != null)
-              Text(
-                buttonLabel!,
-                style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                      fontSize: 24,
-                      color: textColor,
-                    ),
-              ),
-            if (icon != null && wasIconOnRight) icon!,
-          ],
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: maxWidth),
+      child: GenericCard(
+        wasFromButton: true,
+        backgroundColor: buttonColor,
+        wasElevated: wasElevated,
+        onPressed: onPressed,
+        child: Padding(
+          padding: padding,
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              if (icon != null && !wasIconOnRight) icon!,
+              if (buttonLabel == null) ...otherWidget,
+              if (buttonLabel != null)
+                Text(
+                  buttonLabel!,
+                  style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                        fontSize: 24,
+                        color: textColor,
+                      ),
+                ),
+              if (icon != null && wasIconOnRight) icon!,
+            ],
+          ),
         ),
       ),
     );
