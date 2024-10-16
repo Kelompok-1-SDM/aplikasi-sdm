@@ -1,6 +1,7 @@
 import 'package:aplikasi_manajemen_sdm/config/const.dart';
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
+import 'package:aplikasi_manajemen_sdm/view/home/homepage_widgets.dart';
 import 'package:aplikasi_manajemen_sdm/view/profile/profile_widgets.dart';
 import 'package:flutter/material.dart';
 
@@ -48,7 +49,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     right: 0,
                     bottom: 0,
                     child: CustomIconButton(Icons.edit_outlined,
-                    size: IconSize.small,
+                        size: IconSize.small,
                         colorBackground: ColorNeutral.white),
                   )
                 ],
@@ -59,52 +60,32 @@ class _ProfilePageState extends State<ProfilePage> {
               profileCard(
                 Theme.of(context),
               ),
-              SizedBox(
-                height: 13,
+              statsCardProfile(Theme.of(context)),
+              CustomBigButton(
+                wasIconOnRight: true,
+                onPressed: () => {Navigator.pushNamed(context, "/profile")},
+                otherWidget: [],
+                icon: CustomIconButton("assets/icon/lock.svg", colorBackground: Colors.white,),
+                buttonColor: ColorNeutral.black,
+                buttonLabel: "Ubah Password",
               ),
-              statsCardProfile(
-                Theme.of(context),
+              CustomBigButton(
+                maxWidth: 240,
+                wasElevated: true,
+                padding: EdgeInsets.only(
+                  left: 34,
+                  top: 8,
+                  bottom: 8,
+                  right: 6,
+                ),
+                wasIconOnRight: true,
+                onPressed: () => {Navigator.pushNamed(context, "/auth")},
+                otherWidget: [],
+                icon: CustomIconButton("assets/icon/logout.svg", colorBackground: Colors.white, iconColorCustom: ColorPrimary.orange,),
+                buttonColor: ColorPrimary.orange,
+                customLabelColor: Colors.white,
+                buttonLabel: "Logout",
               ),
-              // SizedBox(
-              //   height: 13,
-              // ),
-              // kompetensiCard(
-              //   Theme.of(context),
-              // ),
-              // SizedBox(
-              //   height: 13,
-              // ),
-              // CustomBigButton(
-              //   onPressed: () => {},
-              //   buttonLabel: "Ubah Password",
-              //   otherWidget: [],
-              //   wasIconOnRight: true,
-              //   icon: CustomIconButton(
-              //     "assets/icon/lock.svg",
-              //     size: IconSize.large,
-              //     colorBackground: ColorNeutral.gray,
-              //   ),
-              // ),
-              // SizedBox(
-              //   height: 13,
-              // ),
-              // Padding(
-              //   padding: const EdgeInsets.symmetric(horizontal: 60),
-              //   child: CustomBigButton(
-              //     onPressed: () => {},
-              //     buttonLabel: "Logout",
-              //     otherWidget: [],
-              //     wasIconOnRight: true,
-              //     buttonColor: ColorPrimary.orange,
-              //     customLabelColor: ColorNeutral.white,
-              //     icon: CustomIconButton(
-              //       "assets/icon/lock.svg",
-              //       size: IconSize.large,
-              //       colorBackground: Color(0xFFFF7247),
-              //       iconColorCustom: ColorNeutral.white,
-              //     ),
-              //   ),
-              // ),
             ],
           ),
         ),
