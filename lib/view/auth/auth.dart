@@ -74,7 +74,7 @@ class _AuthPageState extends State<AuthPage> {
       button: [
         CustomBigButton(
           onPressed: () => {
-            Navigator.pop(context)
+            Cekemail()
           },
           padding: EdgeInsets.symmetric(
             vertical: 24,
@@ -113,6 +113,39 @@ class _AuthPageState extends State<AuthPage> {
           ),
         ],
       ),
+    );
+  }
+void Cekemail() {
+    callBottomSheet(
+      context,
+      button: [
+        CustomBigButton(
+          onPressed: () => {
+            Navigator.pop(context)
+          },
+          padding: EdgeInsets.symmetric(
+            vertical: 24,
+          ),
+          buttonColor: ColorPrimary.orange,
+          otherWidget: [
+            Text(
+              "Oke",
+              style: Theme.of(context)
+                  .textTheme
+                  .displayMedium!
+                  .copyWith(fontSize: 24, color: ColorNeutral.white),
+            )
+          ],
+        )
+      ],
+      title: Text(
+        "Lupa Password",
+        style: Theme.of(context).textTheme.displayLarge!.copyWith(
+              fontSize: 20,
+            ),
+      ),
+      description:
+          "Cek email anda untuk mengubah password anda",
     );
   }
 
