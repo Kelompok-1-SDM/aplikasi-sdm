@@ -146,8 +146,8 @@ CustomCardContent statsCardProfile(ThemeData theme) {
             colorBackground: ColorNeutral.black,
           )
         ],
-      )
+      ),
+      StatisticChart()
     ],
-    crumbs: ["🧑‍🏫 Pemateri", "⚖️ Juri", "🤖 AI"],
   );
 }
