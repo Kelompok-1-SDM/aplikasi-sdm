@@ -1,10 +1,11 @@
-import 'package:aplikasi_manajemen_sdm/config/const.dart';
+import 'package:aplikasi_manajemen_sdm/config/const.dart'; 
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
 import 'package:flutter/material.dart';
 
 GenericCard authCard(ThemeData theme, TextEditingController nipController,
     TextEditingController passwordController, VoidCallback lupaPass) {
+  //card form login dengan dua input teks (NIP dan password)
   return GenericCard(
     child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
