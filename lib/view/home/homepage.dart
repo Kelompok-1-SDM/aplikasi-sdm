@@ -16,12 +16,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 1;
-  int _selectedIndexTugas = 0;
-
   final List<Widget> _pages = [
     const Kalender(key: ValueKey('kalender')),
     const HomeScreen(key: ValueKey('home')),
-    const DaftarTugas(key: ValueKey('tasks')),
+    const DaftarTugasDitugaskan(key: ValueKey('tasks-1')),
+    const DaftarTugasHistori(key: ValueKey('tasks-2')),
   ];
 
   bool _isForward = true;
@@ -33,19 +32,11 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void _onDaftarSelected(int index) {
-    setState(() {
-      _selectedIndexTugas = index;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: Navbar(
         state: NavbarState.values[_selectedIndex],
-        stateTugas: _selectedIndexTugas,
-        onDaftarSelected: _onDaftarSelected,
         onItemSelected:
             _onItemTapped, // Pass the function to handle tab selection
       ),

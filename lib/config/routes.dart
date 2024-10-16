@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 
 class AppRoutes {
   static Route onGenerateRoutes(RouteSettings settings) {
-    switch (settings.name) {     
+    switch (settings.name) {
       case '/home':
         return _materialRoute(HomePage());
 
@@ -23,7 +23,7 @@ class AppRoutes {
         return _materialRoute(Kalender());
 
       case '/daftar_tugas':
-        return _materialRoute(DaftarTugas());
+        return _materialRoute(DaftarTugasDitugaskan());
 
       case '/detail_tugas':
 
