@@ -13,7 +13,7 @@ class AuthPage extends StatefulWidget {
 class _AuthPageState extends State<AuthPage> {
   final TextEditingController _nipController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _forgotNipController = TextEditingController(); // Controller for forgot NIP
+  final TextEditingController _forgotNipController = TextEditingController(); // Controller for forgot NIP//memungkinkan UI untuk berubah
 
   void _login() {
     // Replace this with your actual authentication logic
