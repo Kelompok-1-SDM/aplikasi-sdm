@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/config/const.dart';
 import 'package:figma_squircle/figma_squircle.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -125,7 +126,7 @@ class CustomIconButton extends StatelessWidget {
 
     return TextButton.icon(
       onPressed: onPressed,
-      iconAlignment: wasTextInRight ? IconAlignment.end : IconAlignment.start,
+      iconAlignment: wasTextInRight ? IconAlignment.start : IconAlignment.end,
       style: ButtonStyle(
         padding: WidgetStateProperty.all(EdgeInsets.zero),
         backgroundColor: WidgetStateProperty.all(colorBackground),
@@ -133,11 +134,14 @@ class CustomIconButton extends StatelessWidget {
       icon: SizedBox(
         height: size,
         width: size,
-        child: isNotSelectable ? unSelectedIcon : icon,
+        child: !isNotSelectable ? unSelectedIcon : icon,
       ),
       label: Text(
         text!,
-        style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12),
+        style: Theme.of(context)
+            .textTheme
+            .bodyMedium!
+            .copyWith(fontSize: 12, color: iconColor),
         maxLines: 1,
       ),
     );
@@ -763,6 +767,162 @@ class ImageLoader extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class StatisticChart extends StatelessWidget {
+  const StatisticChart({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Statistik-2024",
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        fontSize: 14,
+                      ),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: ShapeDecoration(
+                    color: ColorNeutral.black,
+                    shape: SmoothRectangleBorder(
+                      borderRadius: SmoothBorderRadius(
+                        cornerRadius: 20,
+                        cornerSmoothing: .6,
+                      ),
+                    ),
+                  ),
+                  child: CustomIconButton(
+                    "assets/icon/chevron-down.svg",
+                    colorBackground: ColorNeutral.black,
+                    onPressed: () => {},
+                    text: "2024",
+                    wasTextInRight: false,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 200,
+            child: LineChart(
+              LineChartData(
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: false,
+                  drawHorizontalLine: true,
+                  horizontalInterval: 2,
+                ),
+                titlesData: FlTitlesData(
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      getTitlesWidget: (value, _) {
+                        const monthNames = [
+                          'Jan',
+                          'Feb',
+                          'Mar',
+                          'Apr',
+                          'Mei',
+                          'Jun',
+                          'Jul',
+                          'Agu',
+                          'Sep',
+                          'Okt',
+                          'Nov',
+                          'Des'
+                        ];
+                        return Padding(
+                          padding: const EdgeInsets.all(0),
+                          child: Transform.rotate(
+                            angle: -0.785398, // 45 degrees in radians
+                            child: Text(
+                              monthNames[value.toInt()],
+                              style:
+                                  Theme.of(context).textTheme.bodySmall!.copyWith(
+                                        fontSize: 10,
+                                      ),
+                            ),
+                          ),
+                        );
+                      },
+                      interval: 1,
+                    ),
+                  ),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      interval: 2,
+                      getTitlesWidget: (value, _) {
+                        return Text(
+                          value.toInt().toString(),
+                          style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                                fontSize: 10,
+                              ),
+                        );
+                      },
+                    ),
+                  ),
+                  rightTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                        showTitles: false), // Remove right Y-axis numbers
+                  ),
+                  topTitles: AxisTitles(
+                    sideTitles:
+                        SideTitles(showTitles: false), // No numbers on the top
+                  ),
+                ),
+                borderData: FlBorderData(show: false),
+                minX: 0,
+                maxX: 11,
+                minY: 0,
+                maxY: 10,
+                lineBarsData: [
+                  LineChartBarData(
+                    isCurved: true,
+                    color: ColorPrimary.green,
+                    dotData: FlDotData(show: false),
+                    spots: [
+                      FlSpot(0, 4),
+                      FlSpot(1, 5),
+                      FlSpot(2, 4),
+                      FlSpot(3, 3),
+                      FlSpot(4, 4),
+                      FlSpot(5, 3),
+                      FlSpot(6, 5),
+                      FlSpot(7, 10),
+                      FlSpot(8, 8),
+                    ],
+                    isStepLineChart: false,
+                    belowBarData: BarAreaData(
+                      show: true,
+                      gradient: LinearGradient(
+                        colors: [
+                          ColorPrimary.green.withOpacity(0.3),
+                          Colors.transparent,
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

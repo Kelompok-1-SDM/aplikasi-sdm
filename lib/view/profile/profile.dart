@@ -59,12 +59,12 @@ class _ProfilePageState extends State<ProfilePage> {
               profileCard(
                 Theme.of(context),
               ),
-              // SizedBox(
-              //   height: 13,
-              // ),
-              // statsCardProfile(
-              //   Theme.of(context),
-              // ),
+              SizedBox(
+                height: 13,
+              ),
+              statsCardProfile(
+                Theme.of(context),
+              ),
               // SizedBox(
               //   height: 13,
               // ),
