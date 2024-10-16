@@ -4,6 +4,83 @@ import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/material.dart';
 
+class HomeAppBar extends StatefulWidget {
+  const HomeAppBar({super.key});
+
+  @override
+  State<HomeAppBar> createState() => _HomeAppBarState();
+}
+
+class _HomeAppBarState extends State<HomeAppBar> {
+  final LayerLink layerlink = LayerLink();
+  OverlayEntry? entry;
+
+  void showOverlay() {
+    final OverlayState overlay = Overlay.of(context);
+    final RenderBox renderBox = context.findRenderObject() as RenderBox;
+    final Offset offset = renderBox.localToGlobal(Offset.zero);
+
+    entry = OverlayEntry(
+      builder: (context) => Positioned(
+        right: offset.dx + 90,
+        top: offset.dy + 20,
+        child: CompositedTransformFollower(
+            link: layerlink,
+            showWhenUnlinked: false,
+            offset: Offset(-offset.dx - 270, 30),
+            child: Stack(children: [
+              NotificationWidgetOverlay(),
+              Positioned(
+                right: 10,
+                top: 10,
+                child: CustomIconButton(
+                  Icons.cancel,
+                  colorBackground: ColorNeutral.background,
+                  iconColorCustom: ColorNeutral.black,
+                  onPressed: () => entry?.remove(),
+                ),
+              ),
+            ])),
+      ),
+    );
+
+    overlay.insert(entry!);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        CompositedTransformTarget(
+          link: layerlink,
+          child: CustomIconButton(
+            "assets/icon/notification.svg",
+            colorBackground: ColorNeutral.white,
+            onPressed: () => {
+              WidgetsBinding.instance.addPostFrameCallback((_) => showOverlay())
+            },
+            size: IconSize.medium,
+          ),
+        ),
+        SizedBox(
+          width: 16,
+        ),
+        ProfileIcon(
+          "assets/icon/profile.png",
+          onPressed: () => {
+            Navigator.pushNamed(
+              context,
+              "/profile",
+            )
+          },
+        )
+      ],
+    );
+  }
+}
+
 class Navbar extends StatelessWidget {
   final NavbarState state;
   final Function(int) onItemSelected;
@@ -19,53 +96,101 @@ class Navbar extends StatelessWidget {
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        // Positioned(
-        //   bottom: 140,
-        //   child: Container(
-        //     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        //     decoration: ShapeDecoration(
-        //       color: ColorNeutral.black,
-        //       shape: SmoothRectangleBorder(
-        //         borderRadius: SmoothBorderRadius(
-        //           cornerRadius: 24,
-        //           cornerSmoothing: 0,
-        //         ),
-        //       ),
-        //     ),
-        //     child: Wrap(
-        //       spacing: 26,
-        //       direction: Axis.horizontal,
-        //       children: [
-        //         AnimatedSwitcher(
-        //           duration: const Duration(milliseconds: 300),
-        //           transitionBuilder:
-        //               (Widget child, Animation<double> animation) {
-        //             return ScaleTransition(scale: animation, child: child);
-        //           },
-        //           child: TextButton(
-        //             key: ValueKey(
-        //                 state == NavbarState.calendar), // Unique Key for state
-        //             onPressed: () => {},
-        //             child: Text("Ditugaskan"),
-        //           ),
-        //         ),
-        //         AnimatedSwitcher(
-        //           duration: const Duration(milliseconds: 300),
-        //           transitionBuilder:
-        //               (Widget child, Animation<double> animation) {
-        //             return ScaleTransition(scale: animation, child: child);
-        //           },
-        //           child: TextButton(
-        //             key: ValueKey(
-        //                 state == NavbarState.calendar), // Unique Key for state
-        //             onPressed: () => {},
-        //             child: Text("Histori"),
-        //           ),
-        //         ),
-        //       ],
-        //     ),
-        //   ),
-        // ),
+        AnimatedPositioned(
+            // Slide up when state is NavbarState.task, slide down when not
+            bottom: state == NavbarState.task_1 || state == NavbarState.task_2
+                ? 120
+                : 30, // Adjust the off-screen position
+            duration: const Duration(milliseconds: 300), // Animation duration
+            curve: Curves.easeInOut,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: ShapeDecoration(
+                color: ColorNeutral.black,
+                shape: SmoothRectangleBorder(
+                  borderRadius: SmoothBorderRadius(
+                    cornerRadius: 24,
+                    cornerSmoothing: 0,
+                  ),
+                ),
+              ),
+              child: Wrap(
+                spacing: 26,
+                direction: Axis.horizontal,
+                children: [
+                  TextButton(
+                    style: ButtonStyle(
+                      padding: WidgetStateProperty.all(
+                          EdgeInsets.zero), // Ensure padding is zero
+                    ),
+                    onPressed: () => onItemSelected(2),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 11, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: state == NavbarState.task_1
+                            ? ColorNeutral
+                                .white // White when selected (stateTugas == 0)
+                            : Colors.transparent, // Gray when unselected
+                        borderRadius:
+                            BorderRadius.circular(24), // Rounded corners
+                        border: Border.all(
+                          color: Colors.transparent,
+                          width: 2,
+                        ),
+                      ),
+                      child: Text(
+                        "Ditugaskan",
+                        style: TextStyle(
+                          color: state == NavbarState.task_1
+                              ? ColorNeutral.black
+                              : ColorNeutral.gray, // Text color
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    style: ButtonStyle(
+                      padding: WidgetStateProperty.all(
+                          EdgeInsets.zero), // Ensure padding is zero
+                    ),
+                    onPressed: () => onItemSelected(3),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 11, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: state == NavbarState.task_2
+                            ? ColorNeutral
+                                .white // White when selected (stateTugas == 0)
+                            : Colors.transparent, // Gray when unselected
+                        borderRadius:
+                            BorderRadius.circular(24), // Rounded corners
+                        border: Border.all(
+                          color: Colors.transparent,
+                          width: 2,
+                        ),
+                      ),
+                      child: Text(
+                        "Histori",
+                        style: TextStyle(
+                          color: state == NavbarState.task_2
+                              ? ColorNeutral.black
+                              : ColorNeutral.gray, // Text color
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )),
         Positioned(
           bottom: 30,
           child: Container(
@@ -99,7 +224,7 @@ class Navbar extends StatelessWidget {
                     size: IconSize.large,
                     padding: EdgeInsets.zero,
                     colorBackground: ColorNeutral.black,
-                    isSelected: state == NavbarState.calendar,
+                    isNotSelectable: state == NavbarState.calendar,
                   ),
                 ),
                 AnimatedSwitcher(
@@ -118,7 +243,7 @@ class Navbar extends StatelessWidget {
                     size: IconSize.large,
                     padding: EdgeInsets.zero,
                     colorBackground: ColorNeutral.black,
-                    isSelected: state == NavbarState.home,
+                    isNotSelectable: state == NavbarState.home,
                   ),
                 ),
                 AnimatedSwitcher(
@@ -129,7 +254,7 @@ class Navbar extends StatelessWidget {
                   },
                   child: CustomIconButton(
                     key: ValueKey(
-                        state == NavbarState.task), // Unique Key for state
+                        state == NavbarState.task_1), // Unique Key for state
                     "assets/icon/category-bold.svg",
                     onPressed: () => {
                       onItemSelected(2),
@@ -137,7 +262,7 @@ class Navbar extends StatelessWidget {
                     size: IconSize.large,
                     padding: EdgeInsets.zero,
                     colorBackground: ColorNeutral.black,
-                    isSelected: state == NavbarState.task,
+                    isNotSelectable: state == NavbarState.task_1,
                   ),
                 ),
               ],
@@ -162,8 +287,7 @@ SizedBox headline(ThemeData theme) {
         ),
         Text(
           "Mulai hari dengan\nmenjadi lebih produktif!",
-          style:
-              theme.textTheme.titleMedium!.copyWith(fontSize: 24),
+          style: theme.textTheme.titleMedium!.copyWith(fontSize: 24),
         ),
       ],
     ),
@@ -183,7 +307,7 @@ CustomCardContent currentTask(ThemeData theme) {
       CustomIconButton(
         "assets/icon/category.svg",
         colorBackground: ColorNeutral.black,
-        isSelected: true,
+        isNotSelectable: true,
       )
     ],
     colorBackground: ColorNeutral.white,
@@ -324,4 +448,99 @@ CustomCardContent statsCard(ThemeData theme) {
     ],
     crumbs: ["🧑‍🏫 Pemateri", "⚖️ Juri", "🤖 AI"],
   );
+}
+
+class NotificationWidgetOverlay extends StatefulWidget {
+  const NotificationWidgetOverlay({super.key});
+
+  @override
+  State<NotificationWidgetOverlay> createState() =>
+      _NotificationWidgetOverlayState();
+}
+
+class _NotificationWidgetOverlayState extends State<NotificationWidgetOverlay> {
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      borderRadius: BorderRadius.circular(40),
+      elevation: 1,
+      color: Colors.transparent,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: 300,
+          maxWidth: 320,
+        ),
+        child: Container(
+          decoration: ShapeDecoration(
+            color: ColorNeutral.white,
+            shape: SmoothRectangleBorder(
+              borderRadius: SmoothBorderRadius.only(
+                topLeft: SmoothRadius(
+                  cornerRadius: 40,
+                  cornerSmoothing: .6,
+                ),
+                bottomLeft: SmoothRadius(
+                  cornerRadius: 40,
+                  cornerSmoothing: .6,
+                ),
+                bottomRight: SmoothRadius(
+                  cornerRadius: 40,
+                  cornerSmoothing: .6,
+                ),
+              ),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+            child: ListView.separated(
+              itemBuilder: (_, index) => createNotification(),
+              separatorBuilder: (_, __) => Divider(),
+              itemCount: 10,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget createNotification() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        ProfileIcon(
+          "assets/icon/profile.png",
+          imageSize: IconSize.large,
+        ),
+        SizedBox(
+          width: 12,
+        ),
+        ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 220),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Butuh verifikasi-mu",
+                style: Theme.of(context).textTheme.displayMedium!.copyWith(
+                      fontSize: 14,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              Text(
+                "Apakah rekan kamu Andika, hadir?",
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                      fontSize: 10,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+              )
+            ],
+          ),
+        )
+      ],
+    );
+  }
 }
