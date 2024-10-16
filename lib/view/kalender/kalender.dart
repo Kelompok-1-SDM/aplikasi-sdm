@@ -53,13 +53,16 @@ class _KalenderState extends State<Kalender> {
                 ),
               ),
             ),
-            // SizedBox(
-            //   height: 24,
-            // ),
-            // CustomBottomSheet(
-            //   maxHeight: 1000,
-            //   padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-            //   child: currentTaskKalender(Theme.of(context))),
+            SizedBox(
+              height: 24,
+            ),
+            CustomBottomSheet(
+              maxHeight: double.infinity,
+              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+              child: currentTaskKalender(
+                Theme.of(context),
+              ),
+            ),
           ],
         ),
       ),

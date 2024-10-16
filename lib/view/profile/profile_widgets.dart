@@ -133,6 +133,21 @@ CustomCardContent statsCardProfile(ThemeData theme) {
           ),
         ],
       ),
+      Wrap(
+        direction: Axis.horizontal,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: 8,
+        children: [
+          Text("Ketuk untuk melihat lebih detail"),
+          CustomIconButton(
+            "assets/icon/arrow-45.svg",
+            size: IconSize.small,
+            padding: EdgeInsets.zero,
+            colorBackground: ColorNeutral.black,
+          )
+        ],
+      ),
+      StatisticChart()
     ],
   );
 }
