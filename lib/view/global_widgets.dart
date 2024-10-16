@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/config/const.dart';
 import 'package:figma_squircle/figma_squircle.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -48,38 +49,6 @@ class ProfileIcon extends StatelessWidget {
   }
 }
 
-class HomeAppBar extends StatelessWidget {
-  const HomeAppBar({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        CustomIconButton(
-          "assets/icon/notification.svg",
-          colorBackground: ColorNeutral.white,
-          onPressed: () => {},
-          size: IconSize.medium,
-        ),
-        SizedBox(
-          width: 16,
-        ),
-        ProfileIcon(
-          "assets/icon/profile.png",
-          onPressed: () => {
-            Navigator.pushNamed(
-              context,
-              "/profile",
-            )
-          },
-        )
-      ],
-    );
-  }
-}
-
 class CustomIconButton extends StatelessWidget {
   final String? text;
   final double size;
@@ -89,13 +58,13 @@ class CustomIconButton extends StatelessWidget {
   final bool wasTextInRight;
   final EdgeInsetsGeometry padding;
   final VoidCallback? onPressed;
-  final bool isSelected;
+  final bool isNotSelectable;
 
   const CustomIconButton(this.assetLocation,
       {super.key,
       required this.colorBackground,
       this.padding = const EdgeInsets.all(12),
-      this.isSelected = true,
+      this.isNotSelectable = true,
       this.size = 24.0, // Default icon size for optimization
       this.onPressed,
       this.text,
@@ -137,7 +106,7 @@ class CustomIconButton extends StatelessWidget {
       return IconButton(
         padding: padding,
         iconSize: size,
-        isSelected: isSelected,
+        isSelected: isNotSelectable,
         selectedIcon: CircleAvatar(
           backgroundColor: Colors.transparent,
           radius: size / 2,
@@ -157,6 +126,7 @@ class CustomIconButton extends StatelessWidget {
 
     return TextButton.icon(
       onPressed: onPressed,
+      iconAlignment: wasTextInRight ? IconAlignment.start : IconAlignment.end,
       style: ButtonStyle(
         padding: WidgetStateProperty.all(EdgeInsets.zero),
         backgroundColor: WidgetStateProperty.all(colorBackground),
@@ -164,11 +134,14 @@ class CustomIconButton extends StatelessWidget {
       icon: SizedBox(
         height: size,
         width: size,
-        child: wasTextInRight ? unSelectedIcon : icon,
+        child: !isNotSelectable ? unSelectedIcon : icon,
       ),
       label: Text(
         text!,
-        style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12),
+        style: Theme.of(context)
+            .textTheme
+            .bodyMedium!
+            .copyWith(fontSize: 12, color: iconColor),
         maxLines: 1,
       ),
     );
@@ -214,65 +187,69 @@ class CustomCardContent extends StatelessWidget {
       child: Padding(
         padding:
             const EdgeInsets.only(top: 25, bottom: 30, left: 20, right: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: 50,
-                maxWidth: maxWidth,
+        child: SizedBox(
+          height: height,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: 50,
+                  maxWidth: maxWidth,
+                ),
+                child: _cardHeader(),
               ),
-              child: _cardHeader(),
-            ),
-            if (title != null)
+              if (title != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: SizedBox(
+                    width: maxWidth,
+                    child: Text(
+                      title!,
+                      softWrap: true,
+                      overflow: TextOverflow.ellipsis,
+                      style:
+                          Theme.of(context).textTheme.displayMedium!.copyWith(
+                                fontSize: 32,
+                              ),
+                      maxLines: 2,
+                    ),
+                  ),
+                ),
+              if (description != null)
+                Text(
+                  description!,
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                        fontSize: 14,
+                      ),
+                ),
+              if (descIcon != null)
+                ...descIcon!.map((it) => Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: it,
+                    )),
+              if (otherWidget != null)
+                ...otherWidget!.map(
+                  (it) => Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: it,
+                  ),
+                ),
               Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: SizedBox(
-                  width: maxWidth,
-                  child: Text(
-                    title!,
-                    softWrap: true,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.displayMedium!.copyWith(
-                          fontSize: 32,
-                        ),
-                    maxLines: 2,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: maxWidth),
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    direction: Axis.horizontal,
+                    spacing: 7,
+                    runSpacing: 8,
+                    children: crumbsWidget,
                   ),
                 ),
               ),
-            if (description != null)
-              Text(
-                description!,
-                style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                      fontSize: 14,
-                    ),
-              ),
-            if (descIcon != null)
-              ...descIcon!.map((it) => Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: it,
-                  )),
-            if (otherWidget != null)
-              ...otherWidget!.map(
-                (it) => Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: it,
-                ),
-              ),
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: maxWidth),
-                child: Wrap(
-                  alignment: WrapAlignment.start,
-                  direction: Axis.horizontal,
-                  spacing: 7,
-                  runSpacing: 8,
-                  children: crumbsWidget,
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -341,6 +318,7 @@ class CustomCardContent extends StatelessWidget {
 class GenericCard extends StatelessWidget {
   final VoidCallback? onPressed;
   final Color backgroundColor;
+  final bool wasFromButton;
   final Widget child;
   final bool wasElevated;
 
@@ -349,7 +327,8 @@ class GenericCard extends StatelessWidget {
       this.onPressed,
       this.backgroundColor = ColorNeutral.white,
       required this.child,
-      this.wasElevated = false});
+      this.wasElevated = false,
+      this.wasFromButton = false});
 
   @override
   Widget build(BuildContext context) {
@@ -364,7 +343,7 @@ class GenericCard extends StatelessWidget {
         shape: SmoothRectangleBorder(
           borderRadius: SmoothBorderRadius(
             cornerRadius: 40,
-            cornerSmoothing: 0.6,
+            cornerSmoothing: wasFromButton ? 0 : .6,
           ),
         ),
         color: backgroundColor,
@@ -381,6 +360,7 @@ class CustomBigButton extends StatelessWidget {
   final EdgeInsets padding;
   final bool wasIconOnRight;
   final CustomIconButton? icon;
+  final double maxWidth;
   final List<Widget> otherWidget;
   final bool wasElevated;
   final Color? customLabelColor;
@@ -396,6 +376,7 @@ class CustomBigButton extends StatelessWidget {
     required this.otherWidget,
     this.padding = const EdgeInsets.all(8),
     this.customLabelColor,
+    this.maxWidth = double.infinity,
   });
 
   @override
@@ -404,29 +385,33 @@ class CustomBigButton extends StatelessWidget {
         (buttonColor == ColorNeutral.black
             ? ColorNeutral.white
             : ColorNeutral.black);
-    return GenericCard(
-      backgroundColor: buttonColor,
-      wasElevated: wasElevated,
-      onPressed: onPressed,
-      child: Padding(
-        padding: padding,
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            if (icon != null && !wasIconOnRight) icon!,
-            if (buttonLabel == null) ...otherWidget,
-            if (buttonLabel != null)
-              Text(
-                buttonLabel!,
-                style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                      fontSize: 24,
-                      color: textColor,
-                    ),
-              ),
-            if (icon != null && wasIconOnRight) icon!,
-          ],
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: maxWidth),
+      child: GenericCard(
+        wasFromButton: true,
+        backgroundColor: buttonColor,
+        wasElevated: wasElevated,
+        onPressed: onPressed,
+        child: Padding(
+          padding: padding,
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              if (icon != null && !wasIconOnRight) icon!,
+              if (buttonLabel == null) ...otherWidget,
+              if (buttonLabel != null)
+                Text(
+                  buttonLabel!,
+                  style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                        fontSize: 24,
+                        color: textColor,
+                      ),
+                ),
+              if (icon != null && wasIconOnRight) icon!,
+            ],
+          ),
         ),
       ),
     );
@@ -494,7 +479,7 @@ class CustomTextField extends StatefulWidget {
   final String hint;
   final bool isPassword;
   final TextInputType inputType;
-  final IconData customIcon;
+  final IconData? customIcon;
   final TextEditingController? controller;
 
   const CustomTextField({
@@ -502,7 +487,7 @@ class CustomTextField extends StatefulWidget {
     required this.label,
     this.isPassword = false,
     this.inputType = TextInputType.text,
-    this.customIcon = Icons.visibility_off,
+    this.customIcon,
     required this.hint,
     this.controller, // Default icon for password
   });
@@ -564,19 +549,25 @@ class _CustomTextFieldState extends State<CustomTextField> {
               borderSide: BorderSide(
                   color: ColorNeutral.black, width: 1), // Outline color
             ),
-            suffixIcon: widget.isPassword
+            suffixIcon: widget.isPassword || widget.customIcon != null
                 ? Padding(
                     padding: const EdgeInsets.only(right: 20),
                     child: IconButton(
-                      icon: Icon(
-                        _obscureText ? widget.customIcon : Icons.visibility,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscureText = !_obscureText;
-                        });
-                      },
-                    ),
+                        icon: Icon(
+                          widget.customIcon ??
+                              (widget.isPassword
+                                  ? (_obscureText
+                                      ? Icons.visibility_off
+                                      : Icons.visibility)
+                                  : null),
+                        ),
+                        onPressed: widget.isPassword
+                            ? () {
+                                setState(() {
+                                  _obscureText = !_obscureText;
+                                });
+                              }
+                            : null),
                   )
                 : null,
           ),
@@ -625,69 +616,55 @@ class CustomBottomSheet extends StatelessWidget {
           ),
         ),
       ),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: maxx,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Pull handle at the top of the BottomSheet
+          Container(
+            width: 62,
+            height: 7,
+            decoration: BoxDecoration(
+              color: ColorNeutral.background,
+              borderRadius: BorderRadius.circular(3),
             ),
-            child: IntrinsicHeight(
-              // Makes the container shrink to fit its content
-              child: Column(
-                children: [
-                  // Pull handle at the top of the BottomSheet
-                  Container(
-                    width: 62,
-                    height: 7,
-                    decoration: BoxDecoration(
-                      color: ColorNeutral.background,
-                      borderRadius: BorderRadius.circular(3),
-                    ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(
+              top: 21,
+              left: 29,
+              right: 29,
+              bottom: 62,
+            ),
+            child: Column(
+              children: [
+                if (title != null) title!,
+                SizedBox(
+                  height: 12,
+                ),
+                if (desc != null)
+                  Text(
+                    desc!,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          fontSize: 14,
+                        ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(
-                      top: 21,
-                      left: 29,
-                      right: 29,
-                      bottom: 62,
-                    ),
-                    child: Column(
-                      children: [
-                        if (title != null) title!,
-                        SizedBox(
-                          height: 12,
-                        ),
-                        if (desc != null)
-                          Text(
-                            desc!,
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium!
-                                .copyWith(
-                                  fontSize: 14,
-                                ),
-                          ),
-                        SizedBox(height: 20),
-                        if (child != null) child!,
-                        SizedBox(
-                          height: 56,
-                        ),
-                        if (button != null)
-                          ...button!.map(
-                            (it) => Padding(
-                              padding: EdgeInsets.only(top: 10),
-                              child: it,
-                            ),
-                          )
-                      ],
+                SizedBox(height: 20),
+                if (child != null) child!,
+                SizedBox(
+                  height: 56,
+                ),
+                if (button != null)
+                  ...button!.map(
+                    (it) => Padding(
+                      padding: EdgeInsets.only(top: 10),
+                      child: it,
                     ),
                   )
-                ],
-              ),
+              ],
             ),
-          );
-        },
+          )
+        ],
       ),
     );
   }
@@ -795,6 +772,162 @@ class ImageLoader extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class StatisticChart extends StatelessWidget {
+  const StatisticChart({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Statistik-2024",
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        fontSize: 14,
+                      ),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: ShapeDecoration(
+                    color: ColorNeutral.black,
+                    shape: SmoothRectangleBorder(
+                      borderRadius: SmoothBorderRadius(
+                        cornerRadius: 20,
+                        cornerSmoothing: .6,
+                      ),
+                    ),
+                  ),
+                  child: CustomIconButton(
+                    "assets/icon/chevron-down.svg",
+                    colorBackground: ColorNeutral.black,
+                    onPressed: () => {},
+                    text: "2024",
+                    wasTextInRight: false,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 200,
+            child: LineChart(
+              LineChartData(
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: false,
+                  drawHorizontalLine: true,
+                  horizontalInterval: 2,
+                ),
+                titlesData: FlTitlesData(
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      getTitlesWidget: (value, _) {
+                        const monthNames = [
+                          'Jan',
+                          'Feb',
+                          'Mar',
+                          'Apr',
+                          'Mei',
+                          'Jun',
+                          'Jul',
+                          'Agu',
+                          'Sep',
+                          'Okt',
+                          'Nov',
+                          'Des'
+                        ];
+                        return Padding(
+                          padding: const EdgeInsets.all(0),
+                          child: Transform.rotate(
+                            angle: -0.785398, // 45 degrees in radians
+                            child: Text(
+                              monthNames[value.toInt()],
+                              style:
+                                  Theme.of(context).textTheme.bodySmall!.copyWith(
+                                        fontSize: 10,
+                                      ),
+                            ),
+                          ),
+                        );
+                      },
+                      interval: 1,
+                    ),
+                  ),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      interval: 2,
+                      getTitlesWidget: (value, _) {
+                        return Text(
+                          value.toInt().toString(),
+                          style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                                fontSize: 10,
+                              ),
+                        );
+                      },
+                    ),
+                  ),
+                  rightTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                        showTitles: false), // Remove right Y-axis numbers
+                  ),
+                  topTitles: AxisTitles(
+                    sideTitles:
+                        SideTitles(showTitles: false), // No numbers on the top
+                  ),
+                ),
+                borderData: FlBorderData(show: false),
+                minX: 0,
+                maxX: 11,
+                minY: 0,
+                maxY: 10,
+                lineBarsData: [
+                  LineChartBarData(
+                    isCurved: true,
+                    color: ColorPrimary.green,
+                    dotData: FlDotData(show: false),
+                    spots: [
+                      FlSpot(0, 4),
+                      FlSpot(1, 5),
+                      FlSpot(2, 4),
+                      FlSpot(3, 3),
+                      FlSpot(4, 4),
+                      FlSpot(5, 3),
+                      FlSpot(6, 5),
+                      FlSpot(7, 10),
+                      FlSpot(8, 8),
+                    ],
+                    isStepLineChart: false,
+                    belowBarData: BarAreaData(
+                      show: true,
+                      gradient: LinearGradient(
+                        colors: [
+                          ColorPrimary.green.withOpacity(0.3),
+                          Colors.transparent,
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

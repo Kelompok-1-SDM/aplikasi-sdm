@@ -16,11 +16,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 1;
-
   final List<Widget> _pages = [
     const Kalender(key: ValueKey('kalender')),
     const HomeScreen(key: ValueKey('home')),
-    const DaftarTugas(key: ValueKey('tasks')),
+    const DaftarTugasDitugaskan(key: ValueKey('tasks-1')),
+    const DaftarTugasHistori(key: ValueKey('tasks-2')),
   ];
 
   bool _isForward = true;

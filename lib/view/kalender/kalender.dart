@@ -1,5 +1,6 @@
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
+import 'package:aplikasi_manajemen_sdm/view/home/homepage_widgets.dart';
 import 'package:aplikasi_manajemen_sdm/view/kalender/kalender_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -22,6 +23,8 @@ class _KalenderState extends State<Kalender> {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+
     return RefreshIndicator(
       color: ColorNeutral.black,
       onRefresh: () async {
@@ -40,23 +43,26 @@ class _KalenderState extends State<Kalender> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     HomeAppBar(),
-                    // SizedBox(
-                    //   height: 24,
-                    // ),
-                    // CustomTableCalendar(
-                    //   events: _events,
-                    // ),
+                    SizedBox(
+                      height: 24,
+                    ),
+                    CustomTableCalendar(
+                      events: _events,
+                    ),
                   ],
                 ),
               ),
             ),
-            // SizedBox(
-            //   height: 24,
-            // ),
-            // CustomBottomSheet(
-            //   maxHeight: 1000,
-            //   padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-            //   child: currentTaskKalender(Theme.of(context))),
+            SizedBox(
+              height: 24,
+            ),
+            CustomBottomSheet(
+              maxHeight: double.infinity,
+              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+              child: currentTaskKalender(
+                Theme.of(context),
+              ),
+            ),
           ],
         ),
       ),
