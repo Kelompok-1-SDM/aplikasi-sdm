@@ -1,5 +1,6 @@
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
+import 'package:aplikasi_manajemen_sdm/view/livechat/livechat.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -326,3 +327,104 @@ CustomCardContent currentTaskKalender(ThemeData theme) {
     ],
   );
 }
+
+// Seminar card widget
+CustomCardContent seminarCard(ThemeData theme) {
+  return CustomCardContent(
+    colorBackground: ColorPrimary.orange,
+    header: [
+      CustomIconButton(
+        "assets/icon/category.svg",
+        colorBackground: ColorNeutral.black,
+      )
+    ],
+    otherWidget: [
+      Text(
+        "Tugas yang sedang berlangsung",
+        style: theme.textTheme.bodyMedium!.copyWith(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      const SizedBox(height: 8),
+      Text(
+        "Pemateri Seminar Teknologi Informasi",
+        style: theme.textTheme.bodyMedium!.copyWith(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      const SizedBox(height: 8),
+      Row(
+        children: [
+          Icon(Icons.location_on, color: ColorNeutral.black),
+          const SizedBox(width: 4),
+          Text(
+            "Auditorium Lt. 8, Teknik Sipil",
+            style: theme.textTheme.bodyMedium,
+          ),
+        ],
+      ),
+      const SizedBox(height: 16),
+      Stack(
+        children: [
+          Container(
+            height: 180,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              image: DecorationImage(
+                image: AssetImage("assets/icon/event.jpg"),
+                // fit: BoxFit.cover,
+              ),
+              // ImageLoader(imageUrl: ("assets/icon/event.jpg"), author: "", authorUrl: "", caption: "Masih sepi nih"),
+            ),
+          ),
+          Positioned(
+            bottom: 8,
+            left: 8,
+            child: Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.6),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  // ImageLoader(imageUrl: "assets\icon\event.jpg", caption: "Masih sepi nih", author: "", authorUrl: "",),
+                  Icon(Icons.person, color: Colors.white),
+                  const SizedBox(width: 4),
+                  Text(
+                    "Masih sepi nih...",
+                    style: theme.textTheme.bodyMedium!
+                        .copyWith(color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 16),
+      Row(
+        children: [
+          CircleAvatar(
+            backgroundImage: AssetImage("assets/icon/profile1.png"),
+          ),
+          const SizedBox(width: 4),
+          CircleAvatar(
+            backgroundImage: AssetImage("assets/icon/profile2.png"),
+          ),
+          const SizedBox(width: 4),
+          CircleAvatar(
+            backgroundImage: AssetImage("assets/icon/profile3.png"),
+          ),
+        ],
+      ),
+      const SizedBox(height: 16),
+      // Add the LiveChatButton here
+      LiveChatButton(withText: false,), 
+    ],
+    crumbs: ["🧑‍🏫 Pemateri", "⚖️ Juri", "🤖 AI"],
+  );
+}
+

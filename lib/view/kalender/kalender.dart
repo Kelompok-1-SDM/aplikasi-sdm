@@ -23,6 +23,8 @@ class _KalenderState extends State<Kalender> {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+
     return RefreshIndicator(
       color: ColorNeutral.black,
       onRefresh: () async {
@@ -41,12 +43,12 @@ class _KalenderState extends State<Kalender> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     HomeAppBar(),
-                    // SizedBox(
-                    //   height: 24,
-                    // ),
-                    // CustomTableCalendar(
-                    //   events: _events,
-                    // ),
+                    SizedBox(
+                      height: 24,
+                    ),
+                    CustomTableCalendar(
+                      events: _events,
+                    ),
                   ],
                 ),
               ),
