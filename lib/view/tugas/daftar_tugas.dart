@@ -3,14 +3,11 @@ import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
 import 'package:aplikasi_manajemen_sdm/view/home/homepage_widgets.dart';
 import 'package:flutter/material.dart';
 
-class DaftarTugas extends StatefulWidget {
-  const DaftarTugas({super.key});
+class DaftarTugasDitugaskan extends StatelessWidget {
+  const DaftarTugasDitugaskan({
+    super.key,
+  });
 
-  @override
-  State<DaftarTugas> createState() => _DaftarTugasState();
-}
-
-class _DaftarTugasState extends State<DaftarTugas> {
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
@@ -53,7 +50,7 @@ class _DaftarTugasState extends State<DaftarTugas> {
                 ),
               ],
               crumbs: ['ujicoba'],
-            ), 
+            ),
             CustomCardContent(
               header: [Text("Kamu akan menghadiri acara ini")],
               title: "Pengawas ujian masuk maba",
@@ -109,8 +106,37 @@ class _DaftarTugasState extends State<DaftarTugas> {
                   decoration: TextDecoration.underline,
                   fontSize: 20,
                   color: ColorNeutral.gray),
-            ),SizedBox(
-              height: 200,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class DaftarTugasHistori extends StatelessWidget {
+  const DaftarTugasHistori({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return RefreshIndicator(
+      color: ColorNeutral.black,
+      onRefresh: () async {
+        // Do something when refreshed
+        return Future<void>.delayed(const Duration(seconds: 3));
+      },
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.only(top: 61),
+        child: Column(
+          children: [
+            HomeAppBar(),
+            CustomBigButton(
+              buttonLabel: "Ke Detail tugas",
+              buttonColor: ColorNeutral.black,
+              onPressed: () => {Navigator.pushNamed(context, "/detail_tugas")},
+              otherWidget: [],
             ),
             CustomCardContent(
               header: [Text("Kamu telah menghadiri acara ini")],
@@ -167,7 +193,8 @@ class _DaftarTugasState extends State<DaftarTugas> {
                   decoration: TextDecoration.underline,
                   fontSize: 20,
                   color: ColorNeutral.gray),
-            ),SizedBox(
+            ),
+            SizedBox(
               height: 200,
             )
           ],

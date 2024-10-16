@@ -83,16 +83,12 @@ class _HomeAppBarState extends State<HomeAppBar> {
 
 class Navbar extends StatelessWidget {
   final NavbarState state;
-  final int stateTugas;
   final Function(int) onItemSelected;
-  final Function(int) onDaftarSelected;
 
   const Navbar({
     super.key,
     required this.state,
     required this.onItemSelected,
-    required this.onDaftarSelected,
-    required this.stateTugas,
   });
 
   @override
@@ -102,7 +98,7 @@ class Navbar extends StatelessWidget {
       children: [
         AnimatedPositioned(
             // Slide up when state is NavbarState.task, slide down when not
-            bottom: state == NavbarState.task
+            bottom: state == NavbarState.task_1 || state == NavbarState.task_2
                 ? 120
                 : 30, // Adjust the off-screen position
             duration: const Duration(milliseconds: 300), // Animation duration
@@ -127,14 +123,14 @@ class Navbar extends StatelessWidget {
                       padding: WidgetStateProperty.all(
                           EdgeInsets.zero), // Ensure padding is zero
                     ),
-                    onPressed: () => onDaftarSelected(0),
+                    onPressed: () => onItemSelected(2),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 11, vertical: 6),
                       decoration: BoxDecoration(
-                        color: stateTugas == 0
+                        color: state == NavbarState.task_1
                             ? ColorNeutral
                                 .white // White when selected (stateTugas == 0)
                             : Colors.transparent, // Gray when unselected
@@ -148,7 +144,7 @@ class Navbar extends StatelessWidget {
                       child: Text(
                         "Ditugaskan",
                         style: TextStyle(
-                          color: stateTugas == 0
+                          color: state == NavbarState.task_1
                               ? ColorNeutral.black
                               : ColorNeutral.gray, // Text color
                           fontSize: 12,
@@ -162,14 +158,14 @@ class Navbar extends StatelessWidget {
                       padding: WidgetStateProperty.all(
                           EdgeInsets.zero), // Ensure padding is zero
                     ),
-                    onPressed: () => onDaftarSelected(1),
+                    onPressed: () => onItemSelected(3),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 11, vertical: 6),
                       decoration: BoxDecoration(
-                        color: stateTugas == 1
+                        color: state == NavbarState.task_2
                             ? ColorNeutral
                                 .white // White when selected (stateTugas == 0)
                             : Colors.transparent, // Gray when unselected
@@ -183,7 +179,7 @@ class Navbar extends StatelessWidget {
                       child: Text(
                         "Histori",
                         style: TextStyle(
-                          color: stateTugas == 1
+                          color: state == NavbarState.task_2
                               ? ColorNeutral.black
                               : ColorNeutral.gray, // Text color
                           fontSize: 12,
@@ -258,7 +254,7 @@ class Navbar extends StatelessWidget {
                   },
                   child: CustomIconButton(
                     key: ValueKey(
-                        state == NavbarState.task), // Unique Key for state
+                        state == NavbarState.task_1), // Unique Key for state
                     "assets/icon/category-bold.svg",
                     onPressed: () => {
                       onItemSelected(2),
@@ -266,7 +262,7 @@ class Navbar extends StatelessWidget {
                     size: IconSize.large,
                     padding: EdgeInsets.zero,
                     colorBackground: ColorNeutral.black,
-                    isNotSelectable: state == NavbarState.task,
+                    isNotSelectable: state == NavbarState.task_1,
                   ),
                 ),
               ],
