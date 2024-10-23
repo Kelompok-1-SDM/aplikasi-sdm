@@ -1,10 +1,6 @@
-import 'package:animations/animations.dart';
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/config/const.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
-import 'package:aplikasi_manajemen_sdm/view/home/homepage_widgets.dart';
-import 'package:aplikasi_manajemen_sdm/view/kalender/kalender.dart';
-import 'package:aplikasi_manajemen_sdm/view/tugas/daftar_tugas.dart';
 import 'package:flutter/material.dart';
 
 class BuktiButton extends StatelessWidget {

@@ -48,7 +48,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     right: 0,
                     bottom: 0,
                     child: CustomIconButton(Icons.edit_outlined,
-                    size: IconSize.small,
+                        size: IconSize.small,
                         colorBackground: ColorNeutral.white),
                   )
                 ],
@@ -59,52 +59,150 @@ class _ProfilePageState extends State<ProfilePage> {
               profileCard(
                 Theme.of(context),
               ),
-              // SizedBox(
-              //   height: 13,
-              // ),
-              // statsCardProfile(
-              //   Theme.of(context),
-              // ),
-              // SizedBox(
-              //   height: 13,
-              // ),
-              // kompetensiCard(
-              //   Theme.of(context),
-              // ),
-              // SizedBox(
-              //   height: 13,
-              // ),
-              // CustomBigButton(
-              //   onPressed: () => {},
-              //   buttonLabel: "Ubah Password",
-              //   otherWidget: [],
-              //   wasIconOnRight: true,
-              //   icon: CustomIconButton(
-              //     "assets/icon/lock.svg",
-              //     size: IconSize.large,
-              //     colorBackground: ColorNeutral.gray,
-              //   ),
-              // ),
-              // SizedBox(
-              //   height: 13,
-              // ),
-              // Padding(
-              //   padding: const EdgeInsets.symmetric(horizontal: 60),
-              //   child: CustomBigButton(
-              //     onPressed: () => {},
-              //     buttonLabel: "Logout",
-              //     otherWidget: [],
-              //     wasIconOnRight: true,
-              //     buttonColor: ColorPrimary.orange,
-              //     customLabelColor: ColorNeutral.white,
-              //     icon: CustomIconButton(
-              //       "assets/icon/lock.svg",
-              //       size: IconSize.large,
-              //       colorBackground: Color(0xFFFF7247),
-              //       iconColorCustom: ColorNeutral.white,
-              //     ),
-              //   ),
-              // ),
+              statsCardProfile(Theme.of(context)),
+              CustomCardContent(
+                  description:
+                      "Kompetensi berdasarkan penugasan yang telah dilakukan",
+                  crumbs: [
+                    "⚖️ Juri",
+                    "🧑‍🏫 Pemateri",
+                    "🤖 Iot",
+                    "🤖 AI",
+                    "✨ Teknologi",
+                    "🧠 Penalaran",
+                  ],
+                  header: [
+                    Text("Kompetensi yang dikuasai",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16)),
+                  ]),
+              CustomBigButton(
+                wasIconOnRight: true,
+                onPressed: () => {
+                  callBottomSheet(
+                    context,
+                    title: Text(
+                      "Ubah Password", textAlign: TextAlign.center,
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                    ),
+                    button: [
+                      CustomBigButton(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+                        onPressed: () => {Navigator.pop(context)},
+                        otherWidget: [],
+                        buttonColor: ColorNeutral.black,
+                        customLabelColor: Colors.white,
+                        buttonLabel: "Batal",
+                      ),
+                      CustomBigButton(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+                        onPressed: () => {
+                          callBottomSheet(context,
+                              title: Text(
+                                "Apakah anda yakin mengubah password anda?", textAlign: TextAlign.center,
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                              ),
+                              button: [
+                                CustomBigButton(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 30, vertical: 20),
+                                  onPressed: () => {Navigator.pop(context)},
+                                  otherWidget: [],
+                                  buttonColor: ColorNeutral.black,
+                                  customLabelColor: Colors.white,
+                                  buttonLabel: "Tidak",
+                                ),
+                                CustomBigButton(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 30, vertical: 20),
+                                  onPressed: () => {
+                                    callBottomSheet(
+                                      context,
+                                      title: Text(
+                                        "Password anda berhasil diperbarui", textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold, fontSize: 24, ),
+                                      ),
+                                      button: [
+                                        CustomBigButton(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 30, vertical: 20),
+                                          onPressed: () => {
+                                            // Navigator.pushNamed(
+                                                // context, "/profile"),
+                                                Navigator.pop(context),
+                                                Navigator.pop(context),
+                                                Navigator.pop(context),
+                                          },
+                                          otherWidget: [],
+                                          buttonColor: ColorNeutral.black,
+                                          customLabelColor: Colors.white,
+                                          buttonLabel: "Kembali ke profil",
+                                        )
+                                      ],
+                                    )
+                                  },
+                                  otherWidget: [],
+                                  buttonColor: ColorPrimary.orange,
+                                  customLabelColor: Colors.white,
+                                  buttonLabel: "Ya",
+                                ),
+                              ],
+                              description:
+                                  "Harap cek kembali password anda sebelum konfirmasi")
+                        },
+                        otherWidget: [],
+                        buttonColor: ColorPrimary.orange,
+                        customLabelColor: Colors.white,
+                        buttonLabel: "Ubah",
+                      ),
+                    ],
+                    child: Column(
+                      children: [
+                        CustomTextField(
+                            label: "Password lama", hint: "password lama"),
+                        CustomTextField(
+                            label: "Password baru", hint: "password baru"),
+                        CustomTextField(
+                            label: "Konfirmasi password baru",
+                            hint: "Konfirmasi password"),
+                      ],
+                    ),
+                  )
+                },
+                otherWidget: [],
+                icon: CustomIconButton(
+                  "assets/icon/lock.svg",
+                  colorBackground: Colors.white,
+                ),
+                buttonColor: ColorNeutral.black,
+                buttonLabel: "Ubah Password",
+              ),
+              CustomBigButton(
+                maxWidth: 240,
+                wasElevated: true,
+                padding: EdgeInsets.only(
+                  left: 34,
+                  top: 8,
+                  bottom: 8,
+                  right: 6,
+                ),
+                wasIconOnRight: true,
+                onPressed: () => {
+                  Navigator.pushNamed(context, "/auth"),
+                },
+                otherWidget: [],
+                icon: CustomIconButton(
+                  "assets/icon/logout.svg",
+                  colorBackground: Colors.white,
+                  iconColorCustom: ColorPrimary.orange,
+                ),
+                buttonColor: ColorPrimary.orange,
+                customLabelColor: Colors.white,
+                buttonLabel: "Logout",
+              ),
             ],
           ),
         ),

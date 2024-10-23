@@ -13,6 +13,7 @@ class AuthPage extends StatefulWidget {
 class _AuthPageState extends State<AuthPage> {
   final TextEditingController _nipController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _forgotNipController = TextEditingController(); // Controller for forgot NIP//memungkinkan UI untuk berubah
 
   void _login() {
     // Replace this with your actual authentication logic
@@ -29,6 +30,7 @@ class _AuthPageState extends State<AuthPage> {
     // Dispose of the controller when the page is removed
     _nipController.dispose();
     _passwordController.dispose();
+    _forgotNipController.dispose(); // Dispose forgot NIP controller
     super.dispose();
   }
 
@@ -66,6 +68,87 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
+  void lupapassword() {
+    callBottomSheet(
+      context,
+      button: [
+        CustomBigButton(
+          onPressed: () => {
+            Cekemail()
+          },
+          padding: EdgeInsets.symmetric(
+            vertical: 24,
+          ),
+          buttonColor: ColorPrimary.orange,
+          otherWidget: [
+            Text(
+              "Oke",
+              style: Theme.of(context)
+                  .textTheme
+                  .displayMedium!
+                  .copyWith(fontSize: 24, color: ColorNeutral.white),
+            )
+          ],
+        )
+      ],
+      title: Text(
+        "Lupa password",
+        style: Theme.of(context).textTheme.displayLarge!.copyWith(
+              fontSize: 20,
+            ),
+      ),
+      child: Column(
+        children: [
+          Text(
+            "Silahkan masukkan data NIP anda",
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          SizedBox(height: 10),
+          TextField(
+            controller: _forgotNipController,
+            decoration: InputDecoration(
+              labelText: 'NIP',
+              border: OutlineInputBorder(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+void Cekemail() {
+    callBottomSheet(
+      context,
+      button: [
+        CustomBigButton(
+          onPressed: () => {
+            Navigator.pop(context)
+          },
+          padding: EdgeInsets.symmetric(
+            vertical: 24,
+          ),
+          buttonColor: ColorPrimary.orange,
+          otherWidget: [
+            Text(
+              "Oke",
+              style: Theme.of(context)
+                  .textTheme
+                  .displayMedium!
+                  .copyWith(fontSize: 24, color: ColorNeutral.white),
+            )
+          ],
+        )
+      ],
+      title: Text(
+        "Lupa Password",
+        style: Theme.of(context).textTheme.displayLarge!.copyWith(
+              fontSize: 20,
+            ),
+      ),
+      description:
+          "Cek email anda untuk mengubah password anda",
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,7 +171,7 @@ class _AuthPageState extends State<AuthPage> {
                   height: 30,
                 ),
                 authCard(
-                    Theme.of(context), _nipController, _passwordController),
+                    Theme.of(context), _nipController, _passwordController, lupapassword),
                 SizedBox(height: 10),
                 loginButton(Theme.of(context), _login, _belumPunyaAkun),
               ],

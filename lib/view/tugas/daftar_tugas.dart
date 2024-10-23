@@ -1,10 +1,11 @@
+import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
-}
+class DaftarTugasDitugaskan extends StatelessWidget {
+  const DaftarTugasDitugaskan({
+    super.key,
+  });
 
-class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -40,48 +41,85 @@ class _HomeScreenState extends State<HomeScreen> {
                 'https://example.com/profile_pic.jpg',
               ),
             ),
-          ),
-        ],
-      ),
-      body: ListView(
-        padding: EdgeInsets.all(16.0),
-        children: [
-          Text(
-            "2024",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          TaskCard(
-            title: 'Uji coba bandwith Gedung Teksip',
-            date: '12 Desember, Sampai selesai',
-            location: 'Gedung Teknik Sipil',
-            tag: 'ujicoba',
-            color: Colors.orange,
-          ),
-          Text(
-            "2025",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          TaskCard(
-            title: 'Pengawasan ujian masuk maba',
-            date: '12 Januari 2025, 08:00 - 12:00',
-            location: 'Online',
-            tag: 'pengawas',
-            color: Colors.yellow,
-          ),
-          TaskCard(
-            title: 'Bantu dekorasi ruang studio',
-            date: '12 Januari 2025, 08:00 - 12:00',
-            location: 'Ruang studio Lt.1, Gedung Teknik Sipil',
-            tag: 'dekorasi',
-            color: Colors.green,
-          ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                "Belum ada penawaran baru",
-                style: TextStyle(color: Colors.grey),
-              ),
+            CustomCardContent(
+              header: [Text("Kamu sedang menghadiri")],
+              title: "Pemateri Seminar Teknologi Informasi",
+              actionIcon: [
+                CustomIconButton(
+                  "assets/icon/arrow-45.svg",
+                  colorBackground: ColorNeutral.black,
+                )
+              ],
+              colorBackground: ColorPrimary.orange,
+              descIcon: [
+                CustomIconButton(
+                  "assets/icon/calendar.svg",
+                  colorBackground: Colors.transparent,
+                  text: "12 Januari, 08:00-12:00",
+                ),
+                CustomIconButton(
+                  "assets/icon/location.svg",
+                  colorBackground: Colors.transparent,
+                  text: "Auditorium Lt.8, Teknik Sipil",
+                ),
+              ],
+              crumbs: ['ujicoba'],
+            ),
+            CustomCardContent(
+              header: [Text("Kamu akan menghadiri acara ini")],
+              title: "Pengawas ujian masuk maba",
+              actionIcon: [
+                CustomIconButton(
+                  "assets/icon/arrow-45.svg",
+                  colorBackground: ColorNeutral.black,
+                )
+              ],
+              colorBackground: const Color(0xFFFFEB69),
+              descIcon: [
+                CustomIconButton(
+                  "assets/icon/calendar.svg",
+                  colorBackground: Colors.transparent,
+                  text: "12 Januari 2025, 08:00-12:00",
+                ),
+                CustomIconButton(
+                  "assets/icon/location.svg",
+                  colorBackground: Colors.transparent,
+                  text: "Online",
+                ),
+              ],
+              crumbs: ['pengawas', 'ujian', 'online'],
+            ),
+            CustomCardContent(
+              header: [Text("Kamu akan menghadiri acara ini")],
+              title: "Bantu dekorasi ruang studio",
+              actionIcon: [
+                CustomIconButton(
+                  "assets/icon/arrow-45.svg",
+                  colorBackground: ColorNeutral.black,
+                )
+              ],
+              colorBackground: ColorPrimary.green,
+              descIcon: [
+                CustomIconButton(
+                  "assets/icon/calendar.svg",
+                  colorBackground: Colors.transparent,
+                  text: "12 Januari 2025, 08:00-12:00",
+                ),
+                CustomIconButton(
+                  "assets/icon/location.svg",
+                  colorBackground: Colors.transparent,
+                  text: "Ruang studio, Lt.8, Gedung Teknik Sipil",
+                ),
+              ],
+              crumbs: ['dekorasi'],
+            ),
+            const Text(
+              "Belum ada penawaran baru",
+              style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  decoration: TextDecoration.underline,
+                  fontSize: 20,
+                  color: ColorNeutral.gray),
             ),
           ),
         ],
@@ -193,67 +231,91 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class TaskCard extends StatelessWidget {
-  final String title;
-  final String date;
-  final String location;
-  final String tag;
-  final Color color;
-
-  TaskCard({
-    required this.title,
-    required this.date,
-    required this.location,
-    required this.tag,
-    required this.color,
+class DaftarTugasHistori extends StatelessWidget {
+  const DaftarTugasHistori({
+    super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(top: 16.0),
-      padding: EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.7),
-        borderRadius: BorderRadius.circular(16.0),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
+    return RefreshIndicator(
+      color: ColorNeutral.black,
+      onRefresh: () async {
+        // Do something when refreshed
+        return Future<void>.delayed(const Duration(seconds: 3));
+      },
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.only(top: 61),
+        child: Column(
+          children: [
+            HomeAppBar(),
+            CustomBigButton(
+              buttonLabel: "Ke Detail tugas",
+              buttonColor: ColorNeutral.black,
+              onPressed: () => {Navigator.pushNamed(context, "/detail_tugas")},
+              otherWidget: [],
             ),
-          ),
-          SizedBox(height: 8),
-          Row(
-            children: [
-              Icon(Icons.calendar_today, size: 16, color: Colors.black),
-              SizedBox(width: 4),
-              Text(date, style: TextStyle(color: Colors.black)),
-            ],
-          ),
-          SizedBox(height: 4),
-          Row(
-            children: [
-              Icon(Icons.location_on, size: 16, color: Colors.black),
-              SizedBox(width: 4),
-              Text(location, style: TextStyle(color: Colors.black)),
-            ],
-          ),
-          SizedBox(height: 16),
-          Row(
-            children: [
-              Chip(
-                label: Text(tag),
-                backgroundColor: Colors.black.withOpacity(0.1),
-              ),
-            ],
-          ),
-        ],
+            CustomCardContent(
+              header: [Text("Kamu telah menghadiri acara ini")],
+              title: "Seminar di Auper",
+              actionIcon: [
+                CustomIconButton(
+                  "assets/icon/category.svg",
+                  colorBackground: ColorNeutral.black,
+                )
+              ],
+              colorBackground: ColorPrimary.blue,
+              descIcon: [
+                CustomIconButton(
+                  "assets/icon/calendar.svg",
+                  colorBackground: Colors.transparent,
+                  text: "12 Januari, 08:00-12:00",
+                ),
+                CustomIconButton(
+                  "assets/icon/location.svg",
+                  colorBackground: Colors.transparent,
+                  text: "Aula Pertamina",
+                ),
+              ],
+              crumbs: ['pengawas', 'ujian', 'online'],
+            ),
+            CustomCardContent(
+              header: [Text("Kamu telah menghadiri acara ini")],
+              title: "Juri lomba aplikasi",
+              actionIcon: [
+                CustomIconButton(
+                  "assets/icon/category.svg",
+                  colorBackground: ColorNeutral.black,
+                )
+              ],
+              colorBackground: ColorPrimary.blue,
+              descIcon: [
+                CustomIconButton(
+                  "assets/icon/calendar.svg",
+                  colorBackground: Colors.transparent,
+                  text: "12 Juli, Sampai selesai",
+                ),
+                CustomIconButton(
+                  "assets/icon/location.svg",
+                  colorBackground: Colors.transparent,
+                  text: " Gedung Teknik Sipil",
+                ),
+              ],
+              crumbs: ['juri'],
+            ),
+            const Text(
+              "Hanya itu yang kami temukan",
+              style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  decoration: TextDecoration.underline,
+                  fontSize: 20,
+                  color: ColorNeutral.gray),
+            ),
+            SizedBox(
+              height: 200,
+            )
+          ],
+        ),
       ),
     );
   }
