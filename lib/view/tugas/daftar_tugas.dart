@@ -21,12 +21,6 @@ class DaftarTugasDitugaskan extends StatelessWidget {
         child: Column(
           children: [
             HomeAppBar(),
-            CustomBigButton(
-              buttonLabel: "Ke Detail tugas",
-              buttonColor: ColorNeutral.black,
-              onPressed: () => {Navigator.pushNamed(context, "/detail_tugas")},
-              otherWidget: [],
-            ),
             CustomCardContent(
               header: [Text("Kamu sedang menghadiri")],
               title: "Pemateri Seminar Teknologi Informasi",
@@ -50,6 +44,7 @@ class DaftarTugasDitugaskan extends StatelessWidget {
                 ),
               ],
               crumbs: ['ujicoba'],
+              onPressed: () => {Navigator.pushNamed(context, "/detail_tugas")},
             ),
             CustomCardContent(
               header: [Text("Kamu akan menghadiri acara ini")],
@@ -74,6 +69,7 @@ class DaftarTugasDitugaskan extends StatelessWidget {
                 ),
               ],
               crumbs: ['pengawas', 'ujian', 'online'],
+              onPressed: () => {Navigator.pushNamed(context, "/detail_tugas")},
             ),
             CustomCardContent(
               header: [Text("Kamu akan menghadiri acara ini")],
@@ -98,6 +94,7 @@ class DaftarTugasDitugaskan extends StatelessWidget {
                 ),
               ],
               crumbs: ['dekorasi'],
+              onPressed: () => {Navigator.pushNamed(context, "/detail_tugas")},
             ),
             const Text(
               "Belum ada penawaran baru",
@@ -107,6 +104,9 @@ class DaftarTugasDitugaskan extends StatelessWidget {
                   fontSize: 20,
                   color: ColorNeutral.gray),
             ),
+            SizedBox(
+              height: 200,
+            )
           ],
         ),
       ),
@@ -132,12 +132,6 @@ class DaftarTugasHistori extends StatelessWidget {
         child: Column(
           children: [
             HomeAppBar(),
-            CustomBigButton(
-              buttonLabel: "Ke Detail tugas",
-              buttonColor: ColorNeutral.black,
-              onPressed: () => {Navigator.pushNamed(context, "/detail_tugas")},
-              otherWidget: [],
-            ),
             CustomCardContent(
               header: [Text("Kamu telah menghadiri acara ini")],
               title: "Seminar di Auper",
@@ -161,6 +155,7 @@ class DaftarTugasHistori extends StatelessWidget {
                 ),
               ],
               crumbs: ['pengawas', 'ujian', 'online'],
+              onPressed: () => {Navigator.pushNamed(context, "/detail_tugas")},
             ),
             CustomCardContent(
               header: [Text("Kamu telah menghadiri acara ini")],
@@ -171,7 +166,7 @@ class DaftarTugasHistori extends StatelessWidget {
                   colorBackground: ColorNeutral.black,
                 )
               ],
-              colorBackground: ColorPrimary.blue,
+              colorBackground: ColorPrimary.orange,
               descIcon: [
                 CustomIconButton(
                   "assets/icon/calendar.svg",
@@ -185,6 +180,7 @@ class DaftarTugasHistori extends StatelessWidget {
                 ),
               ],
               crumbs: ['juri'],
+              onPressed: () => {Navigator.pushNamed(context, "/detail_tugas")},
             ),
             const Text(
               "Hanya itu yang kami temukan",
