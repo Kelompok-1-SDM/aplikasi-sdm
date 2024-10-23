@@ -43,9 +43,9 @@ class Chat1 extends StatelessWidget {
                 Text(
                   username,
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                    color: ColorNeutral.gray, // Light gray text color
-                    fontWeight: FontWeight.bold,
-                  ),
+                        color: ColorNeutral.gray, // Light gray text color
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 const SizedBox(height: 4),
 
@@ -59,18 +59,18 @@ class Chat1 extends StatelessWidget {
                   child: Text(
                     messageText,
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      color: ColorNeutral.black,
-                    ),
+                          color: ColorNeutral.black,
+                        ),
                   ),
                 ),
                 const SizedBox(height: 8),
 
                 ImageLoader(
-                  author: username, 
+                  author: username,
                   showCaption: false,
-                  imageUrl: imagePath, 
-                  caption: messageText, 
-                  authorUrl: profileImagePath, 
+                  imageUrl: imagePath,
+                  caption: messageText,
+                  authorUrl: profileImagePath,
                 ),
 
                 Padding(
@@ -78,9 +78,9 @@ class Chat1 extends StatelessWidget {
                   child: Text(
                     timestamp,
                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: ColorNeutral.gray,
-                      fontSize: 12,
-                    ),
+                          color: ColorNeutral.gray,
+                          fontSize: 12,
+                        ),
                   ),
                 ),
               ],
@@ -129,9 +129,9 @@ class Chat2 extends StatelessWidget {
                 Text(
                   username,
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                    color: Colors.grey.shade400, // Light gray text color
-                    fontWeight: FontWeight.bold,
-                  ),
+                        color: Colors.grey.shade400, // Light gray text color
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 const SizedBox(height: 4),
 
@@ -145,8 +145,8 @@ class Chat2 extends StatelessWidget {
                   child: Text(
                     messageText,
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      color: Colors.black,
-                    ),
+                          color: Colors.black,
+                        ),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -157,9 +157,9 @@ class Chat2 extends StatelessWidget {
                   child: Text(
                     timestamp,
                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: Colors.grey.shade500, 
-                      fontSize: 12,
-                    ),
+                          color: Colors.grey.shade500,
+                          fontSize: 12,
+                        ),
                   ),
                 ),
               ],
@@ -212,9 +212,9 @@ class Chat3 extends StatelessWidget {
                 Text(
                   username,
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                    color: Colors.grey.shade400, // Light gray text color
-                    fontWeight: FontWeight.bold,
-                  ),
+                        color: Colors.grey.shade400, // Light gray text color
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 const SizedBox(height: 4),
 
@@ -228,8 +228,8 @@ class Chat3 extends StatelessWidget {
                   child: Text(
                     firstMessageText,
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      color: Colors.black,
-                    ),
+                          color: Colors.black,
+                        ),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -240,9 +240,9 @@ class Chat3 extends StatelessWidget {
                   child: Text(
                     firstTimestamp,
                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: Colors.grey.shade500,
-                      fontSize: 12,
-                    ),
+                          color: Colors.grey.shade500,
+                          fontSize: 12,
+                        ),
                   ),
                 ),
 
@@ -258,8 +258,8 @@ class Chat3 extends StatelessWidget {
                   child: Text(
                     secondMessageText,
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      color: Colors.black,
-                    ),
+                          color: Colors.black,
+                        ),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -270,13 +270,166 @@ class Chat3 extends StatelessWidget {
                   child: Text(
                     secondTimestamp,
                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: Colors.grey.shade500,
-                      fontSize: 12,
-                    ),
+                          color: Colors.grey.shade500,
+                          fontSize: 12,
+                        ),
                   ),
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// class LiveChatPage extends StatefulWidget {
+//   @override
+//   _LiveChatPageState createState() => _LiveChatPageState();
+// }
+
+// // class _LiveChatPageState extends State<LiveChatPage> {
+//   final TextEditingController _controller = TextEditingController();
+//   bool isTyping = false;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text("Live Chat"),
+//       ),
+//       body: Stack(
+//         children: [
+//           // Your main chat messages UI goes here
+//           Positioned(
+//             bottom: 0,
+//             left: 0,
+//             right: 0,
+//             child: Padding(
+//               padding: const EdgeInsets.all(8.0),
+//               child: Row(
+//                 children: [
+//                   // Text input field
+//                   Expanded(
+//                     child: TextField(
+//                       controller: _controller,
+//                       onChanged: (text) {
+//                         setState(() {
+//                           isTyping = text.isNotEmpty;
+//                         });
+//                       },
+//                       decoration: InputDecoration(
+//                         hintText: 'Ketik pesan',
+//                         filled: true,
+//                         fillColor: Colors.white,
+//                         contentPadding: const EdgeInsets.symmetric(
+//                             vertical: 10.0, horizontal: 15.0),
+//                         border: OutlineInputBorder(
+//                           borderRadius: BorderRadius.circular(25.0),
+//                           borderSide: BorderSide.none,
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//                   SizedBox(width: 8.0),
+//                   // File upload button
+//                   IconButton(
+//                     icon: Icon(Icons.attach_file),
+//                     onPressed: () {
+//                       // Implement file picker functionality
+//                     },
+//                   ),
+//                   // Send button
+//                   IconButton(
+//                     icon: Icon(Icons.send),
+//                     onPressed: isTyping
+//                         ? () {
+//                             // Implement send message functionality
+//                             print("Message sent: ${_controller.text}");
+//                             _controller.clear();
+//                             setState(() {
+//                               isTyping = false;
+//                             });
+//                           }
+//                         : null,
+//                     color: isTyping ? Theme.of(context).primaryColor : Colors.grey,
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+class FloatingChatInput extends StatefulWidget {
+  final Function(String message) onSendMessage;
+  final Function() onFileUpload;
+
+  const FloatingChatInput({
+    Key? key,
+    required this.onSendMessage,
+    required this.onFileUpload,
+  }) : super(key: key);
+
+  @override
+  _FloatingChatInputState createState() => _FloatingChatInputState();
+}
+
+class _FloatingChatInputState extends State<FloatingChatInput> {
+  final TextEditingController _controller = TextEditingController();
+  bool isTyping = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        children: [
+          // Text input field
+          Expanded(
+            child: TextField(
+              controller: _controller,
+              onChanged: (text) {
+                setState(() {
+                  isTyping = text.isNotEmpty;
+                });
+              },
+              decoration: InputDecoration(
+                hintText: 'Ketik pesan',
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: const EdgeInsets.symmetric(
+                    vertical: 10.0, horizontal: 15.0),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(25.0),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(width: 8.0),
+          // File upload button
+          IconButton(
+            icon: Icon(Icons.attach_file),
+            onPressed: widget.onFileUpload,
+          ),
+          // Send button
+          IconButton(
+            icon: Icon(Icons.send),
+            onPressed: isTyping
+                ? () {
+                    widget.onSendMessage(_controller.text);
+                    _controller.clear();
+                    setState(() {
+                      isTyping = false;
+                    });
+                  }
+                : null,
+            color: isTyping ? Theme.of(context).primaryColor : Colors.grey,
           ),
         ],
       ),
