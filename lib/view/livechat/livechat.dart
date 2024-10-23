@@ -16,6 +16,7 @@ class _LiveChatState extends State<LiveChat> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
+      floatingActionButton: FloatingChatInput(onFileUpload: () => {}, onSendMessage: (message) => {},),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 61),
         child: Column(
