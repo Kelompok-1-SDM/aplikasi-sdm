@@ -12,13 +12,13 @@ class Chat1 extends StatelessWidget {
   final String timestamp;
 
   const Chat1({
-    Key? key,
+    super.key,
     required this.profileImagePath,
     required this.username,
     required this.messageText,
     required this.imagePath,
     required this.timestamp,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -99,12 +99,12 @@ class Chat2 extends StatelessWidget {
   final String timestamp;
 
   const Chat2({
-    Key? key,
+    super.key,
     required this.profileImagePath,
     required this.username,
     required this.messageText,
     required this.timestamp,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -180,14 +180,14 @@ class Chat3 extends StatelessWidget {
   final String secondTimestamp;
 
   const Chat3({
-    Key? key,
+    super.key,
     required this.profileImagePath,
     required this.username,
     required this.firstMessageText,
     required this.firstTimestamp,
     required this.secondMessageText,
     required this.secondTimestamp,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
