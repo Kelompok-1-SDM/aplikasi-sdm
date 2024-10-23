@@ -8,39 +8,17 @@ class DaftarTugasDitugaskan extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: HomeScreen(),
-      debugShowCheckedModeBanner: false,
-    );
-  }
-}
-
-class HomeScreen extends StatefulWidget {
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  int selectedIndex = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Tawaran Penugasan'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.notifications),
-            onPressed: () {},
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: CircleAvatar(
-              radius: 20,
-              backgroundImage: NetworkImage(
-                'https://example.com/profile_pic.jpg',
-              ),
-            ),
+    return RefreshIndicator(
+      color: ColorNeutral.black,
+      onRefresh: () async {
+        // Do something when refreshed
+        return Future<void>.delayed(const Duration(seconds: 3));
+      },
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.only(top: 61),
+        child: Column(
+          children: [
+            HomeAppBar(),
             CustomCardContent(
               header: [Text("Kamu sedang menghadiri")],
               title: "Pemateri Seminar Teknologi Informasi",
@@ -64,6 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
               crumbs: ['ujicoba'],
+              onPressed: () => {Navigator.pushNamed(context, "/detail_tugas")},
             ),
             CustomCardContent(
               header: [Text("Kamu akan menghadiri acara ini")],
@@ -88,6 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
               crumbs: ['pengawas', 'ujian', 'online'],
+              onPressed: () => {Navigator.pushNamed(context, "/detail_tugas")},
             ),
             CustomCardContent(
               header: [Text("Kamu akan menghadiri acara ini")],
@@ -112,6 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
               crumbs: ['dekorasi'],
+              onPressed: () => {Navigator.pushNamed(context, "/detail_tugas")},
             ),
             const Text(
               "Belum ada penawaran baru",
@@ -121,111 +102,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   fontSize: 20,
                   color: ColorNeutral.gray),
             ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ChoiceChip(
-                      label: Text('Tawaran'),
-                      selected: selectedIndex == 0,
-                      onSelected: (bool selected) {
-                        setState(() {
-                          selectedIndex = 0;
-                        });
-                      },
-                      selectedColor: Colors.white,
-                      backgroundColor: Colors.black,
-                      labelStyle: TextStyle(
-                        color: selectedIndex == 0 ? Colors.black : Colors.white,
-                      ),
-                    ),
-                    ChoiceChip(
-                      label: Text('Ditugaskan'),
-                      selected: selectedIndex == 1,
-                      onSelected: (bool selected) {
-                        setState(() {
-                          selectedIndex = 1;
-                        });
-                      },
-                      selectedColor: Colors.white,
-                      backgroundColor: Colors.black,
-                      labelStyle: TextStyle(
-                        color: selectedIndex == 1 ? Colors.black : Colors.white,
-                      ),
-                    ),
-                    ChoiceChip(
-                      label: Text('Histori'),
-                      selected: selectedIndex == 2,
-                      onSelected: (bool selected) {
-                        setState(() {
-                          selectedIndex = 2;
-                        });
-                      },
-                      selectedColor: Colors.white,
-                      backgroundColor: Colors.black,
-                      labelStyle: TextStyle(
-                        color: selectedIndex == 2 ? Colors.black : Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          // Bottom Navigation Bar section
-          Container(
-            height: 60,
-            width: double.infinity, // Expand to full width of the screen
-            child: Center(
-              child: Container(
-                width: 300, // Fixed width for the bottom navigation bar
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.circular(25), // Rounded edges
-                ),
-                child: BottomNavigationBar(
-                  backgroundColor: Colors.transparent,
-                  items: [
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.calendar_today, color: Colors.grey[600]),
-                      label: '',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.home, color: Colors.grey[600]),
-                      label: '',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.apps, color: Colors.white),
-                      label: '',
-                    ),
-                  ],
-                  currentIndex: selectedIndex,
-                  selectedItemColor: Colors.white,
-                  unselectedItemColor: Colors.grey[600],
-                  onTap: (index) {
-                    setState(() {
-                      selectedIndex = index; // Handle bottom navigation tap
-                    });
-                  },
-                ),
-              ),
-            ),
-          ),
-        ],
+            SizedBox(
+              height: 200,
+            )
+          ],
+        ),
       ),
     );
   }
@@ -249,12 +130,6 @@ class DaftarTugasHistori extends StatelessWidget {
         child: Column(
           children: [
             HomeAppBar(),
-            CustomBigButton(
-              buttonLabel: "Ke Detail tugas",
-              buttonColor: ColorNeutral.black,
-              onPressed: () => {Navigator.pushNamed(context, "/detail_tugas")},
-              otherWidget: [],
-            ),
             CustomCardContent(
               header: [Text("Kamu telah menghadiri acara ini")],
               title: "Seminar di Auper",
@@ -278,6 +153,7 @@ class DaftarTugasHistori extends StatelessWidget {
                 ),
               ],
               crumbs: ['pengawas', 'ujian', 'online'],
+              onPressed: () => {Navigator.pushNamed(context, "/detail_tugas")},
             ),
             CustomCardContent(
               header: [Text("Kamu telah menghadiri acara ini")],
@@ -288,7 +164,7 @@ class DaftarTugasHistori extends StatelessWidget {
                   colorBackground: ColorNeutral.black,
                 )
               ],
-              colorBackground: ColorPrimary.blue,
+              colorBackground: ColorPrimary.orange,
               descIcon: [
                 CustomIconButton(
                   "assets/icon/calendar.svg",
@@ -302,6 +178,7 @@ class DaftarTugasHistori extends StatelessWidget {
                 ),
               ],
               crumbs: ['juri'],
+              onPressed: () => {Navigator.pushNamed(context, "/detail_tugas")},
             ),
             const Text(
               "Hanya itu yang kami temukan",
