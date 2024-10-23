@@ -1,3 +1,4 @@
+import 'package:aplikasi_manajemen_sdm/config/const.dart';
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
 import 'package:aplikasi_manajemen_sdm/view/tugas/detail_tugas_widgets.dart';
@@ -11,6 +12,9 @@ class DetailTugas extends StatefulWidget {
 }
 
 class _DetailTugasState extends State<DetailTugas> {
+  bool histori = true;
+  bool kehadiran = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,11 +28,15 @@ class _DetailTugasState extends State<DetailTugas> {
           padding: const EdgeInsets.only(top: 61),
           child: Column(
             children: [
-              CustomBigButton(
-                buttonLabel: "Ke Livechat",
-                buttonColor: ColorNeutral.black,
-                onPressed: () => {Navigator.pushNamed(context, "/livechat")},
-                otherWidget: [],
+              Align(
+                alignment:
+                    Alignment.centerLeft, // Meletakkan button di sisi kiri
+                child: CustomIconButton(
+                  Icons.chevron_left_rounded,
+                  colorBackground: ColorNeutral.white,
+                  size: IconSize.medium,
+                  onPressed: () => Navigator.pop(context),
+                ),
               ),
 
               const SizedBox(height: 20), // Spacer untuk memberikan jarak
@@ -68,11 +76,17 @@ class _DetailTugasState extends State<DetailTugas> {
                       "Kontribusi Anda akan dihitung dalam bentuk poin kredibilitas pada sistem kami, "
                       "yang nantinya juga akan dimanfaatkan untuk ke depannya sebagai sistem referensi."),
 
-              const SizedBox(height: 10),
-              LiveCard(),
+              if (!histori) SizedBox(height: 10),
+              if (!histori) LiveCard(),
 
-              const SizedBox(height: 10),
-              BuktiButton(),
+              if (histori) SizedBox(height: 10),
+              if (histori) DetailCard(),
+
+             if (!kehadiran) const SizedBox(height: 10),
+             if (!kehadiran) BuktiButton(),
+
+              if (kehadiran) const SizedBox(height: 10),
+              if (kehadiran) BuktiHadirButton(),
 
               const SizedBox(height: 10),
               DosenCard(),
