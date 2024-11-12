@@ -1,35 +1,41 @@
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/config/const.dart';
+import 'package:aplikasi_manajemen_sdm/services/home/home_model.dart';
+import 'package:aplikasi_manajemen_sdm/services/user/user_model.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class HomeAppBar extends StatefulWidget {
-  const HomeAppBar({super.key});
+  final UserData? userdat;
+
+  const HomeAppBar({super.key, this.userdat});
 
   @override
   State<HomeAppBar> createState() => _HomeAppBarState();
 }
 
 class _HomeAppBarState extends State<HomeAppBar> {
-  final LayerLink layerlink = LayerLink();
-  OverlayEntry? entry;
+  OverlayEntry? _overlayEntry;
+  final _layerLink = LayerLink();
 
-  void showOverlay() {
-    final OverlayState overlay = Overlay.of(context);
-    final RenderBox renderBox = context.findRenderObject() as RenderBox;
-    final Offset offset = renderBox.localToGlobal(Offset.zero);
+  void _showOverlay(BuildContext context) {
+    final overlay = Overlay.of(context);
+    final renderBox = context.findRenderObject() as RenderBox;
+    final offset = renderBox.localToGlobal(Offset.zero);
 
-    entry = OverlayEntry(
+    _overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
         right: offset.dx + 90,
         top: offset.dy + 20,
         child: CompositedTransformFollower(
-            link: layerlink,
-            showWhenUnlinked: false,
-            offset: Offset(-offset.dx - 270, 30),
-            child: Stack(children: [
-              NotificationWidgetOverlay(),
+          link: _layerLink,
+          showWhenUnlinked: false,
+          offset: const Offset(-270, 30),
+          child: Stack(
+            children: [
+              const NotificationWidgetOverlay(),
               Positioned(
                 right: 10,
                 top: 10,
@@ -37,45 +43,50 @@ class _HomeAppBarState extends State<HomeAppBar> {
                   Icons.cancel,
                   colorBackground: ColorNeutral.background,
                   iconColorCustom: ColorNeutral.black,
-                  onPressed: () => entry?.remove(),
+                  onPressed: _hideOverlay,
                 ),
               ),
-            ])),
+            ],
+          ),
+        ),
       ),
     );
 
-    overlay.insert(entry!);
+    overlay.insert(_overlayEntry!);
+  }
+
+  void _hideOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
   }
 
   @override
   Widget build(BuildContext context) {
+    print(widget.userdat?.profileImage);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         CompositedTransformTarget(
-          link: layerlink,
+          link: _layerLink,
           child: CustomIconButton(
             "assets/icon/notification.svg",
             colorBackground: ColorNeutral.white,
-            onPressed: () => {
-              WidgetsBinding.instance.addPostFrameCallback((_) => showOverlay())
+            onPressed: () {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                _showOverlay(context);
+              });
             },
             size: IconSize.medium,
           ),
         ),
-        SizedBox(
-          width: 16,
-        ),
+        const SizedBox(width: 16),
         ProfileIcon(
-          "assets/icon/profile.png",
-          onPressed: () => {
-            Navigator.pushNamed(
-              context,
-              "/profile",
-            )
+          widget.userdat?.profileImage ?? 'assets/images/default_profile.png',
+          onPressed: () {
+            Navigator.pushNamed(context, "/profile");
           },
-        )
+        ),
       ],
     );
   }
@@ -253,8 +264,8 @@ class Navbar extends StatelessWidget {
                     return ScaleTransition(scale: animation, child: child);
                   },
                   child: CustomIconButton(
-                    key: ValueKey(
-                        state == NavbarState.task_1), // Unique Key for state
+                    key: ValueKey(state == NavbarState.task_1 ||
+                        state == NavbarState.task_2), // Unique Key for state
                     "assets/icon/category-bold.svg",
                     onPressed: () => {
                       onItemSelected(2),
@@ -262,7 +273,8 @@ class Navbar extends StatelessWidget {
                     size: IconSize.large,
                     padding: EdgeInsets.zero,
                     colorBackground: ColorNeutral.black,
-                    isNotSelectable: state == NavbarState.task_1,
+                    isNotSelectable: state == NavbarState.task_1 ||
+                        state == NavbarState.task_2,
                   ),
                 ),
               ],
@@ -274,7 +286,7 @@ class Navbar extends StatelessWidget {
   }
 }
 
-SizedBox headline(ThemeData theme) {
+SizedBox headline(ThemeData theme, String username) {
   return SizedBox(
     width: double.maxFinite,
     child: Wrap(
@@ -282,7 +294,7 @@ SizedBox headline(ThemeData theme) {
       crossAxisAlignment: WrapCrossAlignment.start,
       children: [
         Text(
-          "Halo 👋 Ardian",
+          "Halo 👋 " + username,
           style: theme.textTheme.bodySmall!.copyWith(fontSize: 20),
         ),
         Text(
@@ -294,7 +306,7 @@ SizedBox headline(ThemeData theme) {
   );
 }
 
-CustomCardContent currentTask(ThemeData theme) {
+CustomCardContent currentTask(ThemeData theme, TugasBerlangsung? tugas) {
   return CustomCardContent(
     header: [
       Text(
@@ -302,7 +314,7 @@ CustomCardContent currentTask(ThemeData theme) {
         style: theme.textTheme.bodySmall!.copyWith(fontSize: 14),
       ),
     ],
-    title: "Pemateri Semminar Teknnologi Informasi",
+    title: tugas?.judulKegiatan,
     actionIcon: [
       CustomIconButton(
         "assets/icon/category.svg",
@@ -315,7 +327,7 @@ CustomCardContent currentTask(ThemeData theme) {
       CustomIconButton(
         "assets/icon/location.svg",
         colorBackground: Colors.transparent,
-        text: "Auditorium Lt. 8, Teknik Sipil",
+        text: tugas?.lokasi,
       )
     ],
     otherWidget: [
@@ -326,14 +338,15 @@ CustomCardContent currentTask(ThemeData theme) {
   );
 }
 
-CustomCardContent homeCard(ThemeData theme) {
+CustomCardContent homeCard(ThemeData theme, JumlahTugasBulanSekarang? data,
+    Function(int) onItemTapped) {
   return CustomCardContent(
     header: [
       CustomIconButton(
         "assets/icon/calendar.svg",
         colorBackground: Colors.transparent,
         iconColorCustom: ColorNeutral.gray,
-        text: "14 Sabtu",
+        text: DateFormat('d EEEE').format(DateTime.now()),
       ),
     ],
     colorBackground: Color(0xFF40DDB3),
@@ -347,7 +360,7 @@ CustomCardContent homeCard(ThemeData theme) {
       ),
       CustomIconButton(
         "assets/icon/calendar.svg",
-        onPressed: () => {},
+        onPressed: () => onItemTapped(0),
         colorBackground: ColorNeutral.black,
       )
     ],
@@ -357,7 +370,7 @@ CustomCardContent homeCard(ThemeData theme) {
         style: theme.textTheme.bodyMedium!.copyWith(fontSize: 16),
       ),
       Text(
-        "5 Kegiatan di Bulan September 🔥",
+        "${data!.count} Kegiatan di Bulan ${DateFormat('MMMM').format(DateTime.now())} 🔥",
         softWrap: true,
         textWidthBasis: TextWidthBasis.parent,
         style: theme.textTheme.displayMedium!.copyWith(
@@ -369,11 +382,12 @@ CustomCardContent homeCard(ThemeData theme) {
         thickness: 1,
       ),
     ],
-    crumbs: ["webinar", "juri", "pengawas"],
+    crumbs: data.kompetensiList,
   );
 }
 
-CustomCardContent statsCard(ThemeData theme) {
+CustomCardContent statsCard(
+    ThemeData theme, Statistik? data, UserData userInfo) {
   return CustomCardContent(
     header: [
       CustomIconButton(
@@ -399,7 +413,7 @@ CustomCardContent statsCard(ThemeData theme) {
           Positioned(
             left: 118,
             child: ProfileIcon(
-              "assets/icon/profile.png",
+              userInfo.profileImage,
               imageSize: 60,
             ),
           ),
@@ -408,11 +422,12 @@ CustomCardContent statsCard(ThemeData theme) {
               text: TextSpan(
                 children: [
                   TextSpan(
-                    text: "Ardian           ,kamu telah melakukan ",
+                    text:
+                        "${userInfo.nama.split(' ')[0]}             ,kamu telah melakukan ",
                     style: theme.textTheme.bodyMedium!.copyWith(fontSize: 36),
                   ),
                   TextSpan(
-                    text: "40 penugasan ",
+                    text: "${data?.totalDalamSetahun} penugasan ",
                     style: theme.textTheme.bodyMedium!
                         .copyWith(fontSize: 36, fontWeight: FontWeight.bold),
                   ),
@@ -446,7 +461,7 @@ CustomCardContent statsCard(ThemeData theme) {
         ],
       )
     ],
-    crumbs: ["🧑‍🏫 Pemateri", "⚖️ Juri", "🤖 AI"],
+    // crumbs: ["🧑‍🏫 Pemateri", "⚖️ Juri", "🤖 AI"],
   );
 }
 

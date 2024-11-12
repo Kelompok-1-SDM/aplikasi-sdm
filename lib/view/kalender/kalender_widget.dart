@@ -1,13 +1,12 @@
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
-import 'package:aplikasi_manajemen_sdm/view/livechat/livechat.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 // Custom TableCalendar class
 class CustomTableCalendar extends StatefulWidget {
-  final Map<DateTime, List<Event>> events;
+  final Map<DateTime, String> events; // DateTime mapped to event status
 
   const CustomTableCalendar({super.key, required this.events});
 
@@ -18,9 +17,10 @@ class CustomTableCalendar extends StatefulWidget {
 class _CustomTableCalendarState extends State<CustomTableCalendar>
     with SingleTickerProviderStateMixin {
   DateTime _selectedDay = DateTime.now();
-  DateTime _focusedDay = DateTime.now(); // To control focused month
-  final DateTime _currentDay = DateTime.now(); // To track the current day
-  late AnimationController _controller;bool _showButton = false;
+  DateTime _focusedDay = DateTime.now();
+  final DateTime _currentDay = DateTime.now();
+  late AnimationController _controller;
+  bool _showButton = false;
 
   @override
   void initState() {
@@ -52,14 +52,12 @@ class _CustomTableCalendarState extends State<CustomTableCalendar>
             onDaySelected: (selectedDay, focusedDay) {
               setState(() {
                 _selectedDay = selectedDay;
-                _focusedDay =
-                    focusedDay; // Update focused day to prevent month jump
+                _focusedDay = focusedDay;
               });
             },
             onPageChanged: (focusedDay) {
               setState(() {
-                _focusedDay =
-                    focusedDay; // Update focused day when changing month jasdgjasdg
+                _focusedDay = focusedDay;
                 _showButton = _focusedDay.month != _currentDay.month ||
                     _focusedDay.year != _currentDay.year;
               });
@@ -82,14 +80,12 @@ class _CustomTableCalendarState extends State<CustomTableCalendar>
               ),
               selectedDecoration: BoxDecoration(
                 border: Border.all(
-                  color:
-                      ColorNeutral.black, // Use a border color for the outline
-                  width: 2, // Define the thickness of the outline
+                  color: ColorNeutral.black,
+                  width: 2,
                 ),
-                shape: BoxShape.circle, // Keeps the rounded shape
+                shape: BoxShape.circle,
               ),
               markerDecoration: BoxDecoration(
-                color: ColorNeutral.black,
                 shape: BoxShape.circle,
               ),
               markersMaxCount: 1,
@@ -97,43 +93,48 @@ class _CustomTableCalendarState extends State<CustomTableCalendar>
               outsideDaysVisible: false,
               selectedTextStyle: TextStyle(color: ColorNeutral.black),
             ),
-            eventLoader: (day) => widget.events[day] ?? [],
+            eventLoader: (day) {
+              // Normalize the day parameter to midnight
+              DateTime normalizedDay = DateTime(day.year, day.month, day.day);
+              // Retrieve events using the normalized key
+              return widget.events.containsKey(normalizedDay)
+                  ? [widget.events[normalizedDay]!]
+                  : [];
+            },
             calendarBuilders: CalendarBuilders(
               markerBuilder: (context, date, events) {
+                // Print to debug the contents of events and check if normalization works
                 if (events.isNotEmpty) {
-                  final event = events.first as Event;
-                  return _buildEventMarker(event.type);
+                  final eventStatus = events.first as String;
+                  return _buildEventMarker(date, eventStatus);
                 }
                 return null;
               },
             ),
           ),
           SizedBox(height: 16),
-          // Footer explaining colors
           _buildFooter(),
         ],
       ),
     );
   }
 
-  // Method to build the event markers
-  Widget _buildEventMarker(String eventType) {
-    switch (eventType) {
-      case 'upcoming':
-        return _eventCircleMarker(ColorPrimary.green);
-      case 'completed':
-        return _eventCircleMarker(ColorPrimary.blue);
-      case 'missed':
-        return _eventCircleMarker(ColorPrimary.orange);
-      default:
-        return SizedBox.shrink();
+  // Build marker based on event type and date
+  Widget _buildEventMarker(DateTime eventDate, String eventType) {
+    if (eventType == 'ditugaskan' && eventDate.isBefore(_currentDay)) {
+      return _eventCircleMarker(ColorPrimary.orange); // Missed event indicator
+    } else if (eventType == 'ditugaskan') {
+      return _eventCircleMarker(ColorPrimary.green); // Upcoming event
+    } else if (eventType == 'selesai') {
+      return _eventCircleMarker(ColorPrimary.blue); // Completed event
+    } else {
+      return SizedBox.shrink();
     }
   }
 
   // Helper method to build event circle marker
   Widget _eventCircleMarker(Color color) {
     return Container(
-      // margin: const EdgeInsets.symmetric(horizontal: 1.5),
       decoration: BoxDecoration(
         color: color,
         shape: BoxShape.circle,
@@ -158,16 +159,13 @@ class _CustomTableCalendarState extends State<CustomTableCalendar>
               _buildColorIndicator(ColorPrimary.green, 'Acara yang mendatang'),
               _buildColorIndicator(
                   ColorPrimary.blue, 'Acara yang sudah dilaksanakan'),
-              _buildColorIndicator(
-                  ColorPrimary.orange, 'Acara yang tidak dihadiri'),
+              _buildColorIndicator(ColorPrimary.orange, 'Acara yang terlewat'),
             ],
           ),
           if (_showButton)
             AnimatedPositioned(
               duration: const Duration(milliseconds: 300),
-              left: _showButton
-                  ? 0
-                  : 100, // Adjust left position based on visibility
+              left: _showButton ? 0 : 100,
               child: ElevatedButton(
                 onPressed: _goToCurrentDate,
                 style: ElevatedButton.styleFrom(
@@ -210,9 +208,9 @@ class _CustomTableCalendarState extends State<CustomTableCalendar>
   // Method to navigate to the current date
   void _goToCurrentDate() {
     setState(() {
-      _focusedDay = _currentDay; // Set focused day to current day
-      _selectedDay = _currentDay; // Update selected day
-      _showButton = false; // Hide button after navigating to current date
+      _focusedDay = _currentDay;
+      _selectedDay = _currentDay;
+      _showButton = false;
     });
   }
 }

@@ -19,14 +19,7 @@ class AppRoutes {
       case '/profile':
         return _materialRoute(ProfilePage());
 
-      case '/kalender':
-        return _materialRoute(Kalender());
-
-      case '/daftar_tugas':
-        return _materialRoute(DaftarTugasDitugaskan());
-
       case '/detail_tugas':
-
         /// Butuh parameter tugas
         return _materialRoute(DetailTugas());
 
