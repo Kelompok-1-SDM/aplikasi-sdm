@@ -1,7 +1,12 @@
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
+import 'package:aplikasi_manajemen_sdm/services/auth/auth_model.dart';
+import 'package:aplikasi_manajemen_sdm/services/auth/auth_service.dart';
+import 'package:aplikasi_manajemen_sdm/services/dio_client.dart';
+import 'package:aplikasi_manajemen_sdm/services/shared_prefrences.dart';
 import 'package:aplikasi_manajemen_sdm/view/auth/auth_widgets.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -13,15 +18,68 @@ class AuthPage extends StatefulWidget {
 class _AuthPageState extends State<AuthPage> {
   final TextEditingController _nipController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _forgotNipController = TextEditingController(); // Controller for forgot NIP//memungkinkan UI untuk berubah
+  final TextEditingController _forgotNipController = TextEditingController();
+  // Controller for forgot NIP//memungkinkan UI untuk berubah
+  final AuthService _authService = AuthService(); // Instantiate AuthService
 
-  void _login() {
-    // Replace this with your actual authentication logic
-    // if (nip == 'admin' && password == 'password') {
-    // Navigate to the home page or dashboard
-    Navigator.pushReplacementNamed(
-      context,
-      '/home',
+  @override
+  void initState() {
+    _checkToken();
+    super.initState();
+  }
+
+  void _checkToken() async {
+    final token = await Storage.getToken();
+
+    if (token != null) {
+      Navigator.pushReplacementNamed(context, '/home');
+    }
+  }
+
+  void _login_callback() async {
+    final nip = _nipController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (nip.isEmpty || password.isEmpty) {
+      _showErrorDialog("Validation Error", "NIP and Password cannot be empty");
+      return;
+    }
+
+    try {
+      final BaseResponse<LoginResponse> response =
+          await _authService.login(nip, password);
+
+      if (response.success) {
+        Fluttertoast.showToast(msg: "Anda berhasil login");
+        if (context.mounted) {
+          Navigator.pushReplacementNamed(context, '/home');
+        }
+      } else {
+        _showErrorDialog("Login failed", response.message ?? "Unknown error");
+      }
+    } catch (e) {
+      print("Error during login: $e");
+      _showErrorDialog("Error", "An error occurred during login: $e");
+    }
+  }
+
+  void _showErrorDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -39,9 +97,7 @@ class _AuthPageState extends State<AuthPage> {
       context,
       button: [
         CustomBigButton(
-          onPressed: () => {
-            Navigator.pop(context)
-          },
+          onPressed: () => {Navigator.pop(context)},
           padding: EdgeInsets.symmetric(
             vertical: 24,
           ),
@@ -73,9 +129,7 @@ class _AuthPageState extends State<AuthPage> {
       context,
       button: [
         CustomBigButton(
-          onPressed: () => {
-            Cekemail()
-          },
+          onPressed: () => {Cekemail()},
           padding: EdgeInsets.symmetric(
             vertical: 24,
           ),
@@ -115,14 +169,13 @@ class _AuthPageState extends State<AuthPage> {
       ),
     );
   }
-void Cekemail() {
+
+  void Cekemail() {
     callBottomSheet(
       context,
       button: [
         CustomBigButton(
-          onPressed: () => {
-            Navigator.pop(context)
-          },
+          onPressed: () => {Navigator.pop(context)},
           padding: EdgeInsets.symmetric(
             vertical: 24,
           ),
@@ -144,8 +197,7 @@ void Cekemail() {
               fontSize: 20,
             ),
       ),
-      description:
-          "Cek email anda untuk mengubah password anda",
+      description: "Cek email anda untuk mengubah password anda",
     );
   }
 
@@ -170,10 +222,11 @@ void Cekemail() {
                 SizedBox(
                   height: 30,
                 ),
-                authCard(
-                    Theme.of(context), _nipController, _passwordController, lupapassword),
+                authCard(Theme.of(context), _nipController, _passwordController,
+                    lupapassword),
                 SizedBox(height: 10),
-                loginButton(Theme.of(context), _login, _belumPunyaAkun),
+                loginButton(
+                    Theme.of(context), _login_callback, _belumPunyaAkun),
               ],
             ),
           ),

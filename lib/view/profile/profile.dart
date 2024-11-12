@@ -1,5 +1,6 @@
 import 'package:aplikasi_manajemen_sdm/config/const.dart';
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
+import 'package:aplikasi_manajemen_sdm/services/shared_prefrences.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
 import 'package:aplikasi_manajemen_sdm/view/profile/profile_widgets.dart';
 import 'package:flutter/material.dart';
@@ -190,8 +191,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   right: 6,
                 ),
                 wasIconOnRight: true,
-                onPressed: () => {
-                  Navigator.pushNamed(context, "/auth"),
+                onPressed: () async => {
+                  await Storage.clearToken(),
+                  Navigator.pushNamedAndRemoveUntil(context, '/auth', (route) => false)
                 },
                 otherWidget: [],
                 icon: CustomIconButton(

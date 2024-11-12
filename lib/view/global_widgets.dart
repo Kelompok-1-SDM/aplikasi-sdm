@@ -6,6 +6,7 @@ import 'package:figma_squircle/figma_squircle.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
 
 class ProfileIcon extends StatelessWidget {
   final String assetLocation;
@@ -17,13 +18,15 @@ class ProfileIcon extends StatelessWidget {
     this.assetLocation, {
     super.key,
     this.imageSize = 50,
-    this.borderColor =
-        ColorPrimary.green, // Replace with your ColorPrimary.green
+    this.borderColor = ColorPrimary.green, // Replace with your ColorPrimary.green
     this.onPressed,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Check if assetLocation is a valid URL or asset path
+    bool isUrl = Uri.tryParse(assetLocation)?.hasAbsolutePath ?? false;
+
     return InkWell(
       borderRadius: BorderRadius.circular(imageSize / 2),
       onTap: onPressed,
@@ -37,12 +40,27 @@ class ProfileIcon extends StatelessWidget {
         ),
         child: ClipOval(
           clipBehavior: Clip.hardEdge,
-          child: Image.asset(
-            assetLocation,
-            fit: BoxFit.cover, // Ensures the image fits within the circle
-            width: imageSize,
-            height: imageSize,
-          ),
+          child: isUrl
+              ? Image.network(
+                  assetLocation,
+                  fit: BoxFit.cover, // Ensures the image fits within the circle
+                  width: imageSize,
+                  height: imageSize,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.asset(
+                      'assets/images/default_profile.png', // Default image in case of error
+                      fit: BoxFit.cover,
+                      width: imageSize,
+                      height: imageSize,
+                    );
+                  },
+                )
+              : Image.asset(
+                  assetLocation,
+                  fit: BoxFit.cover, // Ensures the image fits within the circle
+                  width: imageSize,
+                  height: imageSize,
+                ),
         ),
       ),
     );
@@ -533,6 +551,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         TextField(
           obscureText: widget.isPassword ? _obscureText : false,
           keyboardType: widget.inputType,
+          controller: widget.controller,
           decoration: InputDecoration(
             contentPadding: EdgeInsets.symmetric(
               horizontal: 20,
@@ -936,11 +955,12 @@ class StatisticChart extends StatelessWidget {
 CustomCardContent tawaranTugasCard(
   ThemeData theme, {
   required String title,
-  required String tanggal,
+  required DateTime tanggal,
   required String lokasi,
   required List<String> tags,
   required Color backgroundColor,
 }) {
+  String formattedDate = DateFormat.yMMMd().add_jm().format(tanggal); // format to local string
   return CustomCardContent(
     header: [
       Text(
@@ -963,7 +983,7 @@ CustomCardContent tawaranTugasCard(
         "assets/icon/calendar.svg",
         colorBackground: Colors.transparent,
         iconColorCustom: ColorNeutral.gray,
-        text: tanggal,
+        text: formattedDate,
       ),
       CustomIconButton(
         "assets/icon/location.svg",

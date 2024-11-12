@@ -6,3 +6,5 @@ abstract class IconSize {
   static const double large = 40;
   // static const double superLarge = 50;
 }
+
+const String urlBase = "https://restapi-sdm.lleans.dev";
