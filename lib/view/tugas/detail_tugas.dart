@@ -2,9 +2,15 @@ import 'package:aplikasi_manajemen_sdm/config/const.dart';
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
 import 'package:aplikasi_manajemen_sdm/view/tugas/detail_tugas_widgets.dart';
+import 'package:aplikasi_manajemen_sdm/services/kegiatan/kegiatan_model.dart';
+import 'package:aplikasi_manajemen_sdm/services/kegiatan/kegiatan_service.dart';
+import 'package:aplikasi_manajemen_sdm/services/dio_client.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
 
 class DetailTugas extends StatefulWidget {
+  
   const DetailTugas({super.key});
 
   @override
@@ -12,91 +18,145 @@ class DetailTugas extends StatefulWidget {
 }
 
 class _DetailTugasState extends State<DetailTugas> {
-  bool histori = true;
+  bool isLoading = true;
+  ListKegiatan? kegiatanDat;
+  bool histori = false;
   bool kehadiran = true;
+  final KegiatanService _kegiatanService = KegiatanService();
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _refreshIndicatorKey.currentState?.show();
+      fetchData();
+    });
+  }
+
+  Future<void> fetchData() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final BaseResponse<ListKegiatan> response = await _kegiatanService.fetchListKegiatanByUser(type: 'ditugaskan');
+
+      if (response.success && response.data != null) {
+        if (mounted) {
+          setState(() {
+            kegiatanDat = response.data;
+          });
+        }
+      } else {
+        _showErrorDialog(context, "Fetch Failed", response.message);
+      }
+    } catch (e) {
+      if (mounted) {
+        _showErrorDialog(context, "Error", "An error occurred while fetching data: $e");
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _refreshData() async {
+    await fetchData();
+  }
+
+  void _showErrorDialog(BuildContext dialogContext, String title, String message) {
+    showDialog(
+      context: dialogContext,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: RefreshIndicator(
-        color: ColorNeutral.black,
-        onRefresh: () async {
-          // Do something when refreshed
-          return Future<void>.delayed(const Duration(seconds: 3));
-        },
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.only(top: 61),
-          child: Column(
-            children: [
-              Align(
-                alignment:
-                    Alignment.centerLeft, // Meletakkan button di sisi kiri
-                child: CustomIconButton(
-                  Icons.chevron_left_rounded,
-                  colorBackground: ColorNeutral.white,
-                  size: IconSize.medium,
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ),
-
-              const SizedBox(height: 20), // Spacer untuk memberikan jarak
+    return RefreshIndicator(
+      key: _refreshIndicatorKey,
+      color: ColorNeutral.black,
+      onRefresh: _refreshData,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.only(top: 61, left: 22, right: 22),
+        child: Column(
+          children: [
+            const SizedBox(height: 24),
+            if (isLoading)
+              CircularProgressIndicator()
+            else if (kegiatanDat != null && kegiatanDat!.kegiatan.isNotEmpty)
               CustomCardContent(
-                header: [Text("Kamu sedang menghadiri ")],
-                title: "Pemateri Seminar Teknologi Informasi",
-                actionIcon: [],
-                colorBackground: ColorPrimary.orange,
+                header: [Text("Kamu sedang menghadiri")],
+                title: kegiatanDat!.kegiatan[0].judulKegiatan,  // Menampilkan kegiatan pertama di database
+                actionIcon: [
+                  CustomIconButton(
+                    "assets/icon/arrow-45.svg",
+                    colorBackground: ColorNeutral.black,
+                  ),
+                ],
+                colorBackground: ColorRandom.getRandomColor(),
                 descIcon: [
                   CustomIconButton(
                     "assets/icon/calendar.svg",
                     colorBackground: Colors.transparent,
-                    text: "12 Januari, 08:00-12:00",
+                    text: DateFormat.yMMMd().add_jm().format(kegiatanDat!.kegiatan[0].tanggal),
                   ),
                   CustomIconButton(
                     "assets/icon/location.svg",
                     colorBackground: Colors.transparent,
-                    text: "Auditorium Lt. 8, Teknik Sipil",
+                    text: kegiatanDat!.kegiatan[0].lokasi,
                   ),
                 ],
-                crumbs: ["Detail Tugas"],
+                crumbs: kegiatanDat!.kegiatan[0].kompetensi.take(5).toList(),
+                onPressed: () => Navigator.pushNamed(context, "/detail_tugas"),
               ),
-
-              const SizedBox(height: 10), // Spacer untuk memberikan jarak
-              CustomCardContent(
-                  header: [
-                    Text(
-                      "Brief penugasan",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold), // Menebalkan teks
-                    )
-                  ],
-                  actionIcon: [],
-                  colorBackground: ColorNeutral.white,
-                  description:
-                      "Yth. Bapak/Ibu dosen. Kami mengundang Anda untuk menghadiri penugasan ini sebagai kontribusi Anda selama bekerja di Polinema.\n\n"
-                      "Kontribusi Anda akan dihitung dalam bentuk poin kredibilitas pada sistem kami, "
-                      "yang nantinya juga akan dimanfaatkan untuk ke depannya sebagai sistem referensi."),
-
-              if (!histori) SizedBox(height: 10),
-              if (!histori) LiveCard(),
-
-              if (histori) SizedBox(height: 10),
-              if (histori) DetailCard(),
-
-             if (!kehadiran) const SizedBox(height: 10),
-             if (!kehadiran) BuktiButton(),
-
-              if (kehadiran) const SizedBox(height: 10),
-              if (kehadiran) BuktiHadirButton(),
-
-              const SizedBox(height: 10),
-              DosenCard(),
-
-              const SizedBox(height: 10),
-              FileCard(),
-            ],
-          ),
+            const SizedBox(height: 10),
+            CustomCardContent(
+              header: [
+                Text(
+                  "Brief penugasan",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                )
+              ],
+              actionIcon: [],
+              colorBackground: Colors.white,
+              description: kegiatanDat!.kegiatan[0].deskripsi,
+            ),
+            if (!histori) SizedBox(height: 10),
+            if (!histori) LiveCard(),
+            const SizedBox(height: 10),
+            AgendaCard(),
+            if (histori) SizedBox(height: 10),
+            if (histori) DetailCard(),
+            if (!kehadiran) const SizedBox(height: 10),
+            if (!kehadiran) BuktiButton(),
+            if (kehadiran) const SizedBox(height: 10),
+            if (kehadiran) BuktiHadirButton(),
+            const SizedBox(height: 10),
+            DosenCard(),
+            const SizedBox(height: 10),
+            FileCard(),
+          ],
         ),
       ),
     );
   }
 }
+
