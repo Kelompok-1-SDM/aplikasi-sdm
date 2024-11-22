@@ -54,4 +54,6 @@ class KegiatanService {
       );
     }
   }
+
+  fetchDetailKegiatan(int tugasId) {}
 }
