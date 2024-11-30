@@ -6,14 +6,16 @@ class KegiatanService {
   final Dio dio = DioClient.getInstance();
 
   Future<BaseResponse<ListKegiatan>> fetchListKegiatanByUser(
-      {String type = ""}) async {
+      {String type = "", String tanggal = ""}) async {
     try {
       // Making the GET request
       final response = await dio.get(
         '/api/kegiatan/',
         queryParameters: {
           'uid_user': '',
-          type.isNotEmpty ? 'type' : type: null
+          if (type.isNotEmpty) 'type': type, // Conditionally include 'type'
+          if (tanggal.isNotEmpty)
+            'tanggal': tanggal // Conditionally include 'tanggal'
         },
       );
 

@@ -4,11 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import '../../services/kegiatan/kegiatan_model.dart';
+
 // Custom TableCalendar class
 class CustomTableCalendar extends StatefulWidget {
-  final Map<DateTime, String> events; // DateTime mapped to event status
+  final Map<DateTime, String> events;
+  final Function(DateTime) onDateSelected; // Added callback
 
-  const CustomTableCalendar({super.key, required this.events});
+  const CustomTableCalendar({
+    super.key,
+    required this.events,
+    required this.onDateSelected, // Required callback parameter
+  });
 
   @override
   _CustomTableCalendarState createState() => _CustomTableCalendarState();
@@ -54,6 +61,8 @@ class _CustomTableCalendarState extends State<CustomTableCalendar>
                 _selectedDay = selectedDay;
                 _focusedDay = focusedDay;
               });
+              // Call the callback to notify parent state
+              widget.onDateSelected(selectedDay);
             },
             onPageChanged: (focusedDay) {
               setState(() {
@@ -326,7 +335,7 @@ CustomCardContent currentTaskKalender(ThemeData theme) {
 }
 
 // Seminar card widget
-CustomCardContent seminarCard(ThemeData theme) {
+CustomCardContent seminarCard(ThemeData theme, Kegiatan apa) {
   return CustomCardContent(
     colorBackground: ColorPrimary.orange,
     header: [
@@ -345,7 +354,7 @@ CustomCardContent seminarCard(ThemeData theme) {
       ),
       const SizedBox(height: 8),
       Text(
-        "Pemateri Seminar Teknologi Informasi",
+        apa.judulKegiatan!,
         style: theme.textTheme.bodyMedium!.copyWith(
           fontSize: 24,
           fontWeight: FontWeight.bold,
@@ -357,18 +366,18 @@ CustomCardContent seminarCard(ThemeData theme) {
           Icon(Icons.location_on, color: ColorNeutral.black),
           const SizedBox(width: 4),
           Text(
-            "Auditorium Lt. 8, Teknik Sipil",
+            apa.lokasi!,
             style: theme.textTheme.bodyMedium,
           ),
         ],
       ),
       const SizedBox(height: 16),
-      ImageLoader(
-        author: "Andika",
-        imageUrl: "assets/icon/event.jpg",
-        caption: 'Masih sepi nihh',
-        authorUrl: 'assets/icon/profile-1.png',
-      ),
+      // ImageLoader(
+      //   author: "Andika",
+      //   imageUrl: "assets/icon/event.jpg",
+      //   caption: 'Masih sepi nihh',
+      //   authorUrl: 'assets/icon/profile-1.png',
+      // ),
       const SizedBox(height: 16),
       // Add the LiveChatButton here
       LiveChatButton(

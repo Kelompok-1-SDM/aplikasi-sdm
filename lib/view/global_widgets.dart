@@ -482,7 +482,7 @@ class LiveChatButton extends StatelessWidget {
                 fontSize: 20),
           )
       ],
-      onPressed: () => {},
+      onPressed: () => {Navigator.pushNamed(context, '/livechat')},
       icon: CustomIconButton(
         "assets/icon/chat.svg",
         size: IconSize.large,
