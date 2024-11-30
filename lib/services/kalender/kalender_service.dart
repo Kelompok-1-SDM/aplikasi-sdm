@@ -1,15 +1,11 @@
-import 'package:aplikasi_manajemen_sdm/services/auth/auth_model.dart';
 import 'package:aplikasi_manajemen_sdm/services/dio_client.dart';
 import 'package:aplikasi_manajemen_sdm/services/kalender/kalender_model.dart';
-import 'package:aplikasi_manajemen_sdm/services/kegiatan/kegiatan_model.dart';
-import 'package:aplikasi_manajemen_sdm/services/shared_prefrences.dart';
-import 'package:aplikasi_manajemen_sdm/services/user/user_model.dart';
 import 'package:dio/dio.dart';
 
 class KalenderService {
   final Dio dio = DioClient.getInstance();
 
-  Future<BaseResponse<KalenderResponse>> kegiatan(String id_kegiatan) async {
+  Future<BaseResponse<KalenderResponse>> kegiatan(String idKegiatan) async {
     try {
       // Making the POST request
       final response = await dio.get(

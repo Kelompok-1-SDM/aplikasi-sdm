@@ -1,29 +1,27 @@
-import 'package:aplikasi_manajemen_sdm/config/const.dart';
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
-import 'package:aplikasi_manajemen_sdm/view/tugas/detail_tugas_widgets.dart';
+import 'package:aplikasi_manajemen_sdm/view/kegiatan/detail_kegiatan_widgets.dart';
 import 'package:aplikasi_manajemen_sdm/services/kegiatan/kegiatan_model.dart';
 import 'package:aplikasi_manajemen_sdm/services/kegiatan/kegiatan_service.dart';
 import 'package:aplikasi_manajemen_sdm/services/dio_client.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-
-class DetailTugas extends StatefulWidget {
-  
-  const DetailTugas({super.key});
+class DetailKegiatan extends StatefulWidget {
+  const DetailKegiatan({super.key});
 
   @override
-  State<DetailTugas> createState() => _DetailTugasState();
+  State<DetailKegiatan> createState() => _DetailKegiatanState();
 }
 
-class _DetailTugasState extends State<DetailTugas> {
+class _DetailKegiatanState extends State<DetailKegiatan> {
   bool isLoading = true;
   ListKegiatan? kegiatanDat;
   bool histori = false;
   bool kehadiran = true;
   final KegiatanService _kegiatanService = KegiatanService();
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
@@ -40,7 +38,8 @@ class _DetailTugasState extends State<DetailTugas> {
     });
 
     try {
-      final BaseResponse<ListKegiatan> response = await _kegiatanService.fetchListKegiatanByUser(type: 'ditugaskan');
+      final BaseResponse<ListKegiatan> response =
+          await _kegiatanService.fetchListKegiatanByUser(type: 'ditugaskan');
 
       if (response.success && response.data != null) {
         if (mounted) {
@@ -49,11 +48,11 @@ class _DetailTugasState extends State<DetailTugas> {
           });
         }
       } else {
-        _showErrorDialog(context, "Fetch Failed", response.message);
+        _showErrorDialog("Fetch Failed", response.message);
       }
     } catch (e) {
       if (mounted) {
-        _showErrorDialog(context, "Error", "An error occurred while fetching data: $e");
+        _showErrorDialog("Error", "An error occurred while fetching data: $e");
       }
     } finally {
       if (mounted) {
@@ -68,9 +67,9 @@ class _DetailTugasState extends State<DetailTugas> {
     await fetchData();
   }
 
-  void _showErrorDialog(BuildContext dialogContext, String title, String message) {
+  void _showErrorDialog(String title, String message) {
     showDialog(
-      context: dialogContext,
+      context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(title),
@@ -104,7 +103,8 @@ class _DetailTugasState extends State<DetailTugas> {
             else if (kegiatanDat != null && kegiatanDat!.kegiatan.isNotEmpty)
               CustomCardContent(
                 header: [Text("Kamu sedang menghadiri")],
-                title: kegiatanDat!.kegiatan[0].judulKegiatan,  // Menampilkan kegiatan pertama di database
+                title: kegiatanDat!.kegiatan[0]
+                    .judulKegiatan, // Menampilkan kegiatan pertama di database
                 actionIcon: [
                   CustomIconButton(
                     "assets/icon/arrow-45.svg",
@@ -116,7 +116,9 @@ class _DetailTugasState extends State<DetailTugas> {
                   CustomIconButton(
                     "assets/icon/calendar.svg",
                     colorBackground: Colors.transparent,
-                    text: DateFormat.yMMMd().add_jm().format(kegiatanDat!.kegiatan[0].tanggal),
+                    text: DateFormat.yMMMd()
+                        .add_jm()
+                        .format(kegiatanDat!.kegiatan[0].tanggal),
                   ),
                   CustomIconButton(
                     "assets/icon/location.svg",
@@ -125,7 +127,7 @@ class _DetailTugasState extends State<DetailTugas> {
                   ),
                 ],
                 crumbs: kegiatanDat!.kegiatan[0].kompetensi.take(5).toList(),
-                onPressed: () => Navigator.pushNamed(context, "/detail_tugas"),
+                onPressed: () => Navigator.pushNamed(context, "/detail_kegiatan"),
               ),
             const SizedBox(height: 10),
             CustomCardContent(
@@ -159,4 +161,3 @@ class _DetailTugasState extends State<DetailTugas> {
     );
   }
 }
-

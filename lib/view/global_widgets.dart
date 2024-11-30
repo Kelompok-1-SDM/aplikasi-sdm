@@ -964,7 +964,7 @@ CustomCardContent tawaranTugasCard(
   return CustomCardContent(
     header: [
       Text(
-        "Kamu mendapat tawaran penugasan",
+        "Kamu ditugaskan",
         style: theme.textTheme.bodySmall!.copyWith(fontSize: 14),
       ),
     ],

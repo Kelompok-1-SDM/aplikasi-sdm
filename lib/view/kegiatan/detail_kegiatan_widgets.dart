@@ -1,10 +1,7 @@
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/config/const.dart';
-import 'package:aplikasi_manajemen_sdm/services/dio_client.dart';
 import 'package:aplikasi_manajemen_sdm/services/kegiatan/kegiatan_model.dart';
-import 'package:aplikasi_manajemen_sdm/services/kegiatan/kegiatan_service.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
-import 'package:aplikasi_manajemen_sdm/view/tugas/detail_tugas.dart';
 import 'package:flutter/material.dart';
 
 ListKegiatan? kegiatanDat;

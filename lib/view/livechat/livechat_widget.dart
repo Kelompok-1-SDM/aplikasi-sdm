@@ -1,6 +1,4 @@
-import 'package:aplikasi_manajemen_sdm/config/const.dart';
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
-import 'package:aplikasi_manajemen_sdm/main.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
 import 'package:flutter/material.dart';
 
@@ -370,10 +368,10 @@ class FloatingChatInput extends StatefulWidget {
   final Function() onFileUpload;
 
   const FloatingChatInput({
-    Key? key,
+    super.key,
     required this.onSendMessage,
     required this.onFileUpload,
-  }) : super(key: key);
+  });
 
   @override
   _FloatingChatInputState createState() => _FloatingChatInputState();

@@ -8,15 +8,16 @@ import 'package:aplikasi_manajemen_sdm/view/home/homepage_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class DaftarTugasDitugaskan extends StatefulWidget {
+class DaftarKegiatanDitugaskan extends StatefulWidget {
   final UserData? userData;
-  const DaftarTugasDitugaskan({super.key, this.userData});
+  const DaftarKegiatanDitugaskan({super.key, this.userData});
 
   @override
-  State<DaftarTugasDitugaskan> createState() => _DaftarTugasDitugaskanState();
+  State<DaftarKegiatanDitugaskan> createState() =>
+      _DaftarKegiatanDitugaskanState();
 }
 
-class _DaftarTugasDitugaskanState extends State<DaftarTugasDitugaskan> {
+class _DaftarKegiatanDitugaskanState extends State<DaftarKegiatanDitugaskan> {
   ListKegiatan? kegiatanDat;
   bool isLoading = true;
   final KegiatanService _kegiatanService = KegiatanService();
@@ -141,7 +142,9 @@ class _DaftarTugasDitugaskanState extends State<DaftarTugasDitugaskan> {
                         text: kegiatanDat!.kegiatan[index].lokasi,
                       ),
                     ],
-                    crumbs: kegiatanDat!.kegiatan[index].kompetensi.take(5).toList(),
+                    crumbs: kegiatanDat!.kegiatan[index].kompetensi
+                        .take(5)
+                        .toList(),
                     onPressed: () =>
                         {Navigator.pushNamed(context, "/detail_tugas")},
                   ),
@@ -301,7 +304,9 @@ class _DaftarTugasHistoriState extends State<DaftarTugasHistori> {
                         text: kegiatanDat!.kegiatan[index].lokasi,
                       ),
                     ],
-                    crumbs: kegiatanDat!.kegiatan[index].kompetensi.take(5).toList(),
+                    crumbs: kegiatanDat!.kegiatan[index].kompetensi
+                        .take(5)
+                        .toList(),
                     onPressed: () =>
                         {Navigator.pushNamed(context, "/detail_tugas")},
                   ),

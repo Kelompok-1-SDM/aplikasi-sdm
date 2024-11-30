@@ -294,7 +294,7 @@ SizedBox headline(ThemeData theme, String username) {
       crossAxisAlignment: WrapCrossAlignment.start,
       children: [
         Text(
-          "Halo 👋 " + username,
+          "Halo 👋 $username",
           style: theme.textTheme.bodySmall!.copyWith(fontSize: 20),
         ),
         Text(

@@ -17,7 +17,7 @@ class Kalender extends StatefulWidget {
 }
 
 class _KalenderState extends State<Kalender> {
-  Map<DateTime, String> _events = {};
+  final Map<DateTime, String> _events = {};
 
   ListKegiatan? kegiatanDat;
   bool isLoading = true;

@@ -219,7 +219,7 @@ class TimelineCalendar extends StatelessWidget {
   final DateTime taskStart; // Start time of the event
   final DateTime taskEnd; // End time of the event
 
-  TimelineCalendar({super.key, required this.taskStart, required this.taskEnd});
+  const TimelineCalendar({super.key, required this.taskStart, required this.taskEnd});
 
   @override
   Widget build(BuildContext context) {

@@ -9,7 +9,7 @@ import 'package:aplikasi_manajemen_sdm/services/user/user_model.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
 import 'package:aplikasi_manajemen_sdm/view/home/homepage_widgets.dart';
 import 'package:aplikasi_manajemen_sdm/view/kalender/kalender.dart';
-import 'package:aplikasi_manajemen_sdm/view/tugas/daftar_tugas.dart';
+import 'package:aplikasi_manajemen_sdm/view/kegiatan/daftar_kegiatan.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -47,7 +47,8 @@ class _HomePageState extends State<HomePage> {
             onItemTapped: _onItemTapped, // Pass navigation function
             userData: userdat!, // Pass user data to HomeScreen
           ),
-          DaftarTugasDitugaskan(key: ValueKey('tasks-1'), userData: userdat!),
+          DaftarKegiatanDitugaskan(
+              key: ValueKey('tasks-1'), userData: userdat!),
           DaftarTugasHistori(key: ValueKey('tasks-2'), userData: userdat!),
         ];
       });
@@ -245,7 +246,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               title: data!.duaTugasTerbaru[index].judulKegiatan,
                               tanggal: data!.duaTugasTerbaru[index].tanggal,
                               lokasi: data!.duaTugasTerbaru[index].lokasi,
-                              tags: data!.duaTugasTerbaru[index].kompetensi.take(5).toList(),
+                              tags: data!.duaTugasTerbaru[index].kompetensi
+                                  .take(5)
+                                  .toList(),
                               backgroundColor: ColorRandom.getRandomColor(),
                             ),
                             const SizedBox(height: 13),

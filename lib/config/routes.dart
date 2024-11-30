@@ -1,10 +1,8 @@
 import 'package:aplikasi_manajemen_sdm/view/auth/auth.dart';
 import 'package:aplikasi_manajemen_sdm/view/home/homepage.dart';
-import 'package:aplikasi_manajemen_sdm/view/kalender/kalender.dart';
 import 'package:aplikasi_manajemen_sdm/view/livechat/livechat.dart';
 import 'package:aplikasi_manajemen_sdm/view/profile/profile.dart';
-import 'package:aplikasi_manajemen_sdm/view/tugas/daftar_tugas.dart';
-import 'package:aplikasi_manajemen_sdm/view/tugas/detail_tugas.dart';
+import 'package:aplikasi_manajemen_sdm/view/kegiatan/detail_tugas.dart';
 import 'package:flutter/material.dart';
 
 class AppRoutes {
@@ -19,9 +17,10 @@ class AppRoutes {
       case '/profile':
         return _materialRoute(ProfilePage());
 
-      case '/detail_tugas':
+      case '/detail_kegiatan':
+
         /// Butuh parameter tugas
-        return _materialRoute(DetailTugas());
+        return _materialRoute(DetailKegiatan());
 
       case '/livechat':
 
