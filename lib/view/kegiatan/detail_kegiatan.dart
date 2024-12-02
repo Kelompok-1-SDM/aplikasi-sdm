@@ -8,7 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class DetailKegiatan extends StatefulWidget {
-  const DetailKegiatan({super.key});
+  const DetailKegiatan({super.key, required this.idKegiatan});
+
+  final String idKegiatan;
 
   @override
   State<DetailKegiatan> createState() => _DetailKegiatanState();
@@ -16,7 +18,7 @@ class DetailKegiatan extends StatefulWidget {
 
 class _DetailKegiatanState extends State<DetailKegiatan> {
   bool isLoading = true;
-  ListKegiatan? kegiatanDat;
+  List<KegiatanResponse>? kegiatanDat;
   bool histori = false;
   bool kehadiran = true;
   final KegiatanService _kegiatanService = KegiatanService();
@@ -38,8 +40,8 @@ class _DetailKegiatanState extends State<DetailKegiatan> {
     });
 
     try {
-      final BaseResponse<ListKegiatan> response =
-          await _kegiatanService.fetchListKegiatanByUser(type: 'ditugaskan');
+      final BaseResponse<List<KegiatanResponse>> response =
+          await _kegiatanService.fetchListKegiatanByUser(isDone: true);
 
       if (response.success && response.data != null) {
         if (mounted) {
@@ -100,11 +102,11 @@ class _DetailKegiatanState extends State<DetailKegiatan> {
             const SizedBox(height: 24),
             if (isLoading)
               CircularProgressIndicator()
-            else if (kegiatanDat != null && kegiatanDat!.kegiatan.isNotEmpty)
+            else if (kegiatanDat != null && kegiatanDat!.isNotEmpty)
               CustomCardContent(
                 header: [Text("Kamu sedang menghadiri")],
-                title: kegiatanDat!.kegiatan[0]
-                    .judulKegiatan, // Menampilkan kegiatan pertama di database
+                title: kegiatanDat![0]
+                    .judul, // Menampilkan kegiatan pertama di database
                 actionIcon: [
                   CustomIconButton(
                     "assets/icon/arrow-45.svg",
@@ -118,16 +120,21 @@ class _DetailKegiatanState extends State<DetailKegiatan> {
                     colorBackground: Colors.transparent,
                     text: DateFormat.yMMMd()
                         .add_jm()
-                        .format(kegiatanDat!.kegiatan[0].tanggal),
+                        .format(kegiatanDat![0].tanggalMulai!),
                   ),
                   CustomIconButton(
                     "assets/icon/location.svg",
                     colorBackground: Colors.transparent,
-                    text: kegiatanDat!.kegiatan[0].lokasi,
+                    text: kegiatanDat![0].lokasi,
                   ),
                 ],
-                crumbs: kegiatanDat!.kegiatan[0].kompetensi.take(5).toList(),
-                onPressed: () => Navigator.pushNamed(context, "/detail_kegiatan"),
+                crumbs: kegiatanDat![0]
+                    .kompetensi!
+                    .take(5)
+                    .map((item) => item.namaKompetensi!)
+                    .toList(),
+                onPressed: () =>
+                    Navigator.pushNamed(context, "/detail_kegiatan"),
               ),
             const SizedBox(height: 10),
             CustomCardContent(
@@ -139,7 +146,7 @@ class _DetailKegiatanState extends State<DetailKegiatan> {
               ],
               actionIcon: [],
               colorBackground: Colors.white,
-              description: kegiatanDat!.kegiatan[0].deskripsi,
+              description: kegiatanDat![0].deskripsi,
             ),
             if (!histori) SizedBox(height: 10),
             if (!histori) LiveCard(),

@@ -1,6 +1,7 @@
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/config/const.dart';
 import 'package:aplikasi_manajemen_sdm/services/home/home_model.dart';
+import 'package:aplikasi_manajemen_sdm/services/shared_prefrences.dart';
 import 'package:aplikasi_manajemen_sdm/services/user/user_model.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
 import 'package:figma_squircle/figma_squircle.dart';
@@ -19,6 +20,25 @@ class HomeAppBar extends StatefulWidget {
 class _HomeAppBarState extends State<HomeAppBar> {
   OverlayEntry? _overlayEntry;
   final _layerLink = LayerLink();
+  double statistik = 0;
+
+  @override
+  void initState() {
+    _loadStatistik();
+    super.initState();
+  }
+
+  Future<void> _loadStatistik() async {
+    final savedStatistik = await Storage.getAvg();
+    if (savedStatistik == null) {
+      // Mock data for development
+      statistik = 0;
+    } else if (mounted) {
+      setState(() {
+        statistik = savedStatistik;
+      });
+    }
+  }
 
   void _showOverlay(BuildContext context) {
     final overlay = Overlay.of(context);
@@ -62,7 +82,12 @@ class _HomeAppBarState extends State<HomeAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.userdat?.profileImage);
+    Color color = statistik! > 5
+        ? ColorPrimary.green
+        : statistik! < 5 && statistik! > 3
+            ? ColorPrimary.blue
+            : ColorPrimary.orange;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.end,
@@ -83,6 +108,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
         const SizedBox(width: 16),
         ProfileIcon(
           widget.userdat?.profileImage ?? 'assets/images/default_profile.png',
+          borderColor: color,
           onPressed: () {
             Navigator.pushNamed(context, "/profile");
           },
@@ -333,6 +359,7 @@ CustomCardContent currentTask(ThemeData theme, TugasBerlangsung? tugas) {
     otherWidget: [
       LiveChatButton(
         withText: true,
+        idKegiatan: tugas!.kegiatanId!,
       )
     ],
   );
@@ -387,7 +414,12 @@ CustomCardContent homeCard(ThemeData theme, JumlahTugasBulanSekarang? data,
 }
 
 CustomCardContent statsCard(
-    ThemeData theme, Statistik? data, UserData userInfo) {
+    ThemeData theme, Statistik? data, UserData userInfo, double avg) {
+  Color color = avg > 5
+      ? ColorPrimary.green
+      : avg < 5 && avg > 3
+          ? ColorPrimary.blue
+          : ColorPrimary.orange;
   return CustomCardContent(
     header: [
       CustomIconButton(
@@ -413,6 +445,7 @@ CustomCardContent statsCard(
           Positioned(
             left: 118,
             child: ProfileIcon(
+              borderColor: color,
               userInfo.profileImage,
               imageSize: 60,
             ),

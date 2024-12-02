@@ -16,8 +16,7 @@ class UserService {
       if (response.statusCode == 200 && data.success) {
         return data; // Return the data for success handling
       } else {
-        throw Exception(
-            "Failed to log in. Status code: ${response.statusCode}");
+        throw Exception("Failed to fetch. Status code: ${response.statusCode}");
       }
     } on DioException catch (error) {
       print("DioException occurred: ${error.message}");

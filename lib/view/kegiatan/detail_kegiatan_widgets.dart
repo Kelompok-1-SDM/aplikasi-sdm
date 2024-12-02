@@ -4,7 +4,7 @@ import 'package:aplikasi_manajemen_sdm/services/kegiatan/kegiatan_model.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
 import 'package:flutter/material.dart';
 
-ListKegiatan? kegiatanDat;
+List<KegiatanResponse>? kegiatanDat;
 
 class BuktiButton extends StatelessWidget {
   const BuktiButton({super.key});
@@ -98,7 +98,7 @@ class DetailCard extends StatelessWidget {
     return CustomCardContent(
       colorBackground: Color(0xFF7BAFFF),
       header: [Text("Kamu sedang menghadiri")],
-                title: kegiatanDat!.kegiatan[0].judulKegiatan, 
+                title: kegiatanDat![0].judul, 
       otherWidget: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,107 +1,109 @@
-class KompetensiResponse {
-  final String id;
-  final String namaKompetensi;
+class KegiatanResponse {
+  final String? kegiatanId;
+  final String? judul;
+  final DateTime? tanggalMulai;
+  final DateTime? tanggalAkhir;
+  final String? tipeKegiatan;
+  final bool? isDone;
+  final String? lokasi;
+  final String? deskripsi;
+  final DateTime? updatedAt;
+  final DateTime? createdAt;
+  final String? jabatan;
+  final bool? isPic;
+  final List<Kompetensi>? kompetensi;
 
-  KompetensiResponse({
-    required this.id,
-    required this.namaKompetensi,
+  KegiatanResponse({
+    this.kegiatanId,
+    this.judul,
+    this.tanggalMulai,
+    this.tanggalAkhir,
+    this.tipeKegiatan,
+    this.isDone,
+    this.lokasi,
+    this.deskripsi,
+    this.updatedAt,
+    this.createdAt,
+    this.jabatan,
+    this.isPic,
+    this.kompetensi,
   });
 
-  factory KompetensiResponse.fromJson(Map<String, dynamic> json) {
-    return KompetensiResponse(
-      id: json['id'],
-      namaKompetensi: json['namaKompetensi'],
+  factory KegiatanResponse.fromJson(Map<String, dynamic> json) {
+    return KegiatanResponse(
+      kegiatanId: json['kegiatanId'],
+      judul: json['judul'],
+      tanggalMulai: json['tanggalMulai'] != null
+          ? DateTime.parse(json['tanggalMulai'])
+          : null,
+      tanggalAkhir: json['tanggalAkhir'] != null
+          ? DateTime.parse(json['tanggalAkhir'])
+          : null,
+      tipeKegiatan: json['tipeKegiatan'],
+      isDone: json['isDone'],
+      lokasi: json['lokasi'],
+      deskripsi: json['deskripsi'],
+      updatedAt:
+          json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      createdAt:
+          json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
+      jabatan: json['jabatan'],
+      isPic: json['isPic'],
+      kompetensi: (json['kompetensi'] as List<dynamic>?)
+          ?.map((item) => Kompetensi.fromJson(item))
+          .toList(),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'namaKompetensi': namaKompetensi,
+      'kegiatanId': kegiatanId,
+      'judul': judul,
+      'tanggalMulai': tanggalMulai?.toIso8601String(),
+      'tanggalAkhir': tanggalAkhir?.toIso8601String(),
+      'tipeKegiatan': tipeKegiatan,
+      'isDone': isDone,
+      'lokasi': lokasi,
+      'deskripsi': deskripsi,
+      'updatedAt': updatedAt?.toIso8601String(),
+      'createdAt': createdAt?.toIso8601String(),
+      'jabatan': jabatan,
+      'isPic': isPic,
+      'kompetensi': kompetensi?.map((item) => item.toJson()).toList(),
     };
   }
 }
 
-class ListKegiatan {
-  final String userId;
-  final String nip;
-  final String nama;
-  final String email;
-  final String role;
-  final String profileImage;
-  final DateTime createdAt;
+class Kompetensi {
+  final String? kompetensiId;
+  final String? namaKompetensi;
   final DateTime? updatedAt;
-  final List<Kegiatan> kegiatan;
+  final DateTime? createdAt;
 
-  ListKegiatan({
-    required this.userId,
-    required this.nip,
-    required this.nama,
-    required this.email,
-    required this.role,
-    required this.profileImage,
-    required this.createdAt,
+  Kompetensi({
+    this.kompetensiId,
+    this.namaKompetensi,
     this.updatedAt,
-    required this.kegiatan,
+    this.createdAt,
   });
 
-  factory ListKegiatan.fromJson(Map<String, dynamic> json) {
-    return ListKegiatan(
-      userId: json['userId'],
-      nip: json['nip'],
-      nama: json['nama'],
-      email: json['email'],
-      role: json['role'],
-      profileImage: json['profileImage'],
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
-      kegiatan: (json['kegiatan'] as List)
-          .map((item) => Kegiatan.fromJson(item))
-          .toList(),
+  factory Kompetensi.fromJson(Map<String, dynamic> json) {
+    return Kompetensi(
+      kompetensiId: json['kompetensiId'],
+      namaKompetensi: json['namaKompetensi'],
+      updatedAt:
+          json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      createdAt:
+          json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
     );
   }
-}
 
-class Kegiatan {
-  final String kegiatanId;
-  final String judulKegiatan;
-  final DateTime tanggal;
-  final String tipeKegiatan;
-  final String lokasi;
-  final String deskripsi;
-  final DateTime updatedAt;
-  final DateTime createdAt;
-  final String status;
-  final String role;
-  final List<String> kompetensi;
-
-  Kegiatan({
-    required this.kegiatanId,
-    required this.judulKegiatan,
-    required this.tanggal,
-    required this.tipeKegiatan,
-    required this.lokasi,
-    required this.deskripsi,
-    required this.updatedAt,
-    required this.createdAt,
-    required this.status,
-    required this.role,
-    required this.kompetensi,
-  });
-
-  factory Kegiatan.fromJson(Map<String, dynamic> json) {
-    return Kegiatan(
-      kegiatanId: json['kegiatanId'],
-      judulKegiatan: json['judulKegiatan'],
-      tanggal: DateTime.parse(json['tanggal']),
-      tipeKegiatan: json['tipeKegiatan'],
-      lokasi: json['lokasi'],
-      deskripsi: json['deskripsi'],
-      updatedAt: DateTime.parse(json['updatedAt']),
-      createdAt: DateTime.parse(json['createdAt']),
-      status: json['status'],
-      role: json['role'],
-      kompetensi: List<String>.from(json['kompetensi'] ?? []),
-    );
+  Map<String, dynamic> toJson() {
+    return {
+      'kompetensiId': kompetensiId,
+      'namaKompetensi': namaKompetensi,
+      'updatedAt': updatedAt?.toIso8601String(),
+      'createdAt': createdAt?.toIso8601String(),
+    };
   }
 }

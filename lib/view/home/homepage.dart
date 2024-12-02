@@ -47,9 +47,16 @@ class _HomePageState extends State<HomePage> {
             onItemTapped: _onItemTapped, // Pass navigation function
             userData: userdat!, // Pass user data to HomeScreen
           ),
-          DaftarKegiatanDitugaskan(
-              key: ValueKey('tasks-1'), userData: userdat!),
-          DaftarTugasHistori(key: ValueKey('tasks-2'), userData: userdat!),
+          DaftarKegiatan(
+            key: ValueKey('tasks-1'),
+            userData: userdat!,
+            isHistori: false,
+          ),
+          DaftarKegiatan(
+            key: ValueKey('tasks-2'),
+            userData: userdat!,
+            isHistori: true,
+          ),
         ];
       });
     } catch (e) {
@@ -110,6 +117,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   HomeResponse? data;
   bool isLoading = true;
+  double avg = 0;
   final HomeService _homeService = HomeService();
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>(); // Key to trigger the RefreshIndicator
@@ -133,12 +141,14 @@ class _HomeScreenState extends State<HomeScreen> {
       // Fetch home data from the API
       final BaseResponse<HomeResponse> response =
           await _homeService.fetchDataHome();
+      double? apa = await Storage.getAvg();
 
       if (response.success && response.data != null) {
         if (mounted) {
           // Check if the widget is still mounted
           setState(() {
             data = response.data;
+            avg = apa!;
           });
         }
         print("Data fetched successfully");
@@ -156,7 +166,6 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     } finally {
       if (mounted) {
-        // Check if the widget is still mounted
         setState(() {
           isLoading = false; // Hide loading indicator
         });
@@ -238,16 +247,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: List.generate(
-                        data!.duaTugasTerbaru.length,
+                        data!.duaTugasTerbaru!.length,
                         (index) => Column(
                           children: [
                             tawaranTugasCard(
                               Theme.of(context),
-                              title: data!.duaTugasTerbaru[index].judulKegiatan,
-                              tanggal: data!.duaTugasTerbaru[index].tanggal,
-                              lokasi: data!.duaTugasTerbaru[index].lokasi,
-                              tags: data!.duaTugasTerbaru[index].kompetensi
-                                  .take(5)
+                              title: data!.duaTugasTerbaru![index].judul!,
+                              tanggal:
+                                  data!.duaTugasTerbaru![index].tanggalMulai!,
+                              lokasi: data!.duaTugasTerbaru![index].lokasi!,
+                              tags: data!.duaTugasTerbaru![index].kompetensi!
+                                  .take(4)
                                   .toList(),
                               backgroundColor: ColorRandom.getRandomColor(),
                             ),
@@ -256,8 +266,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                  statsCard(Theme.of(context), data?.statistik,
-                      widget.userData), // Always show stats card
+                  statsCard(Theme.of(context), data?.statistik, widget.userData,
+                      avg), // Always show stats card
                   const SizedBox(height: 13),
                   const Text(
                     "Kamu sudah terkini",

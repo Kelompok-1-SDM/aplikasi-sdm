@@ -2,7 +2,7 @@ import 'package:aplikasi_manajemen_sdm/view/auth/auth.dart';
 import 'package:aplikasi_manajemen_sdm/view/home/homepage.dart';
 import 'package:aplikasi_manajemen_sdm/view/livechat/livechat.dart';
 import 'package:aplikasi_manajemen_sdm/view/profile/profile.dart';
-import 'package:aplikasi_manajemen_sdm/view/kegiatan/detail_tugas.dart';
+import 'package:aplikasi_manajemen_sdm/view/kegiatan/detail_kegiatan.dart';
 import 'package:flutter/material.dart';
 
 class AppRoutes {
@@ -20,12 +20,18 @@ class AppRoutes {
       case '/detail_kegiatan':
 
         /// Butuh parameter tugas
-        return _materialRoute(DetailKegiatan());
+        final idKegiatan = settings.arguments as String;
+        return _materialRoute(DetailKegiatan(
+          idKegiatan: idKegiatan,
+        ));
 
       case '/livechat':
 
         /// Butuh parameter tugas
-        return _materialRoute(LiveChat());
+        final idKegiatan = settings.arguments as String;
+        return _materialRoute(LiveChat(
+          idKegiatan: idKegiatan,
+        ));
 
       default:
         return _materialRoute(HomePage());
