@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/config/const.dart';
+import 'package:aplikasi_manajemen_sdm/services/kegiatan/kegiatan_model.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,8 @@ class ProfileIcon extends StatelessWidget {
     this.assetLocation, {
     super.key,
     this.imageSize = 50,
-    this.borderColor = ColorPrimary.green, // Replace with your ColorPrimary.green
+    this.borderColor =
+        ColorPrimary.green, // Replace with your ColorPrimary.green
     this.onPressed,
   });
 
@@ -438,7 +440,9 @@ class CustomBigButton extends StatelessWidget {
 
 class LiveChatButton extends StatelessWidget {
   final bool withText;
-  const LiveChatButton({super.key, required this.withText});
+  final String idKegiatan;
+  const LiveChatButton(
+      {super.key, required this.withText, required this.idKegiatan});
 
   @override
   Widget build(BuildContext context) {
@@ -482,7 +486,9 @@ class LiveChatButton extends StatelessWidget {
                 fontSize: 20),
           )
       ],
-      onPressed: () => {Navigator.pushNamed(context, '/livechat')},
+      onPressed: () => {
+        Navigator.pushNamed(context, '/livechat', arguments: idKegiatan)
+      },
       icon: CustomIconButton(
         "assets/icon/chat.svg",
         size: IconSize.large,
@@ -596,12 +602,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
   }
 }
 
-// Event class to represent each event
-class Event {
-  final String type;
-  Event(this.type);
-}
-
 class CustomBottomSheet extends StatelessWidget {
   final Widget? child;
   final Text? title;
@@ -622,7 +622,6 @@ class CustomBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double? maxx = maxHeight ?? MediaQuery.of(context).size.height * 0.5;
     return Container(
       width: double.infinity,
       padding: padding,
@@ -874,10 +873,12 @@ class StatisticChart extends StatelessWidget {
                             angle: -0.785398, // 45 degrees in radians
                             child: Text(
                               monthNames[value.toInt()],
-                              style:
-                                  Theme.of(context).textTheme.bodySmall!.copyWith(
-                                        fontSize: 10,
-                                      ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall!
+                                  .copyWith(
+                                    fontSize: 10,
+                                  ),
                             ),
                           ),
                         );
@@ -892,9 +893,10 @@ class StatisticChart extends StatelessWidget {
                       getTitlesWidget: (value, _) {
                         return Text(
                           value.toInt().toString(),
-                          style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                                fontSize: 10,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall!.copyWith(
+                                    fontSize: 10,
+                                  ),
                         );
                       },
                     ),
@@ -960,11 +962,12 @@ CustomCardContent tawaranTugasCard(
   required List<String> tags,
   required Color backgroundColor,
 }) {
-  String formattedDate = DateFormat.yMMMd().add_jm().format(tanggal); // format to local string
+  String formattedDate =
+      DateFormat.yMMMd().add_jm().format(tanggal); // format to local string
   return CustomCardContent(
     header: [
       Text(
-        "Kamu mendapat tawaran penugasan",
+        "Kamu akan menghadiri",
         style: theme.textTheme.bodySmall!.copyWith(fontSize: 14),
       ),
     ],
@@ -1016,5 +1019,59 @@ void callBottomSheet(
       ); // Content defined below
     },
     isScrollControlled: true, // Allows control over the BottomSheet's height
+  );
+}
+
+CustomCardContent kegiatanCard(
+    {required BuildContext context, required KegiatanResponse kegiatan}) {
+  String title;
+  DateTime normalizedDay = DateTime(
+    kegiatan.tanggalMulai!.year,
+    kegiatan.tanggalMulai!.month,
+    kegiatan.tanggalMulai!.day,
+  );
+  DateTime now = DateTime.now();
+  DateTime nowNormalized = DateTime(now.year, now.month, now.day);
+
+  if (normalizedDay.isBefore(nowNormalized) && kegiatan.isDone!) {
+    title = "Kamu telah melaksanakan kegiatan";
+  } else if (normalizedDay.isAfter(nowNormalized)) {
+    title = "Kamu akan menghadiri kegiatan";
+  } else {
+    title = "Kamu sedang melaksanakan";
+  }
+  return CustomCardContent(
+    header: [Text(title)],
+    title: kegiatan.judul,
+    actionIcon: [
+      CustomIconButton(
+        "assets/icon/arrow-45.svg",
+        colorBackground: ColorNeutral.black,
+      )
+    ],
+    colorBackground: ColorRandom.getRandomColor(),
+    descIcon: [
+      CustomIconButton(
+        "assets/icon/calendar.svg",
+        colorBackground: Colors.transparent,
+        text: DateFormat.yMMMd().add_jm().format(kegiatan.tanggalMulai!),
+      ),
+      CustomIconButton(
+        "assets/icon/location.svg",
+        colorBackground: Colors.transparent,
+        text: kegiatan.lokasi,
+      ),
+    ],
+    crumbs: kegiatan.kompetensi!
+        .take(4)
+        .map((item) => item.namaKompetensi!)
+        .toList(),
+    onPressed: () => {
+      Navigator.pushNamed(
+        context,
+        "/detail_kegiatan",
+        arguments: kegiatan.kegiatanId,
+      )
+    },
   );
 }

@@ -1,87 +1,107 @@
 class HomeResponse {
-  final JumlahTugasBulanSekarang jumlahTugasBulanSekarang;
-  final List<DuaTugasTerbaru> duaTugasTerbaru;
+  final JumlahTugasBulanSekarang? jumlahTugasBulanSekarang;
+  final List<DuaTugasTerbaru>? duaTugasTerbaru;
   final TugasBerlangsung? tugasBerlangsung;
-  final Statistik statistik;
+  final Statistik? statistik;
 
   HomeResponse({
-    required this.jumlahTugasBulanSekarang,
-    required this.duaTugasTerbaru,
+    this.jumlahTugasBulanSekarang,
+    this.duaTugasTerbaru,
     this.tugasBerlangsung,
-    required this.statistik,
+    this.statistik,
   });
 
   factory HomeResponse.fromJson(Map<String, dynamic> json) {
     return HomeResponse(
-      jumlahTugasBulanSekarang: JumlahTugasBulanSekarang.fromJson(json['jumlahTugasBulanSekarang']),
-      duaTugasTerbaru: (json['duaTugasTerbaru'] as List)
-          .map((item) => DuaTugasTerbaru.fromJson(item))
-          .toList(),
+      jumlahTugasBulanSekarang: json['jumlahTugasBulanSekarang'] != null
+          ? JumlahTugasBulanSekarang.fromJson(json['jumlahTugasBulanSekarang'])
+          : null,
+      duaTugasTerbaru: json['duaTugasTerbaru'] != null
+          ? (json['duaTugasTerbaru'] as List)
+              .map((item) => DuaTugasTerbaru.fromJson(item))
+              .toList()
+          : null,
       tugasBerlangsung: json['tugasBerlangsung'] != null
           ? TugasBerlangsung.fromJson(json['tugasBerlangsung'])
           : null,
-      statistik: Statistik.fromJson(json['statistik']),
+      statistik: json['statistik'] != null
+          ? Statistik.fromJson(json['statistik'])
+          : null,
     );
   }
 }
 
 class JumlahTugasBulanSekarang {
-  final int count;
-  final List<String> kompetensiList;
+  final int? count;
+  final List<String>? kompetensiList;
 
   JumlahTugasBulanSekarang({
-    required this.count,
-    required this.kompetensiList,
+    this.count,
+    this.kompetensiList,
   });
 
   factory JumlahTugasBulanSekarang.fromJson(Map<String, dynamic> json) {
     return JumlahTugasBulanSekarang(
       count: json['count'],
-      kompetensiList: List<String>.from(json['kompetensiList'] ?? []),
+      kompetensiList:
+          (json['kompetensiList'] as List?)?.map((e) => e as String).toList(),
     );
   }
 }
 
 class DuaTugasTerbaru {
-  final String kegiatanId;
-  final String judulKegiatan;
-  final DateTime tanggal;
-  final String tipeKegiatan;
-  final String lokasi;
-  final String deskripsi;
-  final DateTime updatedAt;
-  final DateTime createdAt;
-  final String status;
-  final String role;
-  final List<String> kompetensi;
+  final String? kegiatanId;
+  final String? judul;
+  final DateTime? tanggalMulai;
+  final DateTime? tanggalAkhir;
+  final String? tipeKegiatan;
+  final String? lokasi;
+  final String? deskripsi;
+  final DateTime? updatedAt;
+  final DateTime? createdAt;
+  final String? status;
+  final String? role;
+  final bool? isPic;
+  final List<String>? kompetensi;
 
   DuaTugasTerbaru({
-    required this.kegiatanId,
-    required this.judulKegiatan,
-    required this.tanggal,
-    required this.tipeKegiatan,
-    required this.lokasi,
-    required this.deskripsi,
-    required this.updatedAt,
-    required this.createdAt,
-    required this.status,
-    required this.role,
-    required this.kompetensi,
+    this.kegiatanId,
+    this.judul,
+    this.tanggalMulai,
+    this.tanggalAkhir,
+    this.tipeKegiatan,
+    this.lokasi,
+    this.deskripsi,
+    this.updatedAt,
+    this.createdAt,
+    this.status,
+    this.role,
+    this.isPic,
+    this.kompetensi,
   });
 
   factory DuaTugasTerbaru.fromJson(Map<String, dynamic> json) {
     return DuaTugasTerbaru(
       kegiatanId: json['kegiatanId'],
-      judulKegiatan: json['judulKegiatan'],
-      tanggal: DateTime.parse(json['tanggal']),
+      judul: json['judul'],
+      tanggalMulai: json['tanggalMulai'] != null
+          ? DateTime.parse(json['tanggalMulai'])
+          : null,
+      tanggalAkhir: json['tanggalAkhir'] != null
+          ? DateTime.parse(json['tanggalAkhir'])
+          : null,
       tipeKegiatan: json['tipeKegiatan'],
       lokasi: json['lokasi'],
       deskripsi: json['deskripsi'],
-      updatedAt: DateTime.parse(json['updatedAt']),
-      createdAt: DateTime.parse(json['createdAt']),
+      updatedAt:
+          json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      createdAt:
+          json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
       status: json['status'],
       role: json['role'],
-      kompetensi: List<String>.from(json['kompetensi'] ?? []),
+      isPic: json['isPic'],
+      kompetensi:
+          (json['kompetensi'] as List?)?.map((e) => e as String).toList(),
     );
   }
 }
@@ -119,43 +139,39 @@ class TugasBerlangsung {
 }
 
 class Statistik {
-  final String firstName;
-  final int totalDalamSetahun;
-  final List<JumlahKegiatan> jumlahKegiatan;
+  final String? firstName;
+  final int? totalDalamSetahun;
+  final List<JumlahKegiatan>? jumlahKegiatan;
 
   Statistik({
-    required this.firstName,
-    required this.totalDalamSetahun,
-    required this.jumlahKegiatan,
+    this.firstName,
+    this.totalDalamSetahun,
+    this.jumlahKegiatan,
   });
 
   factory Statistik.fromJson(Map<String, dynamic> json) {
     return Statistik(
       firstName: json['firstName'],
       totalDalamSetahun: json['totalDalamSetahun'],
-      jumlahKegiatan: (json['jumlahKegiatan'] as List)
-          .map((item) => JumlahKegiatan.fromJson(item))
+      jumlahKegiatan: (json['jumlahKegiatan'] as List?)
+          ?.map((item) => JumlahKegiatan.fromJson(item))
           .toList(),
     );
   }
 }
 
 class JumlahKegiatan {
-  final int year;
-  final int month;
-  final int jumlahKegiatan;
+  final int? jumlahKegiatan;
+  final int? year;
+  final int? month;
 
-  JumlahKegiatan({
-    required this.year,
-    required this.month,
-    required this.jumlahKegiatan,
-  });
+  JumlahKegiatan({this.year, this.month,  this.jumlahKegiatan});
 
   factory JumlahKegiatan.fromJson(Map<String, dynamic> json) {
     return JumlahKegiatan(
+      jumlahKegiatan: json['jumlahKegiatan'],
       year: json['year'],
       month: json['month'],
-      jumlahKegiatan: json['jumlahKegiatan'],
     );
   }
 }

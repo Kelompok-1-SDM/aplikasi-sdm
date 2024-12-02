@@ -11,7 +11,7 @@ class BaseResponse<T> {
 
   factory BaseResponse.fromJson(
     Map<String, dynamic> json,
-    T Function(Map<String, dynamic>) fromJsonT,
+    T Function(dynamic) fromJsonT, // Accept dynamic instead of Map<String, dynamic>
   ) {
     return BaseResponse<T>(
       success: json['success'] ?? false,
@@ -20,6 +20,7 @@ class BaseResponse<T> {
     );
   }
 }
+
 
 
 class DioClient {

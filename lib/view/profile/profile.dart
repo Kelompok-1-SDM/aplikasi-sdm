@@ -63,13 +63,10 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               Stack(
                 children: [
-                  if (userData != null)
-                    ProfileIcon(
-                      userData.profileImage,
-                      imageSize: 130,
-                    )
-                  else
-                    const SizedBox.shrink(),
+                  ProfileIcon(
+                    userData.profileImage,
+                    imageSize: 130,
+                  ),
                   Positioned(
                     right: 0,
                     bottom: 0,
@@ -86,16 +83,15 @@ class _ProfilePageState extends State<ProfilePage> {
                 Theme.of(context),
               ),
               statsCardProfile(Theme.of(context)),
-               if (userData != null)
-                CustomCardContent(
-                  description:
-                      "Kompetensi berdasarkan penugasan yang telah dilakukan",
-                  crumbs: userData.kompetensi,
-                  header: [
-                    Text("Kompetensi yang dikuasai",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16)),
-                  ]),
+               CustomCardContent(
+                description:
+                    "Kompetensi berdasarkan penugasan yang telah dilakukan",
+                crumbs: userData.kompetensi,
+                header: [
+                  Text("Kompetensi yang dikuasai",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16)),
+                ]),
               CustomBigButton(
                 wasIconOnRight: true,
                 onPressed: () => {
