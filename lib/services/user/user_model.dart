@@ -1,3 +1,36 @@
+class Kompetensi {
+  final String kompetensiId;
+  final String namaKompetensi;
+  final String updatedAt;
+  final String createdAt;
+
+  Kompetensi({
+    required this.kompetensiId,
+    required this.namaKompetensi,
+    required this.updatedAt,
+    required this.createdAt,
+  });
+
+  // Method to convert Kompetensi to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'kompetensiId': kompetensiId,
+      'namaKompetensi': namaKompetensi,
+      'updatedAt': updatedAt,
+      'createdAt': createdAt,
+    };
+  }
+
+  factory Kompetensi.fromJson(Map<String, dynamic> json) {
+    return Kompetensi(
+      kompetensiId: json['kompetensiId'],
+      namaKompetensi: json['namaKompetensi'],
+      updatedAt: json['updatedAt'],
+      createdAt: json['createdAt'],
+    );
+  }
+}
+
 class UserData {
   final String userId;
   final String nip;
@@ -7,7 +40,8 @@ class UserData {
   final String profileImage;
   final String? updatedAt;
   final String createdAt;
-  final List<String> kompetensi; // Changed to List<String> since the data is a list of strings
+  final List<Kompetensi>
+      kompetensi; // Updated to store list of Kompetensi objects
 
   UserData({
     required this.userId,
@@ -32,7 +66,9 @@ class UserData {
       'profileImage': profileImage,
       'updatedAt': updatedAt,
       'createdAt': createdAt,
-      'kompetensi': kompetensi, // Directly returns the list of strings
+      'kompetensi': kompetensi
+          .map((kompetensi) => kompetensi.toJson())
+          .toList(), // Convert list of Kompetensi objects to JSON
     };
   }
 
@@ -46,7 +82,9 @@ class UserData {
       profileImage: json['profileImage'],
       updatedAt: json['updatedAt'],
       createdAt: json['createdAt'],
-      kompetensi: List<String>.from(json['kompetensi']), // Parses the kompetensi as a list of strings
+      kompetensi: (json['kompetensi'] as List)
+          .map((kompetensiJson) => Kompetensi.fromJson(kompetensiJson))
+          .toList(), // Convert each kompetensi item to a Kompetensi object
     );
   }
 }
