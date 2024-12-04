@@ -58,7 +58,6 @@ class _KalenderState extends State<Kalender> {
                 tanggalMulai: apa.tanggalMulai!,
                 tanggalAkhir: apa.tanggalAkhir!,
               );
-              ;
             }
           });
         }

@@ -175,7 +175,7 @@ class _DetailKegiatanState extends State<DetailKegiatan> {
                           const SizedBox(height: 10),
                         ],
                       ),
-                    if (!isLoading && !wasNo  w)
+                    if (!isLoading && !wasNow)
                       Column(
                         children: [
                           bigInfo(context,
