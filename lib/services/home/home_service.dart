@@ -1,5 +1,6 @@
 import 'package:aplikasi_manajemen_sdm/services/dio_client.dart';
 import 'package:aplikasi_manajemen_sdm/services/home/home_model.dart';
+import 'package:aplikasi_manajemen_sdm/services/shared_prefrences.dart';
 import 'package:dio/dio.dart';
 
 class HomeService {
@@ -22,6 +23,18 @@ class HomeService {
 
       // Check if the response is successful
       if (response.statusCode == 200 && data.success) {
+        // Save statistik to shared session
+        double average = 0;
+        if (data.data?.statistik?.jumlahKegiatan != null) {
+          var sum = data.data!.statistik!.jumlahKegiatan!
+              .map(
+                  (it) => it.jumlahKegiatan ?? 0) // Replace null 'count' with 0
+              .reduce((a, b) => a + b); // Sum all counts
+
+          average = sum /
+              data.data!.statistik!.jumlahKegiatan!.length; // Calculate average
+        }
+        await Storage.setAvg(average);
         return data;
       } else {
         throw Exception(

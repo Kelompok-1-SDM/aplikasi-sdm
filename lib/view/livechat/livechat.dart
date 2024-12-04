@@ -5,7 +5,9 @@ import 'package:aplikasi_manajemen_sdm/view/livechat/livechat_widget.dart';
 import 'package:flutter/material.dart';
 
 class LiveChat extends StatefulWidget {
-  const LiveChat({super.key});
+  const LiveChat({super.key, required this.idKegiatan});
+
+  final String idKegiatan;
 
   @override
   State<LiveChat> createState() => _LiveChatState();
@@ -16,7 +18,10 @@ class _LiveChatState extends State<LiveChat> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      floatingActionButton: FloatingChatInput(onFileUpload: () => {}, onSendMessage: (message) => {},),
+      floatingActionButton: FloatingChatInput(
+        onFileUpload: () => {},
+        onSendMessage: (message) => {},
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 61),
         child: Column(
@@ -37,9 +42,9 @@ class _LiveChatState extends State<LiveChat> {
                     "Live Chat",
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const Spacer(), // Pushes the text back to the center
                   Opacity(
@@ -54,34 +59,33 @@ class _LiveChatState extends State<LiveChat> {
                 ],
               ),
             ),
-             const SizedBox(height: 16), // Spacing
+            const SizedBox(height: 16), // Spacing
             // Chat message widget for Andika
             Chat1(
-              profileImagePath: 'assets/icon/profile-1.png', // Replace with actual path
+              profileImagePath:
+                  'assets/icon/profile-1.png', // Replace with actual path
               username: 'Andika Handayono',
               messageText: 'Masih sepi nih...',
-              imagePath: 'assets/icon/event.jpg', // Image path for Andika's message
+              imagePath:
+                  'assets/icon/event.jpg', // Image path for Andika's message
               timestamp: '06:30',
             ),
             // Chat message widget for Budi
             Chat2(
-              profileImagePath: 'assets/icon/profile-2.png', 
-              username: 'Aditya Soemarno', 
-              messageText: 'Wihh... Otw nih..', 
-              timestamp: '06:45'
-            ),
+                profileImagePath: 'assets/icon/profile-2.png',
+                username: 'Aditya Soemarno',
+                messageText: 'Wihh... Otw nih..',
+                timestamp: '06:45'),
             Chat3(
-              profileImagePath: 'assets/icon/profile-3.png', 
-              username: 'Tiara Siagan', 
-              firstMessageText: 'Baru sampek di kampus nih.', 
-              firstTimestamp: '06:50', 
-              secondMessageText: 'Otw ke atas', 
-              secondTimestamp: '06:55'
-            ),
+                profileImagePath: 'assets/icon/profile-3.png',
+                username: 'Tiara Siagan',
+                firstMessageText: 'Baru sampek di kampus nih.',
+                firstTimestamp: '06:50',
+                secondMessageText: 'Otw ke atas',
+                secondTimestamp: '06:55'),
           ],
         ),
       ),
     );
   }
 }
-

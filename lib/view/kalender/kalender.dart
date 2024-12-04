@@ -17,78 +17,90 @@ class Kalender extends StatefulWidget {
 }
 
 class _KalenderState extends State<Kalender> {
-  Map<DateTime, String> _events = {};
-
-  ListKegiatan? kegiatanDat;
+  final Map<DateTime, EventData> _events = {};
+  List<KegiatanResponse>? kegiatanDat;
   bool isLoading = true;
+  List<KegiatanResponse>? filteredKegiatan;
   final KegiatanService _kegiatanService = KegiatanService();
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-      GlobalKey<RefreshIndicatorState>(); // Key to trigger the RefreshIndicator
+      GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
     super.initState();
-    // Trigger refresh when the page first loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _refreshIndicatorKey.currentState?.show(); // Show the refresh indicator
       fetchData();
     });
   }
 
+  // Fetch calendar events only
   Future<void> fetchData() async {
     setState(() {
-      isLoading = true; // Show loading indicator during initial fetch
+      isLoading = true;
     });
 
     try {
       // Fetch home data from the API
-      final BaseResponse<ListKegiatan> response =
+      final BaseResponse<List<KegiatanResponse>> response =
           await _kegiatanService.fetchListKegiatanByUser();
 
       if (response.success && response.data != null) {
         if (mounted) {
           // Check if the widget is still mounted
           setState(() {
-            kegiatanDat = response.data;
-
-            for (var apa in kegiatanDat!.kegiatan) {
-              DateTime pop = DateTime(
-                  apa.tanggal.year, apa.tanggal.month, apa.tanggal.day);
-              // If the date exists, add the new event to the existing list
-              _events[pop] = apa.status;
+            kegiatanDat = response.data!;
+            for (var apa in response.data!) {
+              DateTime pop = DateTime(apa.tanggalMulai!.year,
+                  apa.tanggalMulai!.month, apa.tanggalMulai!.day);
+              _events[pop] = EventData(
+                isDone: apa.isDone!,
+                tanggalMulai: apa.tanggalMulai!,
+                tanggalAkhir: apa.tanggalAkhir!,
+              );
+              ;
             }
           });
         }
       } else {
-        if (mounted) {
-          _showErrorDialog(context, "Fetch Failed",
-              response.message); // Pass the current valid context
-        }
+        _showErrorDialog(context, "Fetch Failed", response.message);
       }
     } catch (e) {
-      print("Error during data fetch: $e");
-      if (mounted) {
-        _showErrorDialog(context, "Error",
-            "An error occurred while fetching data: $e"); // Pass the current valid context
-      }
+      print("Error during fetching calendar events: $e");
+      _showErrorDialog(context, "Error", "An error occurred: $e");
     } finally {
-      if (mounted) {
-        // Check if the widget is still mounted
-        setState(() {
-          isLoading = false; // Hide loading indicator
-        });
-      }
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
+  void onDateSelected(DateTime selectedDay) {
+    DateTime normalizedSelectedDay = DateTime(
+      selectedDay.year,
+      selectedDay.month,
+      selectedDay.day,
+    );
+    setState(() {
+      filteredKegiatan = kegiatanDat?.where((kegiatan) {
+        DateTime kegiatanDate = DateTime(
+          kegiatan.tanggalMulai!.year,
+          kegiatan.tanggalMulai!.month,
+          kegiatan.tanggalMulai!.day,
+        );
+        return kegiatanDate == normalizedSelectedDay;
+      }).toList();
+    });
+  }
+
   Future<void> _refreshData() async {
-    await fetchData(); // Refresh data using the existing fetchData method
+    await fetchData(); // Refresh calendar data
   }
 
   void _showErrorDialog(
       BuildContext dialogContext, String title, String message) {
     showDialog(
-      context: dialogContext, // Use the passed-in parent context
+      context: dialogContext,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(title),
@@ -108,10 +120,8 @@ class _KalenderState extends State<Kalender> {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-
     return RefreshIndicator(
-      key: _refreshIndicatorKey, // Set the refresh indicator key
+      key: _refreshIndicatorKey,
       color: ColorNeutral.black,
       onRefresh: _refreshData,
       child: ListView(
@@ -124,27 +134,41 @@ class _KalenderState extends State<Kalender> {
               children: [
                 HomeAppBar(userdat: widget.userData),
                 const SizedBox(height: 24),
-                if (isLoading)
-                  const SizedBox.shrink()
-                else if (_events.isNotEmpty)
-                  CustomTableCalendar(events: _events)
-                else
-                  const SizedBox.shrink(),
+                if (_events.isNotEmpty)
+                  CustomTableCalendar(
+                    events: _events,
+                    onDateSelected: onDateSelected,
+                  )
               ],
             ),
           ),
           const SizedBox(height: 24),
-          if (!isLoading)
+          if (_events.isNotEmpty)
             CustomBottomSheet(
               maxHeight: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-              child: Column(
-                children: [
-                  seminarCard(theme),
-                  const SizedBox(height: 200),
-                ],
+              child: Builder(
+                builder: (context) {
+                  return Column(
+                    children: [
+                      if (filteredKegiatan != null &&
+                          filteredKegiatan!.isNotEmpty)
+                        ...filteredKegiatan!.map((kegiatan) {
+                          return Column(
+                            children: [
+                              seminarCard(
+                                  context: context, kegiatan: kegiatan),
+                              const SizedBox(height: 20),
+                            ],
+                          );
+                        })
+                      else
+                        const Text("No data for the selected date"),
+                    ],
+                  );
+                },
               ),
-            ),
+            )
         ],
       ),
     );

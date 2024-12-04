@@ -1,6 +1,7 @@
 import 'package:aplikasi_manajemen_sdm/config/const.dart';
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/services/shared_prefrences.dart';
+import 'package:aplikasi_manajemen_sdm/services/user/user_model.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
 import 'package:aplikasi_manajemen_sdm/view/profile/profile_widgets.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +14,29 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  late UserData userData;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+  }
+
+  Future<void> fetchUserData() async {
+    try {
+      UserData apa = (await Storage.getMyInfo())!;
+      setState(() {
+        userData = apa;
+      });
+    } catch (e) {
+      print("Error loading user data: $e");
+      // Optionally handle errors, e.g., show error dialog
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    print(userData.kompetensi);
     return Scaffold(
       body: RefreshIndicator(
         color: ColorNeutral.black,
@@ -42,7 +64,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Stack(
                 children: [
                   ProfileIcon(
-                    "assets/icon/profile.png",
+                    userData.profileImage,
                     imageSize: 130,
                   ),
                   Positioned(
@@ -61,30 +83,25 @@ class _ProfilePageState extends State<ProfilePage> {
                 Theme.of(context),
               ),
               statsCardProfile(Theme.of(context)),
-              CustomCardContent(
-                  description:
-                      "Kompetensi berdasarkan penugasan yang telah dilakukan",
-                  crumbs: [
-                    "⚖️ Juri",
-                    "🧑‍🏫 Pemateri",
-                    "🤖 Iot",
-                    "🤖 AI",
-                    "✨ Teknologi",
-                    "🧠 Penalaran",
-                  ],
-                  header: [
-                    Text("Kompetensi yang dikuasai",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16)),
-                  ]),
+               CustomCardContent(
+                description:
+                    "Kompetensi berdasarkan penugasan yang telah dilakukan",
+                crumbs: userData.kompetensi,
+                header: [
+                  Text("Kompetensi yang dikuasai",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16)),
+                ]),
               CustomBigButton(
                 wasIconOnRight: true,
                 onPressed: () => {
                   callBottomSheet(
                     context,
                     title: Text(
-                      "Ubah Password", textAlign: TextAlign.center,
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                      "Ubah Password",
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
                     ),
                     button: [
                       CustomBigButton(
@@ -102,8 +119,10 @@ class _ProfilePageState extends State<ProfilePage> {
                         onPressed: () => {
                           callBottomSheet(context,
                               title: Text(
-                                "Apakah anda yakin mengubah password anda?", textAlign: TextAlign.center,
-                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                "Apakah anda yakin mengubah password anda?",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 20),
                               ),
                               button: [
                                 CustomBigButton(
@@ -122,9 +141,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                     callBottomSheet(
                                       context,
                                       title: Text(
-                                        "Password anda berhasil diperbarui", textAlign: TextAlign.center,
+                                        "Password anda berhasil diperbarui",
+                                        textAlign: TextAlign.center,
                                         style: TextStyle(
-                                            fontWeight: FontWeight.bold, fontSize: 24, ),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 24,
+                                        ),
                                       ),
                                       button: [
                                         CustomBigButton(
@@ -132,10 +154,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                               horizontal: 30, vertical: 20),
                                           onPressed: () => {
                                             // Navigator.pushNamed(
-                                                // context, "/profile"),
-                                                Navigator.pop(context),
-                                                Navigator.pop(context),
-                                                Navigator.pop(context),
+                                            // context, "/profile"),
+                                            Navigator.pop(context),
+                                            Navigator.pop(context),
+                                            Navigator.pop(context),
                                           },
                                           otherWidget: [],
                                           buttonColor: ColorNeutral.black,
@@ -193,7 +215,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 wasIconOnRight: true,
                 onPressed: () async => {
                   await Storage.clearToken(),
-                  Navigator.pushNamedAndRemoveUntil(context, '/auth', (route) => false)
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, '/auth', (route) => false)
                 },
                 otherWidget: [],
                 icon: CustomIconButton(

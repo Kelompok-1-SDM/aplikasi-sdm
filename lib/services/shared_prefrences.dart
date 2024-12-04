@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:aplikasi_manajemen_sdm/services/home/home_model.dart';
 import 'package:aplikasi_manajemen_sdm/services/user/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -52,5 +53,17 @@ class Storage {
     await prefs.remove(_tokenKey);
     await prefs.remove(_expiryKey);
     await prefs.remove(_myInfo);
+  }
+
+  static Future<void> setAvg(double avgJumlah) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('statistik', avgJumlah.toString());
+  }
+
+  static Future<double?> getAvg() async {
+    final prefs = await SharedPreferences.getInstance();
+    final statistik = prefs.getString('statistik');
+    if (statistik == null) return null;
+    return double.parse(statistik);
   }
 }

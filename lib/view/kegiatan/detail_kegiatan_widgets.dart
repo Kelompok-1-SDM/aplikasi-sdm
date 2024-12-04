@@ -1,7 +1,10 @@
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/config/const.dart';
+import 'package:aplikasi_manajemen_sdm/services/kegiatan/kegiatan_model.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
 import 'package:flutter/material.dart';
+
+List<KegiatanResponse>? kegiatanDat;
 
 class BuktiButton extends StatelessWidget {
   const BuktiButton({super.key});
@@ -79,7 +82,8 @@ class BuktiHadirButton extends StatelessWidget {
       icon: CustomIconButton(
         "assets/icon/centang.svg",
         size: IconSize.large,
-        colorBackground: Color(0xFF1AC094), // Bright green for the circle background
+        colorBackground:
+            Color(0xFF1AC094), // Bright green for the circle background
         iconColorCustom: ColorNeutral.white, // White checkmark
       ),
       buttonColor: Color(0xFF13AE85), // Dark green for the button background
@@ -87,19 +91,14 @@ class BuktiHadirButton extends StatelessWidget {
   }
 }
 
-
 class DetailCard extends StatelessWidget {
   const DetailCard({super.key});
 
   CustomCardContent seminarCard(ThemeData theme, {double fontSize = 15.0}) {
     return CustomCardContent(
-      colorBackground: Color(0xFF7BAFFF),  
-      header: [
-        Text(
-          "Acara telah dilaksanakan",
-          style: theme.textTheme.bodyMedium, 
-        ),
-      ],
+      colorBackground: Color(0xFF7BAFFF),
+      header: [Text("Kamu sedang menghadiri")],
+                title: kegiatanDat![0].judul, 
       otherWidget: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,7 +109,8 @@ class DetailCard extends StatelessWidget {
                 const SizedBox(width: 10),
                 Text(
                   "12 Januari 2024",
-                  style: theme.textTheme.bodyMedium!.copyWith(fontSize: fontSize),
+                  style:
+                      theme.textTheme.bodyMedium!.copyWith(fontSize: fontSize),
                 ),
               ],
             ),
@@ -121,7 +121,8 @@ class DetailCard extends StatelessWidget {
                 const SizedBox(width: 10),
                 Text(
                   "08:00–12:00",
-                  style: theme.textTheme.bodyMedium!.copyWith(fontSize: fontSize),
+                  style:
+                      theme.textTheme.bodyMedium!.copyWith(fontSize: fontSize),
                 ),
               ],
             ),
@@ -132,7 +133,8 @@ class DetailCard extends StatelessWidget {
                 const SizedBox(width: 10),
                 Text(
                   "Aula Pertamina",
-                  style: theme.textTheme.bodyMedium!.copyWith(fontSize: fontSize),
+                  style:
+                      theme.textTheme.bodyMedium!.copyWith(fontSize: fontSize),
                 ),
               ],
             ),
@@ -143,7 +145,8 @@ class DetailCard extends StatelessWidget {
                 const SizedBox(width: 10),
                 Text(
                   "Anggota",
-                  style: theme.textTheme.bodyMedium!.copyWith(fontSize: fontSize),
+                  style:
+                      theme.textTheme.bodyMedium!.copyWith(fontSize: fontSize),
                 ),
               ],
             ),
@@ -157,12 +160,9 @@ class DetailCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
 
-    return seminarCard(theme, fontSize: 30.0);  
+    return seminarCard(theme, fontSize: 30.0);
   }
 }
-
-
-
 
 class LiveCard extends StatelessWidget {
   const LiveCard({super.key});
@@ -484,8 +484,6 @@ class DosenCard extends StatelessWidget {
   }
 }
 
-
-
 class SuratButton extends StatelessWidget {
   const SuratButton({super.key, required bool withText});
 
@@ -588,7 +586,6 @@ class FileCard extends StatelessWidget {
       otherWidget: [
         SuratButton(withText: true),
         SertifButton(withText: true),
-        
       ],
     );
   }
@@ -599,8 +596,93 @@ class FileCard extends StatelessWidget {
 
     return fileCard(theme);
   }
-
 }
 
+class AgendaCard extends StatelessWidget {
+  const AgendaCard({super.key});
 
+  CustomCardContent agendaCard(ThemeData theme) {
+    return CustomCardContent(
+      colorBackground: Colors.white, // Warna background luar putih
+      header: [
+        Text(
+          "Agenda kegiatan anda",
+          style: theme.textTheme.bodyMedium!.copyWith(
+            color: Colors.black,
+            fontSize: 16,
+          ),
+        ),
+      ],
+      otherWidget: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color:
+                Color(0xFF222222), 
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Mencari materi",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 20,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "12 Oktober 2024",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons
+                    .circle, // Contoh ikon lingkaran, sesuaikan sesuai kebutuhan
+                color: Colors.grey[800],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+        Center(
+          child: Text(
+            "2 agenda lainnya",
+            style: TextStyle(
+              color: ColorNeutral.gray,
+              fontSize: 12,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          "*waktu hanya perkiraan",
+          style: TextStyle(
+            color: ColorNeutral.gray,
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    return agendaCard(theme);
+  }
+}
 

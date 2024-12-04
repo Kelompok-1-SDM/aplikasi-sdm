@@ -30,7 +30,7 @@ class AuthService {
           // Save the token and its expiry date
           DateTime expiryDate = DateTime.now().add(Duration(days: 7));
           await Storage.saveToken(token, expiryDate);
-          await Storage.saveMyInfo(new UserData(
+          await Storage.saveMyInfo(UserData(
               userId: data.data!.userId.toString(),
               nip: data.data!.nip.toString(),
               nama: data.data!.nama.toString(),
