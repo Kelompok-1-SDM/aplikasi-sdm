@@ -1,11 +1,13 @@
+import 'package:aplikasi_manajemen_sdm/config/const.dart';
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
+import 'package:aplikasi_manajemen_sdm/services/shared_prefrences.dart';
+import 'package:aplikasi_manajemen_sdm/services/user/user_model.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
 import 'package:aplikasi_manajemen_sdm/view/kegiatan/detail_kegiatan_widgets.dart';
 import 'package:aplikasi_manajemen_sdm/services/kegiatan/kegiatan_model.dart';
 import 'package:aplikasi_manajemen_sdm/services/kegiatan/kegiatan_service.dart';
 import 'package:aplikasi_manajemen_sdm/services/dio_client.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class DetailKegiatan extends StatefulWidget {
   const DetailKegiatan({super.key, required this.idKegiatan});
@@ -18,9 +20,8 @@ class DetailKegiatan extends StatefulWidget {
 
 class _DetailKegiatanState extends State<DetailKegiatan> {
   bool isLoading = true;
-  List<KegiatanResponse>? kegiatanDat;
-  bool histori = false;
-  bool kehadiran = true;
+  String? myUid;
+  KegiatanResponse? data;
   final KegiatanService _kegiatanService = KegiatanService();
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
@@ -35,43 +36,56 @@ class _DetailKegiatanState extends State<DetailKegiatan> {
   }
 
   Future<void> fetchData() async {
+    // Trigger the swipe refresh animation programmatically
+    _refreshIndicatorKey.currentState?.show();
     setState(() {
-      isLoading = true;
+      isLoading = true; // Show loading indicator during initial fetch
     });
 
     try {
-      final BaseResponse<List<KegiatanResponse>> response =
-          await _kegiatanService.fetchListKegiatanByUser(isDone: true);
+      // Fetch home data from the API
+      final BaseResponse<KegiatanResponse> response =
+          await _kegiatanService.fetchKegiatanById(widget.idKegiatan);
+      UserData? apa = await Storage.getMyInfo();
 
       if (response.success && response.data != null) {
         if (mounted) {
+          // Check if the widget is still mounted
           setState(() {
-            kegiatanDat = response.data;
+            data = response.data;
+            myUid = apa!.userId;
           });
         }
+        print("Data fetched successfully");
       } else {
-        _showErrorDialog("Fetch Failed", response.message);
+        if (mounted) {
+          _showErrorDialog(context, "Fetch Failed",
+              response.message); // Pass the current valid context
+        }
       }
     } catch (e) {
+      print("Error during data fetch: $e");
       if (mounted) {
-        _showErrorDialog("Error", "An error occurred while fetching data: $e");
+        _showErrorDialog(context, "Error",
+            "An error occurred while fetching data: $e"); // Pass the current valid context
       }
     } finally {
       if (mounted) {
         setState(() {
-          isLoading = false;
+          isLoading = false; // Hide loading indicator
         });
       }
     }
   }
 
   Future<void> _refreshData() async {
-    await fetchData();
+    await fetchData(); // Refresh data using the existing fetchData method
   }
 
-  void _showErrorDialog(String title, String message) {
+  void _showErrorDialog(
+      BuildContext dialogContext, String title, String message) {
     showDialog(
-      context: context,
+      context: dialogContext, // Use the passed-in parent context
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(title),
@@ -89,80 +103,133 @@ class _DetailKegiatanState extends State<DetailKegiatan> {
     );
   }
 
+  bool _wasMePic(List<User> user) {
+    for (var user in user) {
+      if (user.userId == myUid) {
+        return user.isPic ?? false;
+      }
+    }
+
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      key: _refreshIndicatorKey,
-      color: ColorNeutral.black,
-      onRefresh: _refreshData,
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.only(top: 61, left: 22, right: 22),
-        child: Column(
-          children: [
-            const SizedBox(height: 24),
-            if (isLoading)
-              CircularProgressIndicator()
-            else if (kegiatanDat != null && kegiatanDat!.isNotEmpty)
-              CustomCardContent(
-                header: [Text("Kamu sedang menghadiri")],
-                title: kegiatanDat![0]
-                    .judul, // Menampilkan kegiatan pertama di database
-                actionIcon: [
-                  CustomIconButton(
-                    "assets/icon/arrow-45.svg",
-                    colorBackground: ColorNeutral.black,
-                  ),
-                ],
-                colorBackground: ColorRandom.getRandomColor(),
-                descIcon: [
-                  CustomIconButton(
-                    "assets/icon/calendar.svg",
-                    colorBackground: Colors.transparent,
-                    text: DateFormat.yMMMd()
-                        .add_jm()
-                        .format(kegiatanDat![0].tanggalMulai!),
-                  ),
-                  CustomIconButton(
-                    "assets/icon/location.svg",
-                    colorBackground: Colors.transparent,
-                    text: kegiatanDat![0].lokasi,
-                  ),
-                ],
-                crumbs: kegiatanDat![0]
-                    .kompetensi!
-                    .take(5)
-                    .map((item) => item.namaKompetensi!)
-                    .toList(),
-                onPressed: () =>
-                    Navigator.pushNamed(context, "/detail_kegiatan"),
-              ),
-            const SizedBox(height: 10),
-            CustomCardContent(
-              header: [
-                Text(
-                  "Brief penugasan",
-                  style: TextStyle(fontWeight: FontWeight.bold),
+    bool wasNow = false;
+    if (!isLoading) {
+      DateTime now = DateTime.now();
+      wasNow = data!.tanggalMulai!.isAfter(now) &&
+          data!.tanggalMulai!.isBefore(now) &&
+          !data!.isDone!;
+    }
+
+    return Scaffold(
+      body: RefreshIndicator(
+        key: _refreshIndicatorKey,
+        color: ColorNeutral.black,
+        onRefresh: _refreshData,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(top: 61, left: 22, right: 22),
+          child: isLoading
+              ? SizedBox(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: const SizedBox.shrink(), // Empty space during loading
                 )
-              ],
-              actionIcon: [],
-              colorBackground: Colors.white,
-              description: kegiatanDat![0].deskripsi,
-            ),
-            if (!histori) SizedBox(height: 10),
-            if (!histori) LiveCard(),
-            const SizedBox(height: 10),
-            AgendaCard(),
-            if (histori) SizedBox(height: 10),
-            if (histori) DetailCard(),
-            if (!kehadiran) const SizedBox(height: 10),
-            if (!kehadiran) BuktiButton(),
-            if (kehadiran) const SizedBox(height: 10),
-            if (kehadiran) BuktiHadirButton(),
-            const SizedBox(height: 10),
-            DosenCard(),
-            const SizedBox(height: 10),
-            FileCard(),
-          ],
+              : Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: Row(
+                        children: [
+                          CustomIconButton(
+                            Icons.chevron_left_rounded,
+                            colorBackground: ColorNeutral.white,
+                            size: IconSize.medium,
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    if (!isLoading)
+                      headerCard(context, kegiatan: data!),
+                    const SizedBox(height: 10),
+                    if (!isLoading)
+                      Column(
+                        children: [
+                          CustomCardContent(
+                            header: [
+                              Text(
+                                "Brief penugasan",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .displayMedium!
+                                    .copyWith(fontSize: 16),
+                              )
+                            ],
+                            actionIcon: [],
+                            colorBackground: Colors.white,
+                            description: data!.deskripsi,
+                          ),
+                          const SizedBox(height: 10),
+                        ],
+                      ),
+                    if (!isLoading && !wasNo  w)
+                      Column(
+                        children: [
+                          bigInfo(context,
+                              kegiatan: data!,
+                              wasMePic: _wasMePic(data!.users!)),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                        ],
+                      ),
+                    if (!isLoading)
+                      Column(
+                        children: [
+                          LiveChatButton(
+                              withText: true, idKegiatan: data!.kegiatanId!),
+                          SizedBox(
+                            height: 10,
+                          )
+                        ],
+                      ),
+                    if (!isLoading && data!.agenda!.isNotEmpty)
+                      // Column(
+                      //   children: [
+                      //     agenda
+                      //   ],
+                      // )
+                      // const SizedBox(height: 10),
+                      // AgendaCard(),
+                      // if (histori) SizedBox(height: 10),
+                      // if (histori) DetailCard(),
+                      // if (!kehadiran) const SizedBox(height: 10),
+                      // if (!kehadiran) BuktiButton(),
+                      // if (kehadiran) const SizedBox(height: 10),
+                      // if (kehadiran) BuktiHadirButton(),
+                      const SizedBox(height: 10),
+                    // DosenCard(),
+                    if (!isLoading)
+                      Column(
+                        children: [
+                          dosenCard(Theme.of(context)),
+                          const SizedBox(height: 10),
+                        ],
+                      ),
+                    if (!isLoading && data!.lampiran!.isNotEmpty)
+                      Column(
+                        children: [
+                          FileCard(),
+                          const SizedBox(
+                            height: 60,
+                          )
+                        ],
+                      )
+                  ],
+                ),
         ),
       ),
     );

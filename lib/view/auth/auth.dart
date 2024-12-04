@@ -142,6 +142,7 @@ class _AuthPageState extends State<AuthPage> {
       body: RefreshIndicator(
         key: _refreshKey,
         onRefresh: _onRefresh,
+        color: ColorNeutral.black,
         child: Center(
           child: SingleChildScrollView(
             child: Padding(

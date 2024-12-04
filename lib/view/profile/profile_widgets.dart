@@ -1,9 +1,17 @@
 import 'package:aplikasi_manajemen_sdm/config/const.dart';
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
+import 'package:aplikasi_manajemen_sdm/services/home/home_model.dart';
+import 'package:aplikasi_manajemen_sdm/services/user/user_model.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
 import 'package:flutter/material.dart';
 
-GenericCard profileCard(ThemeData theme) {
+GenericCard profileCard(
+    ThemeData theme, UserData user, double average, Color color) {
+  String desc = average > 5
+      ? "Bagus • Si Rajin"
+      : average < 5 && average > 3
+          ? "Newbie • Dibiasakan yaa.."
+          : "Dipantau • Hati-hati";
   return GenericCard(
     child: Padding(
       padding: const EdgeInsets.all(30),
@@ -16,26 +24,26 @@ GenericCard profileCard(ThemeData theme) {
           direction: Axis.vertical,
           children: [
             Text(
-              "Ardian Budiono",
+              user.nama,
               style: theme.textTheme.displayLarge!.copyWith(
                 fontSize: 24,
               ),
             ),
             Text(
-              "Bagus • Si Rajin",
+              desc,
               style: theme.textTheme.displayLarge!.copyWith(
-                color: ColorPrimary.green,
+                color: color,
                 fontSize: 14,
               ),
             ),
             Text(
-              "2241760089",
+              user.nip,
               style: theme.textTheme.bodySmall!.copyWith(
                 fontSize: 14,
               ),
             ),
             Text(
-              "ardianbudiono@gmail.com",
+              user.email,
               style: theme.textTheme.bodySmall!.copyWith(
                 fontSize: 14,
               ),
@@ -75,7 +83,8 @@ CustomCardContent kompetensiCard(ThemeData theme) {
   );
 }
 
-CustomCardContent statsCardProfile(ThemeData theme) {
+CustomCardContent statsCardProfile(ThemeData theme, String? imageProfile,
+    {required Color color, required Statistik stats}) {
   return CustomCardContent(
     header: [
       CustomIconButton(
@@ -101,7 +110,8 @@ CustomCardContent statsCardProfile(ThemeData theme) {
           Positioned(
             left: 118,
             child: ProfileIcon(
-              "assets/icon/profile.png",
+              imageProfile ?? "assets/icon/profile.png",
+              borderColor: color,
               imageSize: 60,
             ),
           ),
@@ -110,11 +120,11 @@ CustomCardContent statsCardProfile(ThemeData theme) {
               text: TextSpan(
                 children: [
                   TextSpan(
-                    text: "Ardian           ,kamu telah melakukan ",
+                    text: "${stats.firstName}           ,kamu telah melakukan ",
                     style: theme.textTheme.bodyMedium!.copyWith(fontSize: 36),
                   ),
                   TextSpan(
-                    text: "40 penugasan ",
+                    text: "${stats.totalDalamSetahun} penugasan ",
                     style: theme.textTheme.bodyMedium!
                         .copyWith(fontSize: 36, fontWeight: FontWeight.bold),
                   ),
@@ -123,7 +133,7 @@ CustomCardContent statsCardProfile(ThemeData theme) {
                     style: theme.textTheme.bodyMedium!.copyWith(fontSize: 36),
                   ),
                   TextSpan(
-                    text: "tahun 2024 ",
+                    text: "tahun ${DateTime.now().year} ",
                     style: theme.textTheme.bodyMedium!
                         .copyWith(fontSize: 36, fontWeight: FontWeight.bold),
                   ),
@@ -147,7 +157,7 @@ CustomCardContent statsCardProfile(ThemeData theme) {
           )
         ],
       ),
-      StatisticChart()
+      StatisticChart(color: color, stats: stats)
     ],
   );
 }

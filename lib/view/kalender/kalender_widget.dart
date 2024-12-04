@@ -358,7 +358,7 @@ CustomCardContent seminarCard(
     onPressed: () => {
       Navigator.pushNamed(
         context,
-        "/detail_tugas",
+        "/detail_kegiatan",
         arguments: kegiatan.kegiatanId,
       )
     },

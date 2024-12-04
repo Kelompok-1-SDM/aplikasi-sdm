@@ -82,9 +82,9 @@ class _HomeAppBarState extends State<HomeAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    Color color = statistik! > 5
+    Color color = statistik > 5
         ? ColorPrimary.green
-        : statistik! < 5 && statistik! > 3
+        : statistik < 5 && statistik > 3
             ? ColorPrimary.blue
             : ColorPrimary.orange;
 
