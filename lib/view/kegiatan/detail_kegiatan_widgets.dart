@@ -48,7 +48,7 @@ CustomCardContent headerCard(BuildContext context,
     ],
     crumbs: kegiatan.kompetensi!
         .take(4)
-        .map((item) => item.namaKompetensi!)
+        .map((item) => item.namaKompetensi)
         .toList(),
   );
 }
@@ -70,8 +70,7 @@ CustomCardContent bigInfo(BuildContext context,
     title = "Kamu akan menghadiri kegiatan";
   }
 
-  Color color = !kegiatan.isDone! 
-  && normalizedDay.isBefore(now)
+  Color color = !kegiatan.isDone! && normalizedDay.isBefore(now)
       ? ColorPrimary.green
       : ColorPrimary.blue;
   double maxWidth = MediaQuery.of(context).size.width - 100;

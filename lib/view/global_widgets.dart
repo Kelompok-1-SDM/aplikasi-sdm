@@ -1142,7 +1142,7 @@ CustomCardContent kegiatanCard(
     ],
     crumbs: kegiatan.kompetensi!
         .take(4)
-        .map((item) => item.namaKompetensi!)
+        .map((item) => item.namaKompetensi)
         .toList(),
     onPressed: () => {
       Navigator.pushNamed(
