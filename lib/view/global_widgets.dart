@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/config/const.dart';
+import 'package:aplikasi_manajemen_sdm/services/home/home_model.dart';
 import 'package:aplikasi_manajemen_sdm/services/kegiatan/kegiatan_model.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -486,9 +487,8 @@ class LiveChatButton extends StatelessWidget {
                 fontSize: 20),
           )
       ],
-      onPressed: () => {
-        Navigator.pushNamed(context, '/livechat', arguments: idKegiatan)
-      },
+      onPressed: () =>
+          {Navigator.pushNamed(context, '/livechat', arguments: idKegiatan)},
       icon: CustomIconButton(
         "assets/icon/chat.svg",
         size: IconSize.large,
@@ -795,8 +795,47 @@ class ImageLoader extends StatelessWidget {
   }
 }
 
-class StatisticChart extends StatelessWidget {
-  const StatisticChart({super.key});
+class StatisticChart extends StatefulWidget {
+  final Color color;
+  final Statistik stats;
+
+  const StatisticChart({super.key, required this.color, required this.stats});
+
+  @override
+  State<StatisticChart> createState() => _StatisticChartState();
+}
+
+class _StatisticChartState extends State<StatisticChart> {
+  int _selectedYear = DateTime.now().year; // Default to the current year
+  late List<JumlahKegiatan> _filteredKegiatan;
+
+  @override
+  void initState() {
+    super.initState();
+    _filterDataByYear();
+  }
+
+  void _filterDataByYear() {
+    setState(() {
+      _filteredKegiatan = widget.stats.jumlahKegiatan
+              ?.where((kegiatan) => kegiatan.year == _selectedYear)
+              .toList() ??
+          [];
+    });
+  }
+
+  List<FlSpot> _generateChartData() {
+    List<FlSpot> spots = [];
+    for (int i = 1; i <= 12; i++) {
+      final kegiatan = _filteredKegiatan.firstWhere(
+        (item) => item.month == i,
+        orElse: () => JumlahKegiatan(month: i, jumlahKegiatan: 0),
+      );
+      spots.add(
+          FlSpot(i.toDouble() - 1, (kegiatan.jumlahKegiatan ?? 0).toDouble()));
+    }
+    return spots;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -811,30 +850,54 @@ class StatisticChart extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Statistik-2024",
+                  "Statistik $_selectedYear",
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                         fontSize: 14,
                       ),
                 ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: ShapeDecoration(
-                    color: ColorNeutral.black,
-                    shape: SmoothRectangleBorder(
-                      borderRadius: SmoothBorderRadius(
-                        cornerRadius: 20,
-                        cornerSmoothing: .6,
+                DropdownButtonHideUnderline(
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: ShapeDecoration(
+                      color: ColorNeutral.black,
+                      shape: SmoothRectangleBorder(
+                        borderRadius: SmoothBorderRadius(
+                          cornerRadius: 20,
+                          cornerSmoothing: .6,
+                        ),
                       ),
                     ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        DropdownButton<int>(
+                          value: _selectedYear,
+                          dropdownColor: ColorNeutral.black,
+                          icon: const Icon(
+                            Icons.keyboard_arrow_down,
+                            color: Colors
+                                .white, // Adjust the color to match the theme
+                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                    color: Colors.white,
+                                  ),
+                          items: _getDropdownItems(),
+                          onChanged: (year) {
+                            if (year != null) {
+                              setState(() {
+                                _selectedYear = year;
+                                _filterDataByYear();
+                              });
+                            }
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                  child: CustomIconButton(
-                    "assets/icon/chevron-down.svg",
-                    colorBackground: ColorNeutral.black,
-                    onPressed: () => {},
-                    text: "2024",
-                    wasTextInRight: false,
-                  ),
-                ),
+                )
               ],
             ),
           ),
@@ -918,25 +981,15 @@ class StatisticChart extends StatelessWidget {
                 lineBarsData: [
                   LineChartBarData(
                     isCurved: true,
-                    color: ColorPrimary.green,
+                    color: widget.color,
                     dotData: FlDotData(show: false),
-                    spots: [
-                      FlSpot(0, 4),
-                      FlSpot(1, 5),
-                      FlSpot(2, 4),
-                      FlSpot(3, 3),
-                      FlSpot(4, 4),
-                      FlSpot(5, 3),
-                      FlSpot(6, 5),
-                      FlSpot(7, 10),
-                      FlSpot(8, 8),
-                    ],
+                    spots: _generateChartData(),
                     isStepLineChart: false,
                     belowBarData: BarAreaData(
                       show: true,
                       gradient: LinearGradient(
                         colors: [
-                          ColorPrimary.green.withOpacity(0.3),
+                          widget.color.withOpacity(0.3),
                           Colors.transparent,
                         ],
                         begin: Alignment.topCenter,
@@ -952,10 +1005,28 @@ class StatisticChart extends StatelessWidget {
       ),
     );
   }
+
+  List<DropdownMenuItem<int>> _getDropdownItems() {
+    final years = widget.stats.jumlahKegiatan
+            ?.map((item) => item.year)
+            .toSet()
+            .toList()
+            .whereType<int>()
+            .toList() ??
+        [];
+    years.sort();
+    return years
+        .map((year) => DropdownMenuItem<int>(
+              value: year,
+              child: Text(year.toString()),
+            ))
+        .toList();
+  }
 }
 
 CustomCardContent tawaranTugasCard(
-  ThemeData theme, {
+  BuildContext context, {
+  required String kegiatanId,
   required String title,
   required DateTime tanggal,
   required String lokasi,
@@ -968,7 +1039,7 @@ CustomCardContent tawaranTugasCard(
     header: [
       Text(
         "Kamu akan menghadiri",
-        style: theme.textTheme.bodySmall!.copyWith(fontSize: 14),
+        style: Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 14),
       ),
     ],
     actionIcon: [
@@ -996,6 +1067,13 @@ CustomCardContent tawaranTugasCard(
       )
     ],
     crumbs: tags,
+    onPressed: () => {
+      Navigator.pushNamed(
+        context,
+        "/detail_kegiatan",
+        arguments: kegiatanId,
+      )
+    },
   );
 }
 

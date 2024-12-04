@@ -251,7 +251,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         (index) => Column(
                           children: [
                             tawaranTugasCard(
-                              Theme.of(context),
+                              context,
+                              kegiatanId:
+                                  data!.duaTugasTerbaru![index].kegiatanId!,
                               title: data!.duaTugasTerbaru![index].judul!,
                               tanggal:
                                   data!.duaTugasTerbaru![index].tanggalMulai!,
