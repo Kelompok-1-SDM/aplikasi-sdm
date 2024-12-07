@@ -1,5 +1,3 @@
-import 'package:aplikasi_manajemen_sdm/services/user/user_model.dart';
-
 class KegiatanResponse {
   final String? kegiatanId;
   final String? judul;
@@ -14,7 +12,6 @@ class KegiatanResponse {
   final List<Lampiran>? lampiran;
   final List<Agenda>? agenda;
   final List<User>? users;
-  final List<Kompetensi>? kompetensi;
 
   KegiatanResponse({
     this.kegiatanId,
@@ -30,7 +27,6 @@ class KegiatanResponse {
     this.lampiran,
     this.agenda,
     this.users,
-    this.kompetensi,
   });
 
   factory KegiatanResponse.fromJson(Map<String, dynamic> json) {
@@ -59,10 +55,7 @@ class KegiatanResponse {
           .toList(),
       users: (json['users'] as List<dynamic>?)
           ?.map((item) => User.fromJson(item))
-          .toList(),
-      kompetensi: (json['kompetensi'] as List<dynamic>?)
-          ?.map((item) => Kompetensi.fromJson(item))
-          .toList(),
+          .toList()
     );
   }
 
@@ -80,8 +73,7 @@ class KegiatanResponse {
       'createdAt': createdAt?.toIso8601String(),
       'lampiran': lampiran?.map((item) => item.toJson()).toList(),
       'agenda': agenda?.map((item) => item.toJson()).toList(),
-      'users': users?.map((item) => item.toJson()).toList(),
-      'kompetensi': kompetensi?.map((item) => item.toJson()).toList(),
+      'users': users?.map((item) => item.toJson()).toList()
     };
   }
 }
@@ -201,7 +193,6 @@ class User {
   final DateTime? createdAt;
   final String? namaJabatan;
   final bool? isPic;
-  final List<Kompetensi>? kompetensi;
 
   User({
     this.userId,
@@ -213,8 +204,7 @@ class User {
     this.updatedAt,
     this.createdAt,
     this.namaJabatan,
-    this.isPic,
-    this.kompetensi,
+    this.isPic
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -232,10 +222,7 @@ class User {
           ? DateTime.parse(json['createdAt'])
           : null,
       namaJabatan: json['namaJabatan'],
-      isPic: json['isPic'],
-      kompetensi: (json['kompetensi'] as List<dynamic>?)
-          ?.map((item) => Kompetensi.fromJson(item))
-          .toList(),
+      isPic: json['isPic']
     );
   }
 
@@ -250,8 +237,7 @@ class User {
       'updatedAt': updatedAt?.toIso8601String(),
       'createdAt': createdAt?.toIso8601String(),
       'namaJabatan': namaJabatan,
-      'isPic': isPic,
-      'kompetensi': kompetensi?.map((item) => item.toJson()).toList(),
+      'isPic': isPic
     };
   }
 }

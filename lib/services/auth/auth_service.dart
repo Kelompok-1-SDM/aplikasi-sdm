@@ -31,14 +31,14 @@ class AuthService {
           DateTime expiryDate = DateTime.now().add(Duration(days: 7));
           await Storage.saveToken(token, expiryDate);
           await Storage.saveMyInfo(UserData(
-              userId: data.data!.userId.toString(),
-              nip: data.data!.nip.toString(),
-              nama: data.data!.nama.toString(),
-              email: data.data!.email.toString(),
-              role: data.data!.role.toString(),
-              profileImage: data.data!.profileImage.toString(),
-              createdAt: data.data!.createdAt.toString(),
-              kompetensi: []));
+            userId: data.data!.userId.toString(),
+            nip: data.data!.nip.toString(),
+            nama: data.data!.nama.toString(),
+            email: data.data!.email.toString(),
+            role: data.data!.role.toString(),
+            profileImage: data.data!.profileImage.toString(),
+            createdAt: data.data!.createdAt.toString(),
+          ));
           print("Token saved, valid until: $expiryDate");
         }
 

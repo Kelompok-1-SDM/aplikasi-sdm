@@ -232,7 +232,10 @@ class _HomeScreenState extends State<HomeScreen> {
             else
               Column(
                 children: [
-                  homeCard(Theme.of(context), data?.jumlahTugasBulanSekarang,
+                  homeCard(
+                      context,
+                      data?.jumlahTugasBulanSekarang ??
+                          JumlahTugasBulanSekarang(count: 0),
                       widget.onItemTapped // Display home card with data
                       ),
                   const SizedBox(height: 13),
@@ -242,7 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       data!.tugasBerlangsung, // Only show if data is available
                     ),
                   const SizedBox(height: 13),
-                  if (data !=
+                  if (data?.duaTugasTerbaru !=
                       null) // Check if data is not null before accessing it
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -250,25 +253,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         data!.duaTugasTerbaru!.length,
                         (index) => Column(
                           children: [
-                            tawaranTugasCard(
-                              context,
-                              kegiatanId:
-                                  data!.duaTugasTerbaru![index].kegiatanId!,
-                              title: data!.duaTugasTerbaru![index].judul!,
-                              tanggal:
-                                  data!.duaTugasTerbaru![index].tanggalMulai!,
-                              lokasi: data!.duaTugasTerbaru![index].lokasi!,
-                              tags: data!.duaTugasTerbaru![index].kompetensi!
-                                  .take(4)
-                                  .toList(),
-                              backgroundColor: ColorRandom.getRandomColor(),
-                            ),
+                            kegiatanCard(context,
+                                kegiatan: data!.duaTugasTerbaru![index]),
                             const SizedBox(height: 13),
                           ],
                         ),
                       ),
                     ),
-                  statsCard(Theme.of(context), data?.statistik, widget.userData,
+                  statsCard(context, data?.statistik, widget.userData,
                       avg), // Always show stats card
                   const SizedBox(height: 13),
                   const Text(

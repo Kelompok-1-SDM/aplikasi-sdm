@@ -2,56 +2,48 @@ import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/config/const.dart';
 import 'package:aplikasi_manajemen_sdm/services/kegiatan/kegiatan_model.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
+import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // Seminar card widget
-CustomCardContent headerCard(BuildContext context,
-    {required KegiatanResponse kegiatan}) {
-  String title;
-  DateTime normalizedDay = DateTime(
-    kegiatan.tanggalMulai!.year,
-    kegiatan.tanggalMulai!.month,
-    kegiatan.tanggalMulai!.day,
-  );
-  DateTime now = DateTime.now();
-  DateTime nowNormalized = DateTime(now.year, now.month, now.day);
+// CustomCardContent headerCard(BuildContext context,
+//     {required KegiatanResponse kegiatan}) {
+//   String title;
+//   DateTime normalizedDay = DateTime(
+//     kegiatan.tanggalMulai!.year,
+//     kegiatan.tanggalMulai!.month,
+//     kegiatan.tanggalMulai!.day,
+//   );
+//   DateTime now = DateTime.now();
+//   DateTime nowNormalized = DateTime(now.year, now.month, now.day);
 
-  if (normalizedDay.isBefore(nowNormalized) && kegiatan.isDone!) {
-    title = "Kamu telah melaksanakan kegiatan";
-  } else if (normalizedDay.isAfter(nowNormalized)) {
-    title = "Kamu akan menghadiri kegiatan";
-  } else {
-    title = "Kamu sedang melaksanakan";
-  }
-  return CustomCardContent(
-    header: [Text(title)],
-    title: kegiatan.judul,
-    actionIcon: [
-      CustomIconButton(
-        "assets/icon/arrow-45.svg",
-        colorBackground: ColorNeutral.black,
-      )
-    ],
-    colorBackground: ColorRandom.getRandomColor(),
-    descIcon: [
-      CustomIconButton(
-        "assets/icon/calendar.svg",
-        colorBackground: Colors.transparent,
-        text: DateFormat.yMMMd().add_jm().format(kegiatan.tanggalMulai!),
-      ),
-      CustomIconButton(
-        "assets/icon/location.svg",
-        colorBackground: Colors.transparent,
-        text: kegiatan.lokasi,
-      ),
-    ],
-    crumbs: kegiatan.kompetensi!
-        .take(4)
-        .map((item) => item.namaKompetensi)
-        .toList(),
-  );
-}
+//   if (normalizedDay.isBefore(nowNormalized) && kegiatan.isDone!) {
+//     title = "Kamu telah melaksanakan kegiatan";
+//   } else if (normalizedDay.isAfter(nowNormalized)) {
+//     title = "Kamu akan menghadiri kegiatan";
+//   } else {
+//     title = "Kamu sedang melaksanakan";
+//   }
+//   return CustomCardContent(
+//     header: [Text(title)],
+//     title: kegiatan.judul,
+//     colorBackground: ColorRandom.getRandomColor(),
+//     descIcon: [
+//       CustomIconButton(
+//         "assets/icon/calendar.svg",
+//         colorBackground: Colors.transparent,
+//         text: DateFormat.yMMMd().add_jm().format(kegiatan.tanggalMulai!),
+//       ),
+//       CustomIconButton(
+//         "assets/icon/location.svg",
+//         colorBackground: Colors.transparent,
+//         text: kegiatan.lokasi,
+//       ),
+//     ]
+//   );
+// }
 
 CustomCardContent bigInfo(BuildContext context,
     {required KegiatanResponse kegiatan, required bool wasMePic}) {
@@ -73,7 +65,7 @@ CustomCardContent bigInfo(BuildContext context,
   Color color = !kegiatan.isDone! && normalizedDay.isBefore(now)
       ? ColorPrimary.green
       : ColorPrimary.blue;
-  double maxWidth = MediaQuery.of(context).size.width - 100;
+  double maxWidth = MediaQuery.of(context).size.width - 120;
   return CustomCardContent(
     colorBackground: color,
     header: [
@@ -84,8 +76,8 @@ CustomCardContent bigInfo(BuildContext context,
       )
     ],
     otherWidget: [
-      SizedBox(
-        width: maxWidth,
+      ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: maxWidth),
         child: Row(
           children: [
             CustomIconButton(
@@ -107,8 +99,8 @@ CustomCardContent bigInfo(BuildContext context,
           ],
         ),
       ),
-      SizedBox(
-        width: maxWidth,
+      ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: maxWidth),
         child: Row(
           children: [
             CustomIconButton(
@@ -130,8 +122,8 @@ CustomCardContent bigInfo(BuildContext context,
           ],
         ),
       ),
-      SizedBox(
-        width: maxWidth,
+      ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: maxWidth),
         child: Row(
           children: [
             CustomIconButton(
@@ -153,8 +145,8 @@ CustomCardContent bigInfo(BuildContext context,
           ],
         ),
       ),
-      SizedBox(
-        width: maxWidth,
+      ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: maxWidth),
         child: Row(
           children: [
             CustomIconButton(
@@ -180,7 +172,31 @@ CustomCardContent bigInfo(BuildContext context,
   );
 }
 
-CustomBigButton _anggotaCard(bool withText, User user) {
+Container _crumbWidget(String title, ThemeData theme) {
+    Color textColor = ColorNeutral.black;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+      decoration: ShapeDecoration(
+        color: ColorNeutral.white,
+        shape: SmoothRectangleBorder(
+          borderRadius: SmoothBorderRadius(
+            cornerRadius: 13,
+          ),
+        ),
+      ),
+      child: Text(
+        title,
+        textAlign: TextAlign.center,
+        style: theme.textTheme.displayMedium!.copyWith(
+              fontSize: 16,
+              color: textColor,
+            ),
+      ),
+    );
+  }
+
+CustomBigButton _anggotaCard(ThemeData theme, User user) {
   return CustomBigButton(
     wasIconOnRight: true,
     otherWidget: [
@@ -207,7 +223,7 @@ CustomBigButton _anggotaCard(bool withText, User user) {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Aditya Soemarno",
+              user.nama!,
               style: TextStyle(
                 color: ColorNeutral.white,
                 fontWeight: FontWeight.w700,
@@ -215,14 +231,6 @@ CustomBigButton _anggotaCard(bool withText, User user) {
               ),
             ),
             SizedBox(height: 4),
-            Text(
-              "Pemateri",
-              style: TextStyle(
-                color: ColorNeutral.white,
-                fontWeight: FontWeight.w400,
-                fontSize: 14,
-              ),
-            ),
           ],
         ),
       ),
@@ -237,7 +245,7 @@ CustomBigButton _anggotaCard(bool withText, User user) {
   );
 }
 
-CustomCardContent dosenCard(ThemeData theme) {
+CustomCardContent dosenCard(ThemeData theme, List<User> users) {
   return CustomCardContent(
     colorBackground: ColorNeutral.white,
     header: [
@@ -249,127 +257,78 @@ CustomCardContent dosenCard(ThemeData theme) {
         ),
       ),
     ],
-    otherWidget: [
-      // _anggotaCard()
-      // AnggotaCard(withText: true, withIcon: true),
-      // AnggotaCard2(withText: true, withIcon: true),
-      // AnggotaCard3(withText: true, withIcon: true),
-    ],
+    otherWidget: List.generate(3, (index) => Column(children: [
+      _anggotaCard(theme, users[index]),
+      SizedBox(height: 10,)
+    ],))
   );
 }
 
-class SuratButton extends StatelessWidget {
-  const SuratButton({super.key, required bool withText});
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomBigButton(
-      wasIconOnRight: true,
-      otherWidget: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Surat No.1546",
-              style: TextStyle(
-                color: ColorNeutral.white,
-                fontWeight: FontWeight.w700,
-                fontSize: 20,
-              ),
-            ),
-            SizedBox(height: 4), // Memberikan jarak antara kedua teks
-            Text(
-              "Silahkan cek surat",
-              style: TextStyle(
-                color: ColorNeutral.white,
-                fontWeight: FontWeight.w400,
-                fontSize: 14, // Ukuran font yang lebih kecil
-              ),
-            ),
-          ],
-        ),
-      ],
-      onPressed: () => {},
-      icon: CustomIconButton(
-        "assets/icon/paper.svg",
-        size: IconSize.large,
-        colorBackground: ColorNeutral.gray,
-      ),
+Future<void> _openBrowserWithDownloadLink(String fileUrl) async {
+  final Uri url = Uri.parse(fileUrl);
+  if (await canLaunchUrl(url)) {
+    await launchUrl(
+      url,
+      mode: LaunchMode.externalApplication, // Opens in the external browser
     );
+  } else {
+    throw 'Could not launch $fileUrl';
   }
 }
 
-class SertifButton extends StatelessWidget {
-  const SertifButton({super.key, required bool withText});
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomBigButton(
-      wasIconOnRight: true,
-      otherWidget: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Sertifikat Semnas",
-              style: TextStyle(
-                color: ColorNeutral.white,
-                fontWeight: FontWeight.w700,
-                fontSize: 20,
-              ),
-            ),
-            SizedBox(height: 4), // Memberikan jarak antara kedua teks
-            Text(
-              "Silahkan cek sertifikat",
-              style: TextStyle(
-                color: ColorNeutral.white,
-                fontWeight: FontWeight.w400,
-                fontSize: 14, // Ukuran font yang lebih kecil
-              ),
-            ),
-          ],
+CustomBigButton fileButton(Lampiran lampiran) {
+  String nama = lampiran.nama!.toLowerCase();
+  Color color = nama.contains('sertifikat') || nama.contains('tugas')
+      ? ColorPrimary.orange
+      : ColorNeutral.black;
+  return CustomBigButton(
+    wasIconOnRight: true,
+    buttonColor: color,
+    otherWidget: [
+      Text(
+        lampiran.nama!,
+        style: TextStyle(
+          color: ColorNeutral.white,
+          fontWeight: FontWeight.w700,
+          fontSize: 20,
         ),
-      ],
-      onPressed: () => {},
-      icon: CustomIconButton(
-        "assets/icon/paper.svg",
-        size: IconSize.large,
-        colorBackground: Color(0xFFFF7247),
-        iconColorCustom: ColorNeutral.white,
       ),
-      buttonColor: ColorPrimary.orange,
-    );
-  }
+    ],
+    padding: EdgeInsets.symmetric(horizontal: 10),
+    onPressed: () => _openBrowserWithDownloadLink(lampiran.url!),
+    icon: CustomIconButton(
+      "assets/icon/paper.svg",
+      size: IconSize.large,
+      colorBackground: ColorNeutral.gray,
+    ),
+  );
 }
 
-class FileCard extends StatelessWidget {
-  const FileCard({super.key});
-
-  CustomCardContent fileCard(ThemeData theme) {
-    return CustomCardContent(
-      colorBackground: ColorNeutral.white,
-      header: [
-        Text(
-          "Dokumen",
-          style: theme.textTheme.bodyMedium!.copyWith(
-            fontSize: 15,
-            height: 1,
-          ),
+CustomCardContent fileCard(ThemeData theme,
+    {required List<Lampiran> lampirans}) {
+  return CustomCardContent(
+    colorBackground: ColorNeutral.white,
+    header: [
+      Text(
+        "Arsip file penugasan",
+        style: theme.textTheme.bodyMedium!.copyWith(
+          fontSize: 15,
+          height: 1,
         ),
-      ],
-      otherWidget: [
-        SuratButton(withText: true),
-        SertifButton(withText: true),
-      ],
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-
-    return fileCard(theme);
-  }
+      ),
+    ],
+    otherWidget: List.generate(
+      lampirans.length,
+      (index) => Column(
+        children: [
+          fileButton(lampirans[index]),
+          const SizedBox(
+            height: 8,
+          )
+        ],
+      ),
+    ),
+  );
 }
 
 class AgendaCard extends StatelessWidget {

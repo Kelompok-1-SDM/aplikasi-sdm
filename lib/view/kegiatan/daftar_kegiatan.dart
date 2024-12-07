@@ -17,7 +17,7 @@ class DaftarKegiatan extends StatefulWidget {
 }
 
 class _DaftarKegiatanState extends State<DaftarKegiatan> {
-  List<KegiatanResponse>? kegiatanDat;
+  Map<int, List<KegiatanResponse>> groupedKegiatan = {};
   bool isLoading = true;
   final KegiatanService _kegiatanService = KegiatanService();
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
@@ -26,61 +26,70 @@ class _DaftarKegiatanState extends State<DaftarKegiatan> {
   @override
   void initState() {
     super.initState();
-    // Trigger refresh when the page first loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _refreshIndicatorKey.currentState?.show(); // Show the refresh indicator
+      _refreshIndicatorKey.currentState?.show();
       fetchData();
     });
   }
 
   Future<void> fetchData() async {
     setState(() {
-      isLoading = true; // Show loading indicator during initial fetch
+      isLoading = true;
     });
 
     try {
-      // Fetch home data from the API
       final BaseResponse<List<KegiatanResponse>> response =
           await _kegiatanService.fetchListKegiatanByUser(
               isDone: widget.isHistori);
 
       if (response.success && response.data != null) {
         if (mounted) {
-          // Check if the widget is still mounted
+          // Group activities by year
           setState(() {
-            kegiatanDat = response.data;
+            groupedKegiatan = _groupByYear(response.data!);
           });
         }
       } else {
         if (mounted && response.message != 'Kegiatan not found') {
-          _showErrorDialog(context, "Fetch Failed",
-              response.message); // Pass the current valid context
+          _showErrorDialog(context, "Fetch Failed", response.message);
         }
       }
     } catch (e) {
       print("Error during data fetch: $e");
       if (mounted) {
-        _showErrorDialog(context, "Error",
-            "An error occurred while fetching data: $e"); // Pass the current valid context
+        _showErrorDialog(
+            context, "Error", "An error occurred while fetching data: $e");
       }
     } finally {
       if (mounted) {
-        // Check if the widget is still mounted
         setState(() {
-          isLoading = false; // Hide loading indicator
+          isLoading = false;
         });
       }
     }
   }
 
+  /// Groups a list of KegiatanResponse by year (from tanggalMulai).
+  Map<int, List<KegiatanResponse>> _groupByYear(
+      List<KegiatanResponse> kegiatanList) {
+    return kegiatanList.fold<Map<int, List<KegiatanResponse>>>({}, (map, item) {
+      final year = item.tanggalMulai!.year; // Extract the year
+      if (!map.containsKey(year)) {
+        map[year] = [];
+      }
+      map[year]!.add(item);
+      return map;
+    });
+  }
+
   Future<void> _refreshData() async {
-    await fetchData(); // Refresh data using the existing fetchData method
+    await fetchData();
   }
 
   void _showErrorDialog(
       BuildContext dialogContext, String title, String message) {
     showDialog(
-      context: dialogContext, // Use the passed-in parent context
+      context: dialogContext,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(title),
@@ -113,20 +122,48 @@ class _DaftarKegiatanState extends State<DaftarKegiatan> {
             ),
             const SizedBox(height: 24),
             // Handle loading state or empty data
-            if (isLoading || kegiatanDat == null || kegiatanDat!.isEmpty)
-              const SizedBox.shrink()
-            else
+            if (isLoading) const SizedBox.shrink(),
+            if (!isLoading && groupedKegiatan.isNotEmpty)
               Column(
-                children: List.generate(
-                  kegiatanDat!.length,
-                  (index) => kegiatanCard(
-                    context: context,
-                    kegiatan: kegiatanDat![index],
-                  ),
-                ),
+                children: groupedKegiatan.entries.map((entry) {
+                  final year = entry.key;
+                  final kegiatanList = entry.value;
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("$year",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(fontSize: 12)),
+                            Divider(
+                              color: ColorNeutral.gray,
+                            )
+                          ],
+                        ),
+                      ),
+                      ...List.generate(
+                        kegiatanList.length,
+                        (index) => Column(
+                          children: [
+                            kegiatanCard(
+                              context,
+                              kegiatan: kegiatanList[index],
+                            ),
+                            SizedBox(height: 10,)
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                }).toList(),
               ),
             const SizedBox(height: 24),
-            // Always show the bottom text
             const Text(
               "Itu saja yang kami temukan",
               style: TextStyle(

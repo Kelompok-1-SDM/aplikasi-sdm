@@ -1,12 +1,15 @@
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/config/const.dart';
 import 'package:aplikasi_manajemen_sdm/services/home/home_model.dart';
+import 'package:aplikasi_manajemen_sdm/services/kegiatan/kegiatan_model.dart';
 import 'package:aplikasi_manajemen_sdm/services/shared_prefrences.dart';
 import 'package:aplikasi_manajemen_sdm/services/user/user_model.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import 'dart:ui' as ui; // Alias the dart:ui import
 
 class HomeAppBar extends StatefulWidget {
   final UserData? userdat;
@@ -141,12 +144,12 @@ class Navbar extends StatelessWidget {
             duration: const Duration(milliseconds: 300), // Animation duration
             curve: Curves.easeInOut,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: ShapeDecoration(
                 color: ColorNeutral.black,
                 shape: SmoothRectangleBorder(
                   borderRadius: SmoothBorderRadius(
-                    cornerRadius: 24,
+                    cornerRadius: 32,
                     cornerSmoothing: 0,
                   ),
                 ),
@@ -332,7 +335,7 @@ SizedBox headline(ThemeData theme, String username) {
   );
 }
 
-CustomCardContent currentTask(ThemeData theme, TugasBerlangsung? tugas) {
+CustomCardContent currentTask(ThemeData theme, KegiatanResponse? tugas) {
   return CustomCardContent(
     header: [
       Text(
@@ -340,7 +343,7 @@ CustomCardContent currentTask(ThemeData theme, TugasBerlangsung? tugas) {
         style: theme.textTheme.bodySmall!.copyWith(fontSize: 14),
       ),
     ],
-    title: tugas?.judulKegiatan,
+    title: tugas?.judul,
     actionIcon: [
       CustomIconButton(
         "assets/icon/category.svg",
@@ -365,7 +368,7 @@ CustomCardContent currentTask(ThemeData theme, TugasBerlangsung? tugas) {
   );
 }
 
-CustomCardContent homeCard(ThemeData theme, JumlahTugasBulanSekarang? data,
+CustomCardContent homeCard(BuildContext context, JumlahTugasBulanSekarang? data,
     Function(int) onItemTapped) {
   return CustomCardContent(
     header: [
@@ -394,13 +397,13 @@ CustomCardContent homeCard(ThemeData theme, JumlahTugasBulanSekarang? data,
     otherWidget: [
       Text(
         "Kamu memiliki",
-        style: theme.textTheme.bodyMedium!.copyWith(fontSize: 16),
+        style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
       ),
       Text(
         "${data!.count} Kegiatan di Bulan ${DateFormat('MMMM').format(DateTime.now())} 🔥",
         softWrap: true,
         textWidthBasis: TextWidthBasis.parent,
-        style: theme.textTheme.displayMedium!.copyWith(
+        style: Theme.of(context).textTheme.displayMedium!.copyWith(
           fontSize: 32,
         ),
       ),
@@ -409,18 +412,34 @@ CustomCardContent homeCard(ThemeData theme, JumlahTugasBulanSekarang? data,
         thickness: 1,
       ),
     ],
-    crumbs: data.kompetensiList,
+    onPressed: () => onItemTapped(0),
   );
 }
 
 CustomCardContent statsCard(
-    ThemeData theme, Statistik? data, UserData userInfo, double avg) {
+    BuildContext context, Statistik? data, UserData userInfo, double avg) {
   Color color = avg > 5
       ? ColorPrimary.green
       : avg < 5 && avg > 3
           ? ColorPrimary.blue
           : ColorPrimary.orange;
+
+  double measureTextWidth(String text, TextStyle style) {
+    final textPainter = TextPainter(
+      text: TextSpan(text: text, style: style),
+      textDirection:
+          ui.TextDirection.ltr, // Use TextDirection from material.dart
+    );
+    textPainter.layout();
+    return textPainter.width;
+  }
+
+  final double textWidth = measureTextWidth(
+    "${userInfo.nama.split(' ')[0]},kamu telah melakukan ",
+    Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 36),
+  );
   return CustomCardContent(
+    onPressed: () => {Navigator.pushNamed(context, '/profile')},
     header: [
       CustomIconButton(
         "assets/icon/stats.svg",
@@ -438,12 +457,12 @@ CustomCardContent statsCard(
     otherWidget: [
       Text(
         "Statistik",
-        style: theme.textTheme.bodyMedium!.copyWith(fontSize: 14),
+        style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14),
       ),
       Stack(
         children: [
           Positioned(
-            left: 118,
+            left: textWidth - 384,
             child: ProfileIcon(
               borderColor: color,
               userInfo.profileImage,
@@ -457,20 +476,30 @@ CustomCardContent statsCard(
                   TextSpan(
                     text:
                         "${userInfo.nama.split(' ')[0]}             ,kamu telah melakukan ",
-                    style: theme.textTheme.bodyMedium!.copyWith(fontSize: 36),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium!
+                        .copyWith(fontSize: 36),
                   ),
                   TextSpan(
-                    text: "${data?.totalDalamSetahun} penugasan ",
-                    style: theme.textTheme.bodyMedium!
+                    text: "${data?.totalDalamSetahun ?? 0} penugasan ",
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium!
                         .copyWith(fontSize: 36, fontWeight: FontWeight.bold),
                   ),
                   TextSpan(
                     text: "dalam",
-                    style: theme.textTheme.bodyMedium!.copyWith(fontSize: 36),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium!
+                        .copyWith(fontSize: 36),
                   ),
                   TextSpan(
                     text: " setahun ini",
-                    style: theme.textTheme.bodyMedium!
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium!
                         .copyWith(fontSize: 36, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -494,7 +523,6 @@ CustomCardContent statsCard(
         ],
       )
     ],
-    // crumbs: ["🧑‍🏫 Pemateri", "⚖️ Juri", "🤖 AI"],
   );
 }
 
