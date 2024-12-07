@@ -133,41 +133,47 @@ class _KalenderState extends State<Kalender> {
               children: [
                 HomeAppBar(userdat: widget.userData),
                 const SizedBox(height: 24),
-                if (_events.isNotEmpty)
-                  CustomTableCalendar(
-                    events: _events,
-                    onDateSelected: onDateSelected,
-                  )
+                // if (_events.isNotEmpty)
+                CustomTableCalendar(
+                  events: _events,
+                  onDateSelected: onDateSelected,
+                )
               ],
             ),
           ),
           const SizedBox(height: 24),
-          if (_events.isNotEmpty)
-            CustomBottomSheet(
-              maxHeight: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-              child: Builder(
-                builder: (context) {
-                  return Column(
-                    children: [
-                      if (filteredKegiatan != null &&
-                          filteredKegiatan!.isNotEmpty)
-                        ...filteredKegiatan!.map((kegiatan) {
-                          return Column(
-                            children: [
-                              seminarCard(
-                                  context: context, kegiatan: kegiatan),
-                              const SizedBox(height: 20),
-                            ],
-                          );
-                        })
-                      else
-                        const Text("No data for the selected date"),
-                    ],
-                  );
-                },
-              ),
-            )
+          // if (_events.isNotEmpty)
+          CustomBottomSheet(
+            maxHeight: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+            child: Builder(
+              builder: (context) {
+                return Column(
+                  children: [
+                    if (filteredKegiatan != null &&
+                        filteredKegiatan!.isNotEmpty)
+                      ...filteredKegiatan!.map((kegiatan) {
+                        return Column(
+                          children: [
+                            seminarCard(context: context, kegiatan: kegiatan),
+                            const SizedBox(height: 20),
+                          ],
+                        );
+                      })
+                    else
+                      Column(
+                        children: [
+                          const Text("No data for the selected date"),
+                          SizedBox(
+                            height: 200,
+                          )
+                        ],
+                      ),
+                  ],
+                );
+              },
+            ),
+          )
         ],
       ),
     );

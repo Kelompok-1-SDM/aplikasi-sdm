@@ -1,9 +1,11 @@
-import 'package:aplikasi_manajemen_sdm/config/const.dart';
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/services/home/home_model.dart';
 import 'package:aplikasi_manajemen_sdm/services/user/user_model.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
 import 'package:flutter/material.dart';
+
+
+import 'dart:ui' as ui; // Alias the dart:ui import
 
 GenericCard profileCard(
     ThemeData theme, UserData user, double average, Color color) {
@@ -61,30 +63,22 @@ GenericCard profileCard(
   );
 }
 
-CustomCardContent kompetensiCard(ThemeData theme) {
-  return CustomCardContent(
-    header: [
-      Text(
-        "Kompetensi yang dikuasai",
-        style: theme.textTheme.displayMedium!.copyWith(
-          fontSize: 16,
-        ),
-      ),
-    ],
-    description: "Kompetensi berdasarkan penugasan yang telah dilakukan",
-    crumbs: [
-      "⚖️ Juri",
-      "🧑‍🏫 Pemateri",
-      "🤖 Iot",
-      "🤖 AI",
-      "✨ Teknologi",
-      "🧠 Penalaran",
-    ],
-  );
-}
-
 CustomCardContent statsCardProfile(ThemeData theme, String? imageProfile,
     {required Color color, required Statistik stats}) {
+  double measureTextWidth(String text, TextStyle style) {
+    final textPainter = TextPainter(
+      text: TextSpan(text: text, style: style),
+      textDirection:
+          ui.TextDirection.ltr, // Use TextDirection from material.dart
+    );
+    textPainter.layout();
+    return textPainter.width;
+  }
+
+  final double textWidth = measureTextWidth(
+    "${stats.firstName},kamu telah melakukan ",
+    theme.textTheme.bodyMedium!.copyWith(fontSize: 36),
+  );
   return CustomCardContent(
     header: [
       CustomIconButton(
@@ -108,7 +102,7 @@ CustomCardContent statsCardProfile(ThemeData theme, String? imageProfile,
       Stack(
         children: [
           Positioned(
-            left: 118,
+            left: textWidth - 384,
             child: ProfileIcon(
               imageProfile ?? "assets/icon/profile.png",
               borderColor: color,
@@ -120,7 +114,7 @@ CustomCardContent statsCardProfile(ThemeData theme, String? imageProfile,
               text: TextSpan(
                 children: [
                   TextSpan(
-                    text: "${stats.firstName}           ,kamu telah melakukan ",
+                    text: "${stats.firstName}             ,kamu telah melakukan ",
                     style: theme.textTheme.bodyMedium!.copyWith(fontSize: 36),
                   ),
                   TextSpan(
@@ -129,7 +123,7 @@ CustomCardContent statsCardProfile(ThemeData theme, String? imageProfile,
                         .copyWith(fontSize: 36, fontWeight: FontWeight.bold),
                   ),
                   TextSpan(
-                    text: "di",
+                    text: "di ",
                     style: theme.textTheme.bodyMedium!.copyWith(fontSize: 36),
                   ),
                   TextSpan(
@@ -141,20 +135,6 @@ CustomCardContent statsCardProfile(ThemeData theme, String? imageProfile,
               ),
             ),
           ),
-        ],
-      ),
-      Wrap(
-        direction: Axis.horizontal,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: 8,
-        children: [
-          Text("Ketuk untuk melihat lebih detail"),
-          CustomIconButton(
-            "assets/icon/arrow-45.svg",
-            size: IconSize.small,
-            padding: EdgeInsets.zero,
-            colorBackground: ColorNeutral.black,
-          )
         ],
       ),
       StatisticChart(color: color, stats: stats)

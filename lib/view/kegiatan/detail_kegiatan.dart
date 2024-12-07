@@ -152,8 +152,7 @@ class _DetailKegiatanState extends State<DetailKegiatan> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    if (!isLoading)
-                      headerCard(context, kegiatan: data!),
+                    if (!isLoading) kegiatanCard(context, kegiatan: data!, isFromDetail: true),
                     const SizedBox(height: 10),
                     if (!isLoading)
                       Column(
@@ -197,35 +196,26 @@ class _DetailKegiatanState extends State<DetailKegiatan> {
                         ],
                       ),
                     if (!isLoading && data!.agenda!.isNotEmpty)
-                      // Column(
-                      //   children: [
-                      //     agenda
-                      //   ],
-                      // )
-                      // const SizedBox(height: 10),
-                      // AgendaCard(),
-                      // if (histori) SizedBox(height: 10),
-                      // if (histori) DetailCard(),
-                      // if (!kehadiran) const SizedBox(height: 10),
-                      // if (!kehadiran) BuktiButton(),
-                      // if (kehadiran) const SizedBox(height: 10),
-                      // if (kehadiran) BuktiHadirButton(),
-                      const SizedBox(height: 10),
-                    // DosenCard(),
+                      Column(
+                        children: [
+                          const SizedBox(height: 10),
+                        ],
+                      ),
                     if (!isLoading)
                       Column(
                         children: [
-                          dosenCard(Theme.of(context)),
+                          dosenCard(Theme.of(context), data!.users!),
                           const SizedBox(height: 10),
                         ],
                       ),
                     if (!isLoading && data!.lampiran!.isNotEmpty)
                       Column(
                         children: [
-                          FileCard(),
+                          fileCard(Theme.of(context),
+                              lampirans: data!.lampiran!),
                           const SizedBox(
-                            height: 60,
-                          )
+                            height: 64,
+                          ),
                         ],
                       )
                   ],

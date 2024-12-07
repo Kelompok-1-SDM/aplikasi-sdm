@@ -152,26 +152,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     const SizedBox(height: 13),
                     profileCard(Theme.of(context), userData!, average, color),
-                    statsCardProfile(
-                      Theme.of(context),
-                      userData!.profileImage,
-                      color: color,
-                      stats: statsData!,
-                    ),
-                    CustomCardContent(
-                      description:
-                          "Kompetensi berdasarkan penugasan yang telah dilakukan",
-                      crumbs: userData!.kompetensi
-                          .map((it) => it.namaKompetensi)
-                          .toList(),
-                      header: [
-                        Text(
-                          "Kompetensi yang dikuasai",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16),
-                        ),
-                      ],
-                    ),
+                    if (!isLoading && statsData != null)
+                      statsCardProfile(
+                        Theme.of(context),
+                        userData!.profileImage,
+                        color: color,
+                        stats: statsData!,
+                      ),
                     CustomBigButton(
                       wasIconOnRight: true,
                       onPressed: () => {
@@ -181,7 +168,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       icon: CustomIconButton(
                         "assets/icon/lock.svg",
                         colorBackground: Colors.white,
+                        size: IconSize.large,
                       ),
+                      padding: EdgeInsets.only(right: 6, top: 6, bottom: 6, left: 34),
                       buttonColor: ColorNeutral.black,
                       buttonLabel: "Ubah Password",
                     ),

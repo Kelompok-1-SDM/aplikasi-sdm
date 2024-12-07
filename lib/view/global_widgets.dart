@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
@@ -222,7 +223,7 @@ class CustomCardContent extends StatelessWidget {
               ),
               if (title != null)
                 Padding(
-                  padding: const EdgeInsets.only(top: 8),
+                  padding: const EdgeInsets.only(top: 8, bottom: 8),
                   child: SizedBox(
                     width: maxWidth,
                     child: Text(
@@ -877,14 +878,14 @@ class _StatisticChartState extends State<StatisticChart> {
                           dropdownColor: ColorNeutral.black,
                           icon: const Icon(
                             Icons.keyboard_arrow_down,
-                            color: Colors
+                            color: ColorNeutral
                                 .white, // Adjust the color to match the theme
                           ),
                           style:
                               Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                    color: Colors.white,
+                                    color: ColorNeutral.white,
                                   ),
-                          items: _getDropdownItems(),
+                          items: _getDropdownItems(context),
                           onChanged: (year) {
                             if (year != null) {
                               setState(() {
@@ -930,17 +931,23 @@ class _StatisticChartState extends State<StatisticChart> {
                           'Nov',
                           'Des'
                         ];
+                        final monthIndex = value.toInt();
+                        final hasData = _filteredKegiatan
+                            .any((item) => item.month == monthIndex + 1);
                         return Padding(
                           padding: const EdgeInsets.all(0),
                           child: Transform.rotate(
                             angle: -0.785398, // 45 degrees in radians
                             child: Text(
-                              monthNames[value.toInt()],
+                              monthNames[monthIndex],
                               style: Theme.of(context)
                                   .textTheme
                                   .bodySmall!
                                   .copyWith(
                                     fontSize: 10,
+                                    color: hasData
+                                        ? ColorNeutral.black
+                                        : ColorNeutral.background,
                                   ),
                             ),
                           ),
@@ -957,8 +964,8 @@ class _StatisticChartState extends State<StatisticChart> {
                         return Text(
                           value.toInt().toString(),
                           style:
-                              Theme.of(context).textTheme.bodySmall!.copyWith(
-                                    fontSize: 10,
+                              Theme.of(context).textTheme.displayMedium!.copyWith(
+                                    fontSize: 14,
                                   ),
                         );
                       },
@@ -1006,7 +1013,7 @@ class _StatisticChartState extends State<StatisticChart> {
     );
   }
 
-  List<DropdownMenuItem<int>> _getDropdownItems() {
+  List<DropdownMenuItem<int>> _getDropdownItems(BuildContext context) {
     final years = widget.stats.jumlahKegiatan
             ?.map((item) => item.year)
             .toSet()
@@ -1018,7 +1025,13 @@ class _StatisticChartState extends State<StatisticChart> {
     return years
         .map((year) => DropdownMenuItem<int>(
               value: year,
-              child: Text(year.toString()),
+              child: Text(
+                year.toString(),
+                style: Theme.of(context)
+                    .textTheme
+                    .displayMedium!
+                    .copyWith(fontSize: 14, color: ColorNeutral.white),
+              ),
             ))
         .toList();
   }
@@ -1030,7 +1043,6 @@ CustomCardContent tawaranTugasCard(
   required String title,
   required DateTime tanggal,
   required String lokasi,
-  required List<String> tags,
   required Color backgroundColor,
 }) {
   String formattedDate =
@@ -1066,7 +1078,6 @@ CustomCardContent tawaranTugasCard(
         text: lokasi,
       )
     ],
-    crumbs: tags,
     onPressed: () => {
       Navigator.pushNamed(
         context,
@@ -1100,8 +1111,9 @@ void callBottomSheet(
   );
 }
 
-CustomCardContent kegiatanCard(
-    {required BuildContext context, required KegiatanResponse kegiatan}) {
+CustomCardContent kegiatanCard(BuildContext context,
+    {required KegiatanResponse kegiatan, bool isFromDetail = false}) {
+  Color color;
   String title;
   DateTime normalizedDay = DateTime(
     kegiatan.tanggalMulai!.year,
@@ -1113,21 +1125,28 @@ CustomCardContent kegiatanCard(
 
   if (normalizedDay.isBefore(nowNormalized) && kegiatan.isDone!) {
     title = "Kamu telah melaksanakan kegiatan";
+    color = ColorCard.done;
   } else if (normalizedDay.isAfter(nowNormalized)) {
     title = "Kamu akan menghadiri kegiatan";
+    List<Color> colors = [ColorCard.tasked1, ColorCard.tasked2];
+    Random random = Random();
+    int randomIndex = random.nextInt(colors.length);
+    color = colors[randomIndex];
   } else {
     title = "Kamu sedang melaksanakan";
+    color = ColorCard.working;
   }
   return CustomCardContent(
     header: [Text(title)],
     title: kegiatan.judul,
     actionIcon: [
-      CustomIconButton(
-        "assets/icon/arrow-45.svg",
-        colorBackground: ColorNeutral.black,
-      )
+      if (!isFromDetail)
+        CustomIconButton(
+          "assets/icon/arrow-45.svg",
+          colorBackground: ColorNeutral.black,
+        )
     ],
-    colorBackground: ColorRandom.getRandomColor(),
+    colorBackground: color,
     descIcon: [
       CustomIconButton(
         "assets/icon/calendar.svg",
@@ -1140,16 +1159,14 @@ CustomCardContent kegiatanCard(
         text: kegiatan.lokasi,
       ),
     ],
-    crumbs: kegiatan.kompetensi!
-        .take(4)
-        .map((item) => item.namaKompetensi)
-        .toList(),
-    onPressed: () => {
-      Navigator.pushNamed(
-        context,
-        "/detail_kegiatan",
-        arguments: kegiatan.kegiatanId,
-      )
-    },
+    onPressed: !isFromDetail
+        ? () => {
+              Navigator.pushNamed(
+                context,
+                "/detail_kegiatan",
+                arguments: kegiatan.kegiatanId,
+              )
+            }
+        : null,
   );
 }
