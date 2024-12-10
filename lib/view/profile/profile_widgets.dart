@@ -4,7 +4,6 @@ import 'package:aplikasi_manajemen_sdm/services/user/user_model.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
 import 'package:flutter/material.dart';
 
-
 import 'dart:ui' as ui; // Alias the dart:ui import
 
 GenericCard profileCard(
@@ -17,47 +16,55 @@ GenericCard profileCard(
   return GenericCard(
     child: Padding(
       padding: const EdgeInsets.all(30),
-      child: SizedBox(
-        width: double.infinity,
-        child: Wrap(
-          crossAxisAlignment: WrapCrossAlignment.center,
-          runAlignment: WrapAlignment.center,
-          spacing: 13,
-          direction: Axis.vertical,
-          children: [
-            Text(
-              user.nama,
-              style: theme.textTheme.displayLarge!.copyWith(
-                fontSize: 24,
-              ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            user.nama,
+            style: theme.textTheme.displayLarge!.copyWith(
+              fontSize: 24,
             ),
-            Text(
-              desc,
-              style: theme.textTheme.displayLarge!.copyWith(
-                color: color,
-                fontSize: 14,
-              ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(
+            height: 13,
+          ),
+          Text(
+            desc,
+            style: theme.textTheme.displayLarge!.copyWith(
+              color: color,
+              fontSize: 14,
             ),
-            Text(
-              user.nip,
-              style: theme.textTheme.bodySmall!.copyWith(
-                fontSize: 14,
-              ),
+          ),
+          SizedBox(
+            height: 13,
+          ),
+          Text(
+            user.nip,
+            style: theme.textTheme.bodySmall!.copyWith(
+              fontSize: 14,
             ),
-            Text(
-              user.email,
-              style: theme.textTheme.bodySmall!.copyWith(
-                fontSize: 14,
-              ),
+          ),
+          SizedBox(
+            height: 13,
+          ),
+          Text(
+            user.email,
+            style: theme.textTheme.bodySmall!.copyWith(
+              fontSize: 14,
             ),
-            Text(
-              "Jika data anda tidak sesuai, harap hubungi admin",
-              style: theme.textTheme.bodySmall!.copyWith(
-                fontSize: 12,
-              ),
+          ),
+          SizedBox(
+            height: 13,
+          ),
+          Text(
+            "Jika data anda tidak sesuai, harap hubungi admin",
+            style: theme.textTheme.bodySmall!.copyWith(
+              fontSize: 12,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     ),
   );
@@ -114,7 +121,8 @@ CustomCardContent statsCardProfile(ThemeData theme, String? imageProfile,
               text: TextSpan(
                 children: [
                   TextSpan(
-                    text: "${stats.firstName}             ,kamu telah melakukan ",
+                    text:
+                        "${stats.firstName}             ,kamu telah melakukan ",
                     style: theme.textTheme.bodyMedium!.copyWith(fontSize: 36),
                   ),
                   TextSpan(

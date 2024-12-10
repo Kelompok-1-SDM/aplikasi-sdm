@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/services/dio_client.dart';
 import 'package:aplikasi_manajemen_sdm/services/kegiatan/kegiatan_model.dart';
@@ -5,12 +7,11 @@ import 'package:aplikasi_manajemen_sdm/services/kegiatan/kegiatan_service.dart';
 import 'package:aplikasi_manajemen_sdm/services/user/user_model.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
 import 'package:aplikasi_manajemen_sdm/view/home/homepage_widgets.dart';
-import 'package:flutter/material.dart';
 
 class DaftarKegiatan extends StatefulWidget {
   final UserData? userData;
   final bool isHistori;
-  const DaftarKegiatan({super.key, this.userData, required this.isHistori});
+  const DaftarKegiatan({super.key, this.userData, this.isHistori = false});
 
   @override
   State<DaftarKegiatan> createState() => _DaftarKegiatanState();
@@ -154,6 +155,7 @@ class _DaftarKegiatanState extends State<DaftarKegiatan> {
                             kegiatanCard(
                               context,
                               kegiatan: kegiatanList[index],
+                              isFromHistori: widget.isHistori
                             ),
                             SizedBox(height: 10,)
                           ],

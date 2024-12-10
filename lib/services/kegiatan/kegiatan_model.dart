@@ -31,32 +31,33 @@ class KegiatanResponse {
 
   factory KegiatanResponse.fromJson(Map<String, dynamic> json) {
     return KegiatanResponse(
-      kegiatanId: json['kegiatanId'],
-      judul: json['judul'],
-      tanggalMulai: json['tanggalMulai'] != null
-          ? DateTime.parse(json['tanggalMulai'])
-          : null,
-      tanggalAkhir: json['tanggalAkhir'] != null
-          ? DateTime.parse(json['tanggalAkhir'])
-          : null,
-      tipeKegiatan: json['tipeKegiatan'],
-      isDone: json['isDone'],
-      lokasi: json['lokasi'],
-      deskripsi: json['deskripsi'],
-      updatedAt:
-          json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
-      createdAt:
-          json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
-      lampiran: (json['lampiran'] as List<dynamic>?)
-          ?.map((item) => Lampiran.fromJson(item))
-          .toList(),
-      agenda: (json['agenda'] as List<dynamic>?)
-          ?.map((item) => Agenda.fromJson(item))
-          .toList(),
-      users: (json['users'] as List<dynamic>?)
-          ?.map((item) => User.fromJson(item))
-          .toList()
-    );
+        kegiatanId: json['kegiatanId'],
+        judul: json['judul'],
+        tanggalMulai: json['tanggalMulai'] != null
+            ? DateTime.parse(json['tanggalMulai'])
+            : null,
+        tanggalAkhir: json['tanggalAkhir'] != null
+            ? DateTime.parse(json['tanggalAkhir'])
+            : null,
+        tipeKegiatan: json['tipeKegiatan'],
+        isDone: json['isDone'],
+        lokasi: json['lokasi'],
+        deskripsi: json['deskripsi'],
+        updatedAt: json['updatedAt'] != null
+            ? DateTime.parse(json['updatedAt'])
+            : null,
+        createdAt: json['createdAt'] != null
+            ? DateTime.parse(json['createdAt'])
+            : null,
+        lampiran: (json['lampiran'] as List<dynamic>?)
+            ?.map((item) => Lampiran.fromJson(item))
+            .toList(),
+        agenda: (json['agenda'] as List<dynamic>?)
+            ?.map((item) => Agenda.fromJson(item))
+            .toList(),
+        users: (json['users'] as List<dynamic>?)
+            ?.map((item) => User.fromJson(item))
+            .toList());
   }
 
   Map<String, dynamic> toJson() {
@@ -101,12 +102,10 @@ class Lampiran {
       kegiatanId: json['kegiatanId'],
       nama: json['nama'],
       url: json['url'],
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
-          : null,
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'])
-          : null,
+      updatedAt:
+          json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      createdAt:
+          json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
     );
   }
 
@@ -128,9 +127,11 @@ class Agenda {
   final DateTime? jadwalAgenda;
   final String? namaAgenda;
   final String? deskripsiAgenda;
-  final String? status;
+  final bool? isDone;
+  final bool? wasMePic; // Updated from bool to String
   final DateTime? updatedAt;
   final DateTime? createdAt;
+  final List<Progress>? progress; // New field
   final List<User>? users;
 
   Agenda({
@@ -139,9 +140,11 @@ class Agenda {
     this.jadwalAgenda,
     this.namaAgenda,
     this.deskripsiAgenda,
-    this.status,
+    this.isDone,
+    this.wasMePic,
     this.updatedAt,
     this.createdAt,
+    this.progress,
     this.users,
   });
 
@@ -154,13 +157,15 @@ class Agenda {
           : null,
       namaAgenda: json['namaAgenda'],
       deskripsiAgenda: json['deskripsiAgenda'],
-      status: json['status'],
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
-          : null,
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'])
-          : null,
+      isDone: json['isDone'],
+      wasMePic: json['wasMePic'],
+      updatedAt:
+          json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      createdAt:
+          json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
+      progress: (json['progress'] as List<dynamic>?)
+          ?.map((item) => Progress.fromJson(item))
+          .toList(),
       users: (json['users'] as List<dynamic>?)
           ?.map((item) => User.fromJson(item))
           .toList(),
@@ -174,10 +179,90 @@ class Agenda {
       'jadwalAgenda': jadwalAgenda?.toIso8601String(),
       'namaAgenda': namaAgenda,
       'deskripsiAgenda': deskripsiAgenda,
-      'status': status,
+      'isDone': isDone,
+      'wasMePic': wasMePic,
       'updatedAt': updatedAt?.toIso8601String(),
       'createdAt': createdAt?.toIso8601String(),
+      'progress': progress?.map((item) => item.toJson()).toList(),
       'users': users?.map((item) => item.toJson()).toList(),
+    };
+  }
+}
+
+class Progress {
+  final String? progressId;
+  final String? agendaId;
+  final String? deskripsiProgress;
+  final DateTime? updatedAt;
+  final DateTime? createdAt;
+  final List<Attachment>? attachments;
+
+  Progress({
+    this.progressId,
+    this.agendaId,
+    this.deskripsiProgress,
+    this.updatedAt,
+    this.createdAt,
+    this.attachments,
+  });
+
+  factory Progress.fromJson(Map<String, dynamic> json) {
+    return Progress(
+      progressId: json['progressId'],
+      agendaId: json['agendaId'],
+      deskripsiProgress: json['deskripsiProgress'],
+      updatedAt:
+          json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      createdAt:
+          json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
+      attachments: (json['attachments'] as List<dynamic>?)
+          ?.map((item) => Attachment.fromJson(item))
+          .toList(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'progressId': progressId,
+      'agendaId': agendaId,
+      'deskripsiProgress': deskripsiProgress,
+      'updatedAt': updatedAt?.toIso8601String(),
+      'createdAt': createdAt?.toIso8601String(),
+      'attachments': attachments?.map((item) => item.toJson()).toList(),
+    };
+  }
+}
+
+class Attachment {
+  final String? progressId;
+  final String? attachmentId;
+  final DateTime? updatedAt;
+  final DateTime? createdAt;
+
+  Attachment({
+    this.progressId,
+    this.attachmentId,
+    this.updatedAt,
+    this.createdAt,
+  });
+
+  factory Attachment.fromJson(Map<String, dynamic> json) {
+    return Attachment(
+      progressId: json['progressId'],
+      attachmentId: json['attachmentId'],
+      updatedAt:
+          json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      createdAt:
+          json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'progressId': progressId,
+      'attachmentId': attachmentId,
+      'updatedAt': updatedAt?.toIso8601String(),
+      'createdAt': createdAt?.toIso8601String(),
     };
   }
 }
@@ -194,36 +279,34 @@ class User {
   final String? namaJabatan;
   final bool? isPic;
 
-  User({
-    this.userId,
-    this.nip,
-    this.nama,
-    this.email,
-    this.role,
-    this.profileImage,
-    this.updatedAt,
-    this.createdAt,
-    this.namaJabatan,
-    this.isPic
-  });
+  User(
+      {this.userId,
+      this.nip,
+      this.nama,
+      this.email,
+      this.role,
+      this.profileImage,
+      this.updatedAt,
+      this.createdAt,
+      this.namaJabatan,
+      this.isPic});
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      userId: json['userId'],
-      nip: json['nip'],
-      nama: json['nama'],
-      email: json['email'],
-      role: json['role'],
-      profileImage: json['profileImage'],
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
-          : null,
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'])
-          : null,
-      namaJabatan: json['namaJabatan'],
-      isPic: json['isPic']
-    );
+        userId: json['userId'],
+        nip: json['nip'],
+        nama: json['nama'],
+        email: json['email'],
+        role: json['role'],
+        profileImage: json['profileImage'],
+        updatedAt: json['updatedAt'] != null
+            ? DateTime.parse(json['updatedAt'])
+            : null,
+        createdAt: json['createdAt'] != null
+            ? DateTime.parse(json['createdAt'])
+            : null,
+        namaJabatan: json['namaJabatan'],
+        isPic: json['isPic']);
   }
 
   Map<String, dynamic> toJson() {

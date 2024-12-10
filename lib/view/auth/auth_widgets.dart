@@ -19,7 +19,7 @@ GenericCard authCard(ThemeData theme, TextEditingController nipController,
           CustomTextField(
             label: "NIP",
             controller: nipController,
-            hint: "2241760089",
+            hint: "679753467523745364",
             isPassword: false, // or true for password fields
             inputType: TextInputType.number, // For numeric input
           ),
@@ -27,7 +27,7 @@ GenericCard authCard(ThemeData theme, TextEditingController nipController,
           CustomTextField(
             controller: passwordController,
             label: "Password",
-            hint: "password",
+            hint: "Password",
             isPassword: true, // or true for password fields
             inputType: TextInputType.text, // For numeric input
           ),

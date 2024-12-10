@@ -87,4 +87,39 @@ class KegiatanService {
       );
     }
   }
+
+  Future<BaseResponse<Agenda>> fetchAgendaById(String uid) async {
+    try {
+      // Make the GET request
+      final response = await dio.get(
+        '/api/agenda/',
+        queryParameters: {'uid': uid},
+      );
+
+      // Use a custom `fromJsonT` function for a list of KegiatanResponse
+      final BaseResponse<Agenda> data =
+          BaseResponse<Agenda>.fromJson(
+              response.data, (json) => Agenda.fromJson(json));
+
+      // Return the data if successful
+      if (response.statusCode == 200 && data.success) {
+        return data;
+      } else {
+        throw Exception(
+            "Failed to fetch agenda. Status code: ${response.statusCode}");
+      }
+    } on DioException catch (error) {
+      // Handle Dio-specific errors
+      return BaseResponse<Agenda>(
+        success: false,
+        message: error.response?.data['message'] ?? 'An error occurred',
+      );
+    } catch (e) {
+      // Handle unexpected errors
+      return BaseResponse<Agenda>(
+        success: false,
+        message: 'An unexpected error occurred: $e',
+      );
+    }
+  }
 }

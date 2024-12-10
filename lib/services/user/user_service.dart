@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:aplikasi_manajemen_sdm/services/dio_client.dart';
 import 'package:aplikasi_manajemen_sdm/services/home/home_model.dart';
 import 'package:aplikasi_manajemen_sdm/services/shared_prefrences.dart';
@@ -23,6 +25,7 @@ class UserService {
 
       // Check if the response is successful
       if (response.statusCode == 200 && data.success) {
+        await Storage.saveMyInfo(data.data!);
         return data;
       } else {
         throw Exception(
@@ -112,5 +115,109 @@ class UserService {
     }
   }
 
-  
+  Future<BaseResponse<UserData>> updatePassword(String password) async {
+    try {
+      // Making the GET request
+      final response = await dio.put('/api/user',
+          queryParameters: {'uid': ''}, data: {'password': password});
+
+      // Parsing the response
+      final BaseResponse<UserData> data = BaseResponse<UserData>.fromJson(
+        response.data,
+        (json) => UserData.fromJson(json),
+      );
+
+      // Check if the response is successful
+      if (response.statusCode == 200 && data.success) {
+        await Storage.saveMyInfo(data.data!);
+        return data;
+      } else {
+        throw Exception(
+            "Failed to update password. Status code: ${response.statusCode}");
+      }
+    } on DioException catch (error) {
+      print("DioException occurred: ${error.message}");
+      // Check if there's a response available
+      if (error.response != null) {
+        return BaseResponse<UserData>(
+          success: false,
+          message: error.response?.data['message'] ?? 'Unknown error occurred',
+        );
+      } else {
+        return BaseResponse<UserData>(
+          success: false,
+          message:
+              'No response from the server. Check your internet connection.',
+        );
+      }
+    } catch (e) {
+      print("Unexpected error: $e");
+      return BaseResponse<UserData>(
+        success: false,
+        message: 'An unexpected error occurred',
+      );
+    }
+  }
+
+  Future<BaseResponse<UserData>> updateProfile(File file) async {
+    try {
+      final FormData formData = FormData.fromMap(
+        {
+          'file': await MultipartFile.fromFile(file.path,
+              filename: file.path.split('/').last,
+              contentType: DioMediaType(
+                  'image', file.path.split('/').last.split('.').last))
+        },
+      );
+
+      for (var element in formData.files) {
+        print(" ini field ${element.key} ${element.value.contentType}");
+      }
+
+      // Making the GET request
+      final response = await dio.put(
+        '/api/user',
+        queryParameters: {'uid': ''},
+        data: formData,
+      );
+
+      // Parsing the response
+      final BaseResponse<UserData> data = BaseResponse<UserData>.fromJson(
+        response.data,
+        (json) => UserData.fromJson(json),
+      );
+
+      // Check if the response is successful
+      if (response.statusCode == 200 && data.success) {
+        await Storage.saveMyInfo(data.data!);
+        UserData? user = await Storage.getMyInfo();
+        print(user!.profileImage);
+        return data;
+      } else {
+        throw Exception(
+            "Failed to update profile picture. Status code: ${response.statusCode}");
+      }
+    } on DioException catch (error) {
+      print("DioException occurred: ${error.message}");
+      // Check if there's a response available
+      if (error.response != null) {
+        return BaseResponse<UserData>(
+          success: false,
+          message: error.response?.data['message'] ?? 'Unknown error occurred',
+        );
+      } else {
+        return BaseResponse<UserData>(
+          success: false,
+          message:
+              'No response from the server. Check your internet connection.',
+        );
+      }
+    } catch (e) {
+      print("Unexpected error: $e");
+      return BaseResponse<UserData>(
+        success: false,
+        message: 'An unexpected error occurred',
+      );
+    }
+  }
 }

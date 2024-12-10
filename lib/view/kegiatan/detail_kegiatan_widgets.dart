@@ -7,44 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-// Seminar card widget
-// CustomCardContent headerCard(BuildContext context,
-//     {required KegiatanResponse kegiatan}) {
-//   String title;
-//   DateTime normalizedDay = DateTime(
-//     kegiatan.tanggalMulai!.year,
-//     kegiatan.tanggalMulai!.month,
-//     kegiatan.tanggalMulai!.day,
-//   );
-//   DateTime now = DateTime.now();
-//   DateTime nowNormalized = DateTime(now.year, now.month, now.day);
-
-//   if (normalizedDay.isBefore(nowNormalized) && kegiatan.isDone!) {
-//     title = "Kamu telah melaksanakan kegiatan";
-//   } else if (normalizedDay.isAfter(nowNormalized)) {
-//     title = "Kamu akan menghadiri kegiatan";
-//   } else {
-//     title = "Kamu sedang melaksanakan";
-//   }
-//   return CustomCardContent(
-//     header: [Text(title)],
-//     title: kegiatan.judul,
-//     colorBackground: ColorRandom.getRandomColor(),
-//     descIcon: [
-//       CustomIconButton(
-//         "assets/icon/calendar.svg",
-//         colorBackground: Colors.transparent,
-//         text: DateFormat.yMMMd().add_jm().format(kegiatan.tanggalMulai!),
-//       ),
-//       CustomIconButton(
-//         "assets/icon/location.svg",
-//         colorBackground: Colors.transparent,
-//         text: kegiatan.lokasi,
-//       ),
-//     ]
-//   );
-// }
-
 CustomCardContent bigInfo(BuildContext context,
     {required KegiatanResponse kegiatan, required bool wasMePic}) {
   String title;
@@ -65,7 +27,7 @@ CustomCardContent bigInfo(BuildContext context,
   Color color = !kegiatan.isDone! && normalizedDay.isBefore(now)
       ? ColorPrimary.green
       : ColorPrimary.blue;
-  double maxWidth = MediaQuery.of(context).size.width - 120;
+  double maxWidth = MediaQuery.of(context).size.width - 160;
   return CustomCardContent(
     colorBackground: color,
     header: [
@@ -76,17 +38,17 @@ CustomCardContent bigInfo(BuildContext context,
       )
     ],
     otherWidget: [
-      ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: maxWidth),
-        child: Row(
-          children: [
-            CustomIconButton(
-              "assets/icon/calendar.svg",
-              colorBackground: Colors.transparent,
-              iconColorCustom: ColorNeutral.black,
-              size: IconSize.large,
-            ),
-            Text(
+      Row(
+        children: [
+          CustomIconButton(
+            "assets/icon/calendar-bold.svg",
+            colorBackground: Colors.transparent,
+            iconColorCustom: ColorNeutral.black,
+            size: IconSize.large,
+          ),
+          ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxWidth),
+            child: Text(
               softWrap: true,
               overflow: TextOverflow.ellipsis,
               maxLines: 2,
@@ -95,21 +57,21 @@ CustomCardContent bigInfo(BuildContext context,
                   .textTheme
                   .bodyMedium!
                   .copyWith(fontSize: 32),
-            )
-          ],
-        ),
-      ),
-      ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: maxWidth),
-        child: Row(
-          children: [
-            CustomIconButton(
-              "assets/icon/time.svg",
-              colorBackground: Colors.transparent,
-              iconColorCustom: ColorNeutral.black,
-              size: IconSize.large,
             ),
-            Text(
+          )
+        ],
+      ),
+      Row(
+        children: [
+          CustomIconButton(
+            "assets/icon/time.svg",
+            colorBackground: Colors.transparent,
+            iconColorCustom: ColorNeutral.black,
+            size: IconSize.large,
+          ),
+          ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxWidth),
+            child: Text(
               softWrap: true,
               overflow: TextOverflow.ellipsis,
               maxLines: 2,
@@ -118,21 +80,21 @@ CustomCardContent bigInfo(BuildContext context,
                   .textTheme
                   .bodyMedium!
                   .copyWith(fontSize: 32),
-            )
-          ],
-        ),
-      ),
-      ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: maxWidth),
-        child: Row(
-          children: [
-            CustomIconButton(
-              "assets/icon/location.svg",
-              colorBackground: Colors.transparent,
-              iconColorCustom: ColorNeutral.black,
-              size: IconSize.large,
             ),
-            Text(
+          )
+        ],
+      ),
+      Row(
+        children: [
+          CustomIconButton(
+            "assets/icon/location-bold.svg",
+            colorBackground: Colors.transparent,
+            iconColorCustom: ColorNeutral.black,
+            size: IconSize.large,
+          ),
+          ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxWidth),
+            child: Text(
               softWrap: true,
               overflow: TextOverflow.ellipsis,
               maxLines: 2,
@@ -141,21 +103,21 @@ CustomCardContent bigInfo(BuildContext context,
                   .textTheme
                   .bodyMedium!
                   .copyWith(fontSize: 32),
-            )
-          ],
-        ),
-      ),
-      ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: maxWidth),
-        child: Row(
-          children: [
-            CustomIconButton(
-              "assets/icon/user.svg",
-              colorBackground: Colors.transparent,
-              iconColorCustom: ColorNeutral.black,
-              size: IconSize.large,
             ),
-            Text(
+          )
+        ],
+      ),
+      Row(
+        children: [
+          CustomIconButton(
+            "assets/icon/user.svg",
+            colorBackground: Colors.transparent,
+            iconColorCustom: ColorNeutral.black,
+            size: IconSize.large,
+          ),
+          ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxWidth),
+            child: Text(
               softWrap: true,
               overflow: TextOverflow.ellipsis,
               maxLines: 2,
@@ -164,164 +126,211 @@ CustomCardContent bigInfo(BuildContext context,
                   .textTheme
                   .bodyMedium!
                   .copyWith(fontSize: 32),
-            )
-          ],
-        ),
+            ),
+          )
+        ],
       ),
     ],
   );
 }
 
 Container _crumbWidget(String title, ThemeData theme) {
-    Color textColor = ColorNeutral.black;
+  Color textColor = ColorNeutral.black;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-      decoration: ShapeDecoration(
-        color: ColorNeutral.white,
-        shape: SmoothRectangleBorder(
-          borderRadius: SmoothBorderRadius(
-            cornerRadius: 13,
-          ),
+  return Container(
+    padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+    decoration: ShapeDecoration(
+      color: ColorNeutral.white,
+      shape: SmoothRectangleBorder(
+        borderRadius: SmoothBorderRadius(
+          cornerRadius: 13,
         ),
       ),
-      child: Text(
-        title,
-        textAlign: TextAlign.center,
-        style: theme.textTheme.displayMedium!.copyWith(
-              fontSize: 16,
-              color: textColor,
-            ),
+    ),
+    child: Text(
+      title,
+      textAlign: TextAlign.center,
+      style: theme.textTheme.displayMedium!.copyWith(
+        fontSize: 12,
+        color: textColor,
       ),
-    );
-  }
-
-CustomBigButton _anggotaCard(ThemeData theme, User user) {
-  return CustomBigButton(
-    wasIconOnRight: true,
-    otherWidget: [
-      SizedBox(
-        width: 50,
-        child: Stack(
-          alignment: Alignment.centerLeft,
-          children: [
-            Positioned(
-              child: ClipOval(
-                child: ProfileIcon(
-                  user.profileImage ?? "assets/icon/profile-1",
-                  imageSize: 60,
-                  borderColor: ColorNeutral.white,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      SizedBox(width: 16), // Jarak antara profil dan teks
-      Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              user.nama!,
-              style: TextStyle(
-                color: ColorNeutral.white,
-                fontWeight: FontWeight.w700,
-                fontSize: 20,
-              ),
-            ),
-            SizedBox(height: 4),
-          ],
-        ),
-      ),
-      if (user.isPic!)
-        CustomIconButton(
-          "assets/icon/pic.svg",
-          size: IconSize.large,
-          colorBackground: ColorNeutral.gray,
-        ),
-    ],
-    onPressed: () => {},
+    ),
   );
 }
 
-CustomCardContent dosenCard(ThemeData theme, List<User> users) {
+CustomBigButton _anggotaCard(BuildContext context, User user) {
+  double maxWidth =
+      MediaQuery.of(context).size.width - (!user.isPic! ? 180 : 260);
+  return CustomBigButton(
+    wasIconOnRight: true,
+    otherWidget: [
+      Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          ProfileIcon(
+            user.profileImage ?? "assets/icon/profile-1",
+            borderColor: ColorNeutral.white,
+            imageSize: 64,
+          ),
+          ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxWidth),
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    user.nama!,
+                    style: Theme.of(context)
+                        .textTheme
+                        .displayMedium!
+                        .copyWith(fontSize: 16, color: ColorNeutral.white),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    softWrap: true,
+                  ),
+                  SizedBox(
+                    height: 4,
+                  ),
+                  _crumbWidget(user.namaJabatan ?? "", Theme.of(context))
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
+    ],
+    icon: user.isPic!
+        ? CustomIconButton(
+            "assets/icon/pic.svg",
+            size: IconSize.large,
+            colorBackground: ColorNeutral.gray,
+          )
+        : null,
+    onPressed: () {},
+  );
+}
+
+CustomCardContent dosenCard(BuildContext context, List<User> users) {
   return CustomCardContent(
     colorBackground: ColorNeutral.white,
     header: [
       Text(
         "Dosen yang menghadiri acara ini",
-        style: theme.textTheme.bodyMedium!.copyWith(
-          fontSize: 15,
-          height: 1,
+        style:
+            Theme.of(context).textTheme.displayMedium!.copyWith(fontSize: 16),
+      )
+    ],
+    otherWidget: [
+      ...List.generate(
+        3,
+        (index) => Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _anggotaCard(context, users[index]),
+            SizedBox(
+              height: 8,
+            ),
+            if (index == 2 && users.length > 3)
+              TextButton(
+                child: Text(
+                  '${users.length - 3} dosen lainnya',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        fontSize: 11,
+                        decoration: TextDecoration.underline,
+                      ),
+                ),
+                onPressed: () => _showListOfDosen(context, users),
+              ),
+          ],
         ),
       ),
     ],
-    otherWidget: List.generate(3, (index) => Column(children: [
-      _anggotaCard(theme, users[index]),
-      SizedBox(height: 10,)
-    ],))
+  );
+}
+
+void _showListOfDosen(BuildContext context, List<User> users) {
+  callBottomSheet(
+    context,
+    button: [],
+    title: Text(
+      "Daftar dosen yang ditugaskan",
+      textAlign: TextAlign.center,
+      style: Theme.of(context).textTheme.displayLarge!.copyWith(
+            fontSize: 20,
+          ),
+    ),
+    child: Column(
+      children: [
+        ...List.generate(
+          users.length,
+          (index) => _anggotaCard(context, users[index]),
+        )
+      ],
+    ),
   );
 }
 
 Future<void> _openBrowserWithDownloadLink(String fileUrl) async {
   final Uri url = Uri.parse(fileUrl);
-  if (await canLaunchUrl(url)) {
-    await launchUrl(
-      url,
-      mode: LaunchMode.externalApplication, // Opens in the external browser
-    );
-  } else {
-    throw 'Could not launch $fileUrl';
+  if (!await launchUrl(url)) {
+    throw Exception('Could not launch $url');
   }
 }
 
-CustomBigButton fileButton(Lampiran lampiran) {
+CustomBigButton fileButton(BuildContext context, Lampiran lampiran) {
   String nama = lampiran.nama!.toLowerCase();
   Color color = nama.contains('sertifikat') || nama.contains('tugas')
       ? ColorPrimary.orange
       : ColorNeutral.black;
+
+  double maxWidth = MediaQuery.of(context).size.width - 240;
   return CustomBigButton(
     wasIconOnRight: true,
+    padding: EdgeInsets.only(top: 8, right: 8, bottom: 8, left: 32),
     buttonColor: color,
     otherWidget: [
-      Text(
-        lampiran.nama!,
-        style: TextStyle(
-          color: ColorNeutral.white,
-          fontWeight: FontWeight.w700,
-          fontSize: 20,
+      ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: maxWidth),
+        child: Text(
+          lampiran.nama!,
+          style: Theme.of(context)
+              .textTheme
+              .displayLarge!
+              .copyWith(fontSize: 20, color: ColorNeutral.white),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          softWrap: true,
         ),
-      ),
+      )
     ],
-    padding: EdgeInsets.symmetric(horizontal: 10),
-    onPressed: () => _openBrowserWithDownloadLink(lampiran.url!),
     icon: CustomIconButton(
       "assets/icon/paper.svg",
       size: IconSize.large,
-      colorBackground: ColorNeutral.gray,
+      colorBackground:
+          color == ColorPrimary.orange ? ColorCard.working : ColorNeutral.gray,
     ),
+    onPressed: () => _openBrowserWithDownloadLink(lampiran.url!),
   );
 }
 
-CustomCardContent fileCard(ThemeData theme,
+CustomCardContent fileCard(BuildContext context,
     {required List<Lampiran> lampirans}) {
   return CustomCardContent(
     colorBackground: ColorNeutral.white,
     header: [
       Text(
         "Arsip file penugasan",
-        style: theme.textTheme.bodyMedium!.copyWith(
-          fontSize: 15,
-          height: 1,
-        ),
-      ),
+        style:
+            Theme.of(context).textTheme.displayMedium!.copyWith(fontSize: 16),
+      )
     ],
     otherWidget: List.generate(
       lampirans.length,
       (index) => Column(
         children: [
-          fileButton(lampirans[index]),
+          fileButton(context, lampirans[index]),
           const SizedBox(
             height: 8,
           )
@@ -331,89 +340,32 @@ CustomCardContent fileCard(ThemeData theme,
   );
 }
 
-class AgendaCard extends StatelessWidget {
-  const AgendaCard({super.key});
+Future<DateTime> selectDateTime(BuildContext context) async {
+  // Show the Date Picker
+  final DateTime? pickedDate = await showDatePicker(
+    context: context,
+    initialDate: DateTime.now(),
+    firstDate: DateTime(2000),
+    lastDate: DateTime(2101),
+  );
 
-  CustomCardContent agendaCard(ThemeData theme) {
-    return CustomCardContent(
-      colorBackground: Colors.white, // Warna background luar putih
-      header: [
-        Text(
-          "Agenda kegiatan anda",
-          style: theme.textTheme.bodyMedium!.copyWith(
-            color: Colors.black,
-            fontSize: 16,
-          ),
-        ),
-      ],
-      otherWidget: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: Color(0xFF222222),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Mencari materi",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 20,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "12 Oktober 2024",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(
-                Icons
-                    .circle, // Contoh ikon lingkaran, sesuaikan sesuai kebutuhan
-                color: Colors.grey[800],
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 10),
-        Center(
-          child: Text(
-            "2 agenda lainnya",
-            style: TextStyle(
-              color: ColorNeutral.gray,
-              fontSize: 12,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          "*waktu hanya perkiraan",
-          style: TextStyle(
-            color: ColorNeutral.gray,
-            fontSize: 12,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-      ],
+  if (pickedDate != null) {
+    // Show the Time Picker if a date is selected
+    final TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
     );
+
+    if (pickedTime != null) {
+      return DateTime(
+        pickedDate.year,
+        pickedDate.month,
+        pickedDate.day,
+        pickedTime.hour,
+        pickedTime.minute,
+      );
+    }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    return agendaCard(theme);
-  }
+  return DateTime.now();
 }

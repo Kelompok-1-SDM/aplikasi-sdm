@@ -1,12 +1,12 @@
+import 'package:flutter/material.dart';
+
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/services/dio_client.dart';
 import 'package:aplikasi_manajemen_sdm/services/kegiatan/kegiatan_model.dart';
 import 'package:aplikasi_manajemen_sdm/services/kegiatan/kegiatan_service.dart';
 import 'package:aplikasi_manajemen_sdm/services/user/user_model.dart';
-import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
 import 'package:aplikasi_manajemen_sdm/view/home/homepage_widgets.dart';
 import 'package:aplikasi_manajemen_sdm/view/kalender/kalender_widget.dart';
-import 'package:flutter/material.dart';
 
 class Kalender extends StatefulWidget {
   final UserData? userData;
@@ -143,9 +143,8 @@ class _KalenderState extends State<Kalender> {
           ),
           const SizedBox(height: 24),
           // if (_events.isNotEmpty)
-          CustomBottomSheet(
-            maxHeight: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+          CalendarBottomSheet(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
             child: Builder(
               builder: (context) {
                 return Column(
@@ -163,10 +162,10 @@ class _KalenderState extends State<Kalender> {
                     else
                       Column(
                         children: [
-                          const Text("No data for the selected date"),
-                          SizedBox(
-                            height: 200,
-                          )
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 80),
+                            child: const Text("No data for the selected date"),
+                          ),
                         ],
                       ),
                   ],
