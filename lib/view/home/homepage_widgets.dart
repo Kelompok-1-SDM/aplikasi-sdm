@@ -359,12 +359,11 @@ CustomCardContent currentTask(ThemeData theme, KegiatanResponse? tugas) {
         text: tugas?.lokasi,
       )
     ],
-    otherWidget: [
-      LiveChatButton(
-        withText: true,
-        idKegiatan: tugas!.kegiatanId!,
-      )
-    ],
+    // otherWidget: [
+    //   LiveChatButton(
+    //     idKegiatan: tugas!.kegiatanId!,
+    //   )
+    // ],
   );
 }
 
@@ -404,8 +403,8 @@ CustomCardContent homeCard(BuildContext context, JumlahTugasBulanSekarang? data,
         softWrap: true,
         textWidthBasis: TextWidthBasis.parent,
         style: Theme.of(context).textTheme.displayMedium!.copyWith(
-          fontSize: 32,
-        ),
+              fontSize: 32,
+            ),
       ),
       Divider(
         color: ColorNeutral.gray,

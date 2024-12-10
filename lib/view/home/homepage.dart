@@ -23,18 +23,23 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 1;
   bool _isForward = true;
   UserData? userdat;
-  List<Widget>? _pages; // Nullable until data is loaded
+  List<Widget>? _pages;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    fetchUserData(); // Fetch user data on init
+    _fetchUserData(); // Fetch user data on initial load
   }
 
-  Future<void> fetchUserData() async {
+  // Fetch user data and update the pages
+  Future<void> _fetchUserData() async {
+    setState(() {
+      _isLoading = true; // Show loading indicator while fetching
+    });
+
     try {
       userdat = await Storage.getMyInfo();
-
       if (userdat == null) {
         throw Exception("User data not found");
       }
@@ -44,8 +49,8 @@ class _HomePageState extends State<HomePage> {
           Kalender(key: ValueKey('kalender'), userData: userdat!),
           HomeScreen(
             key: ValueKey('home'),
-            onItemTapped: _onItemTapped, // Pass navigation function
-            userData: userdat!, // Pass user data to HomeScreen
+            onItemTapped: _onItemTapped,
+            userData: userdat!,
           ),
           DaftarKegiatan(
             key: ValueKey('tasks-1'),
@@ -61,7 +66,10 @@ class _HomePageState extends State<HomePage> {
       });
     } catch (e) {
       print("Error loading user data: $e");
-      // Optionally handle errors, e.g., show error dialog
+    } finally {
+      setState(() {
+        _isLoading = false; // Stop loading indicator
+      });
     }
   }
 
@@ -74,31 +82,38 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: Navbar(
-        state: NavbarState.values[_selectedIndex],
-        onItemSelected: _onItemTapped, // Pass function to handle tab selection
+    return PopScope(
+      onPopInvokedWithResult: (didPop, result) async =>
+          {await _fetchUserData()},
+      child: Scaffold(
+        floatingActionButton: Navbar(
+          state: NavbarState.values[_selectedIndex],
+          onItemSelected: _onItemTapped,
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        body: _isLoading
+            ? Center(
+                child: CircularProgressIndicator()) // Show loading indicator
+            : _pages == null
+                ? Center(child: Text("No pages available")) // Error fallback
+                : PageTransitionSwitcher(
+                    duration: const Duration(milliseconds: 500),
+                    reverse: !_isForward,
+                    transitionBuilder: (
+                      Widget child,
+                      Animation<double> primaryAnimation,
+                      Animation<double> secondaryAnimation,
+                    ) {
+                      return SharedAxisTransition(
+                        animation: primaryAnimation,
+                        secondaryAnimation: secondaryAnimation,
+                        transitionType: SharedAxisTransitionType.horizontal,
+                        child: child,
+                      );
+                    },
+                    child: _pages![_selectedIndex],
+                  ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: _pages == null
-          ? Center(child: CircularProgressIndicator()) // Show loading indicator
-          : PageTransitionSwitcher(
-              duration: const Duration(milliseconds: 500),
-              reverse: !_isForward, // Reverse animation when going backward
-              transitionBuilder: (
-                Widget child,
-                Animation<double> primaryAnimation,
-                Animation<double> secondaryAnimation,
-              ) {
-                return SharedAxisTransition(
-                  animation: primaryAnimation,
-                  secondaryAnimation: secondaryAnimation,
-                  transitionType: SharedAxisTransitionType.horizontal,
-                  child: child,
-                );
-              },
-              child: _pages![_selectedIndex], // Use loaded pages
-            ),
     );
   }
 }
@@ -240,11 +255,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                   const SizedBox(height: 13),
                   if (data?.tugasBerlangsung != null)
-                    currentTask(
-                      Theme.of(context),
-                      data!.tugasBerlangsung, // Only show if data is available
+                    Column(
+                      children: [
+                        currentTask(
+                          Theme.of(context),
+                          data!
+                              .tugasBerlangsung, // Only show if data is available
+                        ),
+                        const SizedBox(height: 13),
+                      ],
                     ),
-                  const SizedBox(height: 13),
                   if (data?.duaTugasTerbaru !=
                       null) // Check if data is not null before accessing it
                     Column(

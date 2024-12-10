@@ -17,6 +17,7 @@ class AuthPage extends StatefulWidget {
 
 class _AuthPageState extends State<AuthPage> {
   final TextEditingController _nipController = TextEditingController();
+  final TextEditingController _nipLupaController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final AuthService _authService = AuthService();
 
@@ -42,15 +43,18 @@ class _AuthPageState extends State<AuthPage> {
     final password = _passwordController.text.trim();
 
     if (nip.isEmpty || password.isEmpty) {
-      _showErrorDialog("Validation Error", "All fields must be filled.");
+      _showErrorDialog(
+          context, "Validation Error", "All fields must be filled.");
       return;
     }
     if (nip.length < 18) {
-      _showErrorDialog("Validation Error", "NIP must be at least 18 digits.");
+      _showErrorDialog(
+          context, "Validation Error", "NIP must be at least 18 digits.");
       return;
     }
     if (password.length < 4) {
-      _showErrorDialog("Validation Error", "Password must be at least 4 characters.");
+      _showErrorDialog(context, "Validation Error",
+          "Password must be at least 4 characters.");
       return;
     }
 
@@ -64,10 +68,38 @@ class _AuthPageState extends State<AuthPage> {
           Navigator.pushReplacementNamed(context, '/home');
         }
       } else {
-        _showErrorDialog("Login failed", response.message);
+        _showErrorDialog(context, "Login failed", response.message);
       }
     } catch (e) {
-      _showErrorDialog("Error", "An error occurred during login: $e");
+      _showErrorDialog(context, "Error", "An error occurred during login: $e");
+    }
+  }
+
+  Future<void> _resetCallback() async {
+    final nip = _nipLupaController.text.trim();
+
+    if (nip.isEmpty) {
+      _showErrorDialog(
+          context, "Validation Error", "All fields must be filled.");
+      return;
+    }
+    if (nip.length < 18) {
+      _showErrorDialog(
+          context, "Validation Error", "NIP must be at least 18 digits.");
+      return;
+    }
+    try {
+      final BaseResponse<LoginResponse> response =
+          await _authService.resetPassword(nip);
+
+      if (response.success) {
+        _afterReset();
+      } else {
+        _showErrorDialog(context, "Reset failed", response.message);
+      }
+    } catch (e) {
+      _showErrorDialog(
+          context, "Error", "An error occurred during forgot password: $e");
     }
   }
 
@@ -76,9 +108,10 @@ class _AuthPageState extends State<AuthPage> {
     await _loginCallback();
   }
 
-  void _showErrorDialog(String title, String message) {
+  void _showErrorDialog(
+      BuildContext dialogContext, String title, String message) {
     showDialog(
-      context: context,
+      context: dialogContext,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(title),
@@ -109,29 +142,84 @@ class _AuthPageState extends State<AuthPage> {
       button: [
         CustomBigButton(
           onPressed: () => {Navigator.pop(context)},
-          padding: EdgeInsets.symmetric(
-            vertical: 24,
+          padding: EdgeInsets.all(
+            24,
           ),
           buttonColor: ColorPrimary.orange,
-          otherWidget: [
-            Text(
-              "Oke",
-              style: Theme.of(context)
-                  .textTheme
-                  .displayMedium!
-                  .copyWith(fontSize: 24, color: ColorNeutral.white),
-            )
-          ],
+          buttonLabel: "Oke",
+          customLabelColor: ColorNeutral.white,
         )
       ],
       title: Text(
         "Belum punya akun",
+        textAlign: TextAlign.center,
         style: Theme.of(context).textTheme.displayLarge!.copyWith(
               fontSize: 20,
             ),
       ),
       description:
           "Untuk saat ini, pembuatan akun hanya bisa dilakukan pada admin.",
+    );
+  }
+
+  void _resetPassword() {
+    callBottomSheet(
+      context,
+      button: [
+        CustomBigButton(
+          onPressed: () => {_resetCallback()},
+          padding: EdgeInsets.all(
+            24,
+          ),
+          buttonColor: ColorPrimary.orange,
+          buttonLabel: "Lupa Password",
+          customLabelColor: ColorNeutral.white,
+        )
+      ],
+      child: Column(
+        children: [
+          CustomTextField(
+            label: "NIP",
+            controller: _nipLupaController,
+            hint: "2241760089",
+            isPassword: false, // or true for password fields
+            inputType: TextInputType.number, // For numeric input
+          ),
+        ],
+      ),
+      title: Text(
+        "Lupa Password",
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.displayLarge!.copyWith(
+              fontSize: 20,
+            ),
+      ),
+      description: "Silahkan masukkan data NIP anda.",
+    );
+  }
+
+  void _afterReset() {
+    callBottomSheet(
+      context,
+      button: [
+        CustomBigButton(
+          onPressed: () => {Navigator.pop(context), Navigator.pop(context)},
+          padding: EdgeInsets.all(
+            24,
+          ),
+          buttonColor: ColorPrimary.orange,
+          buttonLabel: "Oke",
+          customLabelColor: ColorNeutral.white,
+        )
+      ],
+      title: Text(
+        "Lupa Password",
+        style: Theme.of(context).textTheme.displayLarge!.copyWith(
+              fontSize: 20,
+            ),
+      ),
+      description:
+          "Silakan cek email yang terdaftar untuk mengubah password anda",
     );
   }
 
@@ -158,13 +246,12 @@ class _AuthPageState extends State<AuthPage> {
                     width: 262,
                   ),
                   SizedBox(height: 30),
-                  authCard(
-                      Theme.of(context), _nipController, _passwordController, () {}),
+                  authCard(Theme.of(context), _nipController,
+                      _passwordController, _resetPassword),
                   SizedBox(height: 10),
-                  loginButton(
-                      Theme.of(context), () async {
-                        await _refreshKey.currentState?.show();
-                      }, _belumPunyaAkun),
+                  loginButton(Theme.of(context), () async {
+                    await _refreshKey.currentState?.show();
+                  }, _belumPunyaAkun),
                 ],
               ),
             ),

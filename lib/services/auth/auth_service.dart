@@ -70,4 +70,50 @@ class AuthService {
       );
     }
   }
+
+  Future<BaseResponse<LoginResponse>> resetPassword(String nip) async {
+    try {
+      // Making the POST request
+      final response = await dio.post(
+        '/api/request-reset',
+        data: {'nip': nip},
+      );
+
+      // Parsing the response
+      final BaseResponse<LoginResponse> data =
+          BaseResponse<LoginResponse>.fromJson(
+        response.data,
+        (json) => LoginResponse.fromJson(json),
+      );
+
+      // Check if the response is successful
+      if (response.statusCode == 200 && data.success) {
+        return data;
+      } else {
+        throw Exception(
+            "Failed to log in. Status code: ${response.statusCode}");
+      }
+    } on DioException catch (error) {
+      print("DioException occurred: ${error.message}");
+      // Check if there's a response available
+      if (error.response != null) {
+        return BaseResponse<LoginResponse>(
+          success: false,
+          message: error.response?.data['message'] ?? 'Unknown error occurred',
+        );
+      } else {
+        return BaseResponse<LoginResponse>(
+          success: false,
+          message:
+              'No response from the server. Check your internet connection.',
+        );
+      }
+    } catch (e) {
+      print("Unexpected error: $e");
+      return BaseResponse<LoginResponse>(
+        success: false,
+        message: 'An unexpected error occurred',
+      );
+    }
+  }
 }

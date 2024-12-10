@@ -1,8 +1,10 @@
+  import 'dart:math';
+
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/services/kegiatan/kegiatan_model.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
+import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class EventData {
@@ -166,40 +168,50 @@ class _CustomTableCalendarState extends State<CustomTableCalendar>
 
   // Footer explaining event color meanings
   Widget _buildFooter() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 30, bottom: 24, right: 30),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildColorIndicator(
-                  ColorPrimary.green, 'Acara yang mendatang/belum selesai'),
-              _buildColorIndicator(
-                  ColorPrimary.blue, 'Acara yang sudah dilaksanakan'),
-            ],
-          ),
-          if (_showButton)
-            AnimatedPositioned(
-              duration: const Duration(milliseconds: 300),
-              left: _showButton ? 0 : 100,
-              child: ElevatedButton(
-                onPressed: _goToCurrentDate,
-                style: ElevatedButton.styleFrom(
-                  shape: CircleBorder(),
-                  padding: EdgeInsets.all(16),
-                  backgroundColor: ColorNeutral.black,
-                ),
-                child: Text(
-                  '${_currentDay.day}',
-                  style: TextStyle(color: ColorNeutral.white),
-                ),
+    return SizedBox(
+      height: 76,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 30, bottom: 24, right: 30),
+        child: Stack(
+          children: [
+            // Color indicators
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  _buildColorIndicator(
+                    ColorPrimary.green,
+                    'Acara yang mendatang/belum selesai',
+                  ),
+                  _buildColorIndicator(
+                    ColorPrimary.blue,
+                    'Acara yang sudah dilaksanakan',
+                  ),
+                ],
               ),
             ),
-        ],
+            // Floating button
+            if (_showButton)
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: ElevatedButton(
+                  onPressed: _goToCurrentDate,
+                  style: ElevatedButton.styleFrom(
+                    shape: CircleBorder(),
+                    padding: EdgeInsets.all(16),
+                    backgroundColor: ColorNeutral.black,
+                  ),
+                  child: Text(
+                    '${_currentDay.day}',
+                    style: TextStyle(color: ColorNeutral.white),
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -235,126 +247,47 @@ class _CustomTableCalendarState extends State<CustomTableCalendar>
   }
 }
 
-class TimelineCalendar extends StatelessWidget {
-  final DateTime taskStart; // Start time of the event
-  final DateTime taskEnd; // End time of the event
-
-  const TimelineCalendar(
-      {super.key, required this.taskStart, required this.taskEnd});
-
-  @override
-  Widget build(BuildContext context) {
-    double progress = calculateProgress(taskStart, taskEnd);
-
-    return SizedBox(
-      width: 50, // Fixed width for the timeline
-      child: Column(
-        children: [
-          // Top time label (start time)
-          Text(
-            DateFormat('HH:mm').format(taskStart),
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          const SizedBox(height: 4),
-
-          // Timeline vertical progress indicator
-          Expanded(
-            child: Stack(
-              children: [
-                // Background for the progress bar
-                Container(
-                  width: 8,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                // The orange progress bar based on the percentage of time passed
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: FractionallySizedBox(
-                    heightFactor: progress, // This sets the fill height
-                    child: Container(
-                      width: 8,
-                      decoration: BoxDecoration(
-                        color: Colors.orange, // Progress bar color
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 4),
-
-          // Bottom time label (end time)
-          Text(
-            DateFormat('HH:mm').format(taskEnd),
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Function to calculate progress (returns a value between 0 and 1)
-  double calculateProgress(DateTime taskStart, DateTime taskEnd) {
-    final totalDuration = taskEnd.difference(taskStart).inMinutes.toDouble();
-    final timePassed =
-        DateTime.now().difference(taskStart).inMinutes.toDouble();
-    return (timePassed / totalDuration).clamp(0.0, 1.0);
-  }
-}
-
 // Seminar card widget
 CustomCardContent seminarCard(
     {required BuildContext context, required KegiatanResponse kegiatan}) {
+  List<Color> colors = [ColorCard.tasked1, ColorCard.tasked2];
+  Random random = Random();
+  int randomIndex = random.nextInt(colors.length);
 
+  Color color = colors[randomIndex];
   return CustomCardContent(
-    colorBackground: ColorPrimary.orange,
-    header: [Text("Kegiatan yang sedang berlangsung")],
+    colorBackground: kegiatan.tanggalMulai!.isAfter(DateTime.now())
+        ? color
+        : kegiatan.tanggalAkhir!.isBefore(DateTime.now())
+            ? ColorCard.done
+            : ColorCard.working,
+    header: [
+      Text(kegiatan.tanggalMulai!.isAfter(DateTime.now())
+          ? "Kegiatan yang akan datang"
+          : kegiatan.tanggalAkhir!.isBefore(DateTime.now())
+              ? "Kegiatan yang sudah dilaksanakan"
+              : "Kegiatan yang sedang berlangsung")
+    ],
     actionIcon: [
       CustomIconButton(
         "assets/icon/category.svg",
         colorBackground: ColorNeutral.black,
       )
     ],
-    otherWidget: [
-      const SizedBox(height: 8),
-      Text(
-        kegiatan.judul!,
-        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-      ),
-      const SizedBox(height: 8),
-      Row(
-        children: [
-          Icon(Icons.location_on, color: ColorNeutral.black),
-          const SizedBox(width: 4),
-          Text(
-            kegiatan.lokasi!,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-        ],
-      ),
-      // const SizedBox(height: 16),
-      // ImageLoader(
-      //   author: "Andika",
-      //   imageUrl: "assets/icon/event.jpg",
-      //   caption: 'Masih sepi nihh',
-      //   authorUrl: 'assets/icon/profile-1.png',
-      // ),
-      const SizedBox(height: 16),
-      // Add the LiveChatButton here
-      LiveChatButton(
-        withText: false,
-        idKegiatan: kegiatan.kegiatanId!,
+    title: kegiatan.judul,
+    descIcon: [
+      CustomIconButton(
+        "assets/icon/location.svg",
+        colorBackground: Colors.transparent,
+        text: kegiatan.lokasi,
       ),
     ],
+    // otherWidget: [
+    //   // Add the LiveChatButton here
+    //   LiveChatButton(
+    //     idKegiatan: kegiatan.kegiatanId!,
+    //   ),
+    // ],
     onPressed: () => {
       Navigator.pushNamed(
         context,
@@ -363,4 +296,100 @@ CustomCardContent seminarCard(
       )
     },
   );
+}
+
+class CalendarBottomSheet extends StatelessWidget {
+  final Widget? child;
+  final Text? title;
+  final String? desc;
+  final List<CustomBigButton>? button;
+  final EdgeInsets padding;
+
+  const CalendarBottomSheet({
+    super.key,
+    required this.child,
+    this.title,
+    this.desc,
+    this.button,
+    this.padding = const EdgeInsets.symmetric(vertical: 12, horizontal: 29),
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: padding,
+      decoration: ShapeDecoration(
+        color: ColorNeutral.white,
+        shape: SmoothRectangleBorder(
+          borderRadius: SmoothBorderRadius.only(
+            topLeft: SmoothRadius(cornerRadius: 40, cornerSmoothing: 0.6),
+            topRight: SmoothRadius(cornerRadius: 40, cornerSmoothing: 0.6),
+          ),
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Pull handle at the top of the BottomSheet
+          Container(
+            width: 62,
+            height: 7,
+            decoration: BoxDecoration(
+              color: ColorNeutral.background,
+              borderRadius: BorderRadius.circular(3),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(
+              top: 21,
+              bottom: 62,
+            ),
+            child: Column(
+              children: [
+                if (title != null)
+                  Column(
+                    children: [
+                      title!,
+                      SizedBox(
+                        height: 12,
+                      ),
+                    ],
+                  ),
+                if (desc != null)
+                  Column(
+                    children: [
+                      Text(
+                        desc!,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                              fontSize: 14,
+                            ),
+                      ),
+                      SizedBox(height: 20),
+                    ],
+                  ),
+                if (child != null)
+                  Column(
+                    children: [
+                      child!,
+                      SizedBox(
+                        height: 56,
+                      ),
+                    ],
+                  ),
+                if (button != null)
+                  ...button!.map(
+                    (it) => Padding(
+                      padding: EdgeInsets.only(top: 10),
+                      child: it,
+                    ),
+                  )
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
 }

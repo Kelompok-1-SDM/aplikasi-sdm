@@ -208,19 +208,13 @@ class CustomCardContent extends StatelessWidget {
       onPressed: onPressed,
       child: Padding(
         padding:
-            const EdgeInsets.only(top: 25, bottom: 30, left: 20, right: 20),
+            const EdgeInsets.only(top: 25, bottom: 25, left: 20, right: 20),
         child: SizedBox(
           height: height,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxHeight: 50,
-                  maxWidth: maxWidth,
-                ),
-                child: _cardHeader(),
-              ),
+              _cardHeader(),
               if (title != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 8, bottom: 8),
@@ -239,15 +233,22 @@ class CustomCardContent extends StatelessWidget {
                   ),
                 ),
               if (description != null)
-                Text(
-                  description!,
-                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                        fontSize: 14,
-                      ),
+                Column(
+                  children: [
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      description!,
+                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                            fontSize: 14,
+                          ),
+                    ),
+                  ],
                 ),
               if (descIcon != null)
                 ...descIcon!.map((it) => Padding(
-                      padding: const EdgeInsets.only(top: 8),
+                      padding: const EdgeInsets.only(top: 0),
                       child: it,
                     )),
               if (otherWidget != null)
@@ -257,19 +258,20 @@ class CustomCardContent extends StatelessWidget {
                     child: it,
                   ),
                 ),
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: maxWidth),
-                  child: Wrap(
-                    alignment: WrapAlignment.start,
-                    direction: Axis.horizontal,
-                    spacing: 7,
-                    runSpacing: 8,
-                    children: crumbsWidget,
+              if (crumbsWidget.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: maxWidth),
+                    child: Wrap(
+                      alignment: WrapAlignment.start,
+                      direction: Axis.horizontal,
+                      spacing: 7,
+                      runSpacing: 8,
+                      children: crumbsWidget,
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
         ),
@@ -284,7 +286,7 @@ class CustomCardContent extends StatelessWidget {
       children: [
         ConstrainedBox(
           constraints: BoxConstraints(
-            maxWidth: 200,
+            maxWidth: 220,
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -383,7 +385,7 @@ class CustomBigButton extends StatelessWidget {
   final bool wasIconOnRight;
   final CustomIconButton? icon;
   final double maxWidth;
-  final List<Widget> otherWidget;
+  final List<Widget>? otherWidget;
   final bool wasElevated;
   final Color? customLabelColor;
 
@@ -395,7 +397,7 @@ class CustomBigButton extends StatelessWidget {
     this.buttonLabel,
     required this.onPressed,
     this.wasIconOnRight = false,
-    required this.otherWidget,
+    this.otherWidget,
     this.padding = const EdgeInsets.all(8),
     this.customLabelColor,
     this.maxWidth = double.infinity,
@@ -415,89 +417,67 @@ class CustomBigButton extends StatelessWidget {
         wasElevated: wasElevated,
         onPressed: onPressed,
         child: Padding(
-          padding: padding,
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              if (icon != null && !wasIconOnRight) icon!,
-              if (buttonLabel == null) ...otherWidget,
-              if (buttonLabel != null)
-                Text(
-                  buttonLabel!,
-                  style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                        fontSize: 24,
-                        color: textColor,
-                      ),
-                ),
-              if (icon != null && wasIconOnRight) icon!,
-            ],
-          ),
-        ),
+            padding: padding,
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: otherWidget != null
+                  ? MainAxisAlignment.spaceBetween
+                  : MainAxisAlignment.center,
+              children: [
+                if (icon != null && !wasIconOnRight) icon!,
+                if (buttonLabel == null && otherWidget != null)
+                  Flexible(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: otherWidget!,
+                    ),
+                  ),
+                if (buttonLabel != null)
+                  Text(
+                    buttonLabel!,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                          fontSize: 24,
+                          color: textColor,
+                        ),
+                  ),
+                if (icon != null && wasIconOnRight) icon!,
+              ],
+            )),
       ),
     );
   }
 }
 
-class LiveChatButton extends StatelessWidget {
-  final bool withText;
-  final String idKegiatan;
-  const LiveChatButton(
-      {super.key, required this.withText, required this.idKegiatan});
+// class LiveChatButton extends StatelessWidget {
+//   final String idKegiatan;
+//   const LiveChatButton({super.key, required this.idKegiatan});
 
-  @override
-  Widget build(BuildContext context) {
-    return CustomBigButton(
-      wasIconOnRight: true,
-      otherWidget: [
-        SizedBox(
-          width: 140,
-          child: Stack(
-            alignment: Alignment.centerLeft,
-            children: [
-              Positioned(
-                child: ProfileIcon(
-                  "assets/icon/profile-1.png",
-                  imageSize: 60,
-                ),
-              ),
-              Positioned(
-                left: 34,
-                child: ProfileIcon(
-                  "assets/icon/profile-2.png",
-                  imageSize: 60,
-                ),
-              ),
-              Positioned(
-                left: 68,
-                child: ProfileIcon(
-                  "assets/icon/profile-3.png",
-                  imageSize: 60,
-                ),
-              ),
-            ],
-          ),
-        ),
-        if (withText)
-          Text(
-            "Live chat",
-            style: TextStyle(
-                color: ColorNeutral.white,
-                fontWeight: FontWeight.w700,
-                fontSize: 20),
-          )
-      ],
-      onPressed: () =>
-          {Navigator.pushNamed(context, '/livechat', arguments: idKegiatan)},
-      icon: CustomIconButton(
-        "assets/icon/chat.svg",
-        size: IconSize.large,
-        colorBackground: ColorNeutral.gray,
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return CustomBigButton(
+//       wasIconOnRight: true,
+//       padding: EdgeInsets.only(top: 8, right: 8, bottom: 8, left: 32),
+//       otherWidget: [
+//         Text(
+//           "Live chat",
+//           style: TextStyle(
+//               color: ColorNeutral.white,
+//               fontWeight: FontWeight.w700,
+//               fontSize: 20),
+//         )
+//       ],
+//       onPressed: () =>
+//           {Navigator.pushNamed(context, '/livechat', arguments: idKegiatan)},
+//       icon: CustomIconButton(
+//         "assets/icon/chat.svg",
+//         size: IconSize.large,
+//         colorBackground: ColorNeutral.gray,
+//       ),
+//     );
+//   }
+// }
 
 class CustomTextField extends StatefulWidget {
   final String label;
@@ -607,9 +587,9 @@ class CustomBottomSheet extends StatelessWidget {
   final Widget? child;
   final Text? title;
   final String? desc;
-  final double? maxHeight;
   final List<CustomBigButton>? button;
   final EdgeInsets padding;
+  final ScrollController? scrollController;
 
   const CustomBottomSheet({
     super.key,
@@ -617,12 +597,40 @@ class CustomBottomSheet extends StatelessWidget {
     this.title,
     this.desc,
     this.button,
-    this.maxHeight,
     this.padding = const EdgeInsets.symmetric(vertical: 12, horizontal: 29),
+    this.scrollController,
   });
 
   @override
   Widget build(BuildContext context) {
+    final content = [
+      if (title != null) ...[
+        title!,
+        SizedBox(height: 12),
+      ],
+      if (desc != null) ...[
+        Text(
+          desc!,
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                fontSize: 14,
+              ),
+        ),
+        SizedBox(height: 20),
+      ],
+      if (child != null) ...[
+        child!,
+        SizedBox(height: 56),
+      ],
+      if (button != null)
+        ...button!.map(
+          (it) => Padding(
+            padding: EdgeInsets.only(top: 10),
+            child: it,
+          ),
+        ),
+    ];
+
     return Container(
       width: double.infinity,
       padding: padding,
@@ -636,9 +644,7 @@ class CustomBottomSheet extends StatelessWidget {
         ),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Pull handle at the top of the BottomSheet
+        children: <Widget>[
           Container(
             width: 62,
             height: 7,
@@ -647,42 +653,14 @@ class CustomBottomSheet extends StatelessWidget {
               borderRadius: BorderRadius.circular(3),
             ),
           ),
-          Padding(
-            padding: EdgeInsets.only(
-              top: 21,
-              left: 29,
-              right: 29,
-              bottom: 62,
+          SizedBox(height: 21),
+          Expanded(
+            child: ListView(
+              controller: scrollController,
+              shrinkWrap: true,
+              children: content,
             ),
-            child: Column(
-              children: [
-                if (title != null) title!,
-                SizedBox(
-                  height: 12,
-                ),
-                if (desc != null)
-                  Text(
-                    desc!,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          fontSize: 14,
-                        ),
-                  ),
-                SizedBox(height: 20),
-                if (child != null) child!,
-                SizedBox(
-                  height: 56,
-                ),
-                if (button != null)
-                  ...button!.map(
-                    (it) => Padding(
-                      padding: EdgeInsets.only(top: 10),
-                      child: it,
-                    ),
-                  )
-              ],
-            ),
-          )
+          ),
         ],
       ),
     );
@@ -858,8 +836,7 @@ class _StatisticChartState extends State<StatisticChart> {
                 ),
                 DropdownButtonHideUnderline(
                   child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
                     decoration: ShapeDecoration(
                       color: ColorNeutral.black,
                       shape: SmoothRectangleBorder(
@@ -963,10 +940,12 @@ class _StatisticChartState extends State<StatisticChart> {
                       getTitlesWidget: (value, _) {
                         return Text(
                           value.toInt().toString(),
-                          style:
-                              Theme.of(context).textTheme.displayMedium!.copyWith(
-                                    fontSize: 14,
-                                  ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .displayMedium!
+                              .copyWith(
+                                fontSize: 14,
+                              ),
                         );
                       },
                     ),
@@ -1090,29 +1069,51 @@ CustomCardContent tawaranTugasCard(
 
 void callBottomSheet(
   BuildContext context, {
-  child,
-  required title,
+  Widget? child,
+  required Text title,
   required List<CustomBigButton> button,
   String? description,
 }) {
   showModalBottomSheet(
     context: context,
-    backgroundColor:
-        Colors.transparent, // Transparent background for custom shape
+    backgroundColor: Colors.transparent,
+    isScrollControlled: true,
     builder: (context) {
-      return CustomBottomSheet(
-        child: child,
-        title: title,
-        desc: description,
-        button: button,
-      ); // Content defined below
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final isContentMinimal = constraints.maxHeight < 860;
+
+          return AnimatedPadding(
+            duration: const Duration(milliseconds: 300),
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: DraggableScrollableSheet(
+              initialChildSize: isContentMinimal ? 0.5 : 0.6,
+              minChildSize: isContentMinimal ? 0.5 : 0.6,
+              maxChildSize: isContentMinimal ? 0.8 : 1.0,
+              expand: false,
+              builder: (context, scrollController) {
+                return CustomBottomSheet(
+                  title: title,
+                  desc: description,
+                  button: button,
+                  child: child,
+                  scrollController: scrollController,
+                );
+              },
+            ),
+          );
+        },
+      );
     },
-    isScrollControlled: true, // Allows control over the BottomSheet's height
   );
 }
 
 CustomCardContent kegiatanCard(BuildContext context,
-    {required KegiatanResponse kegiatan, bool isFromDetail = false}) {
+    {required KegiatanResponse kegiatan,
+    bool isFromDetail = false,
+    bool isFromHistori = false}) {
   Color color;
   String title;
   DateTime normalizedDay = DateTime(
@@ -1142,7 +1143,9 @@ CustomCardContent kegiatanCard(BuildContext context,
     actionIcon: [
       if (!isFromDetail)
         CustomIconButton(
-          "assets/icon/arrow-45.svg",
+          isFromHistori
+              ? "assets/icon/category.svg"
+              : "assets/icon/arrow-45.svg",
           colorBackground: ColorNeutral.black,
         )
     ],
