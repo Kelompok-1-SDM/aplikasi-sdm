@@ -1,3 +1,4 @@
+import 'package:aplikasi_manajemen_sdm/services/shared_prefrences.dart';
 import 'package:flutter/material.dart';
 
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
@@ -9,9 +10,8 @@ import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
 import 'package:aplikasi_manajemen_sdm/view/home/homepage_widgets.dart';
 
 class DaftarKegiatan extends StatefulWidget {
-  final UserData? userData;
   final bool isHistori;
-  const DaftarKegiatan({super.key, this.userData, this.isHistori = false});
+  const DaftarKegiatan({super.key, this.isHistori = false});
 
   @override
   State<DaftarKegiatan> createState() => _DaftarKegiatanState();
@@ -19,6 +19,8 @@ class DaftarKegiatan extends StatefulWidget {
 
 class _DaftarKegiatanState extends State<DaftarKegiatan> {
   Map<int, List<KegiatanResponse>> groupedKegiatan = {};
+  UserData? userData;
+
   bool isLoading = true;
   final KegiatanService _kegiatanService = KegiatanService();
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
@@ -34,7 +36,10 @@ class _DaftarKegiatanState extends State<DaftarKegiatan> {
   }
 
   Future<void> fetchData() async {
+    UserData? user = await Storage.getMyInfo();
+
     setState(() {
+      userData = user;
       isLoading = true;
     });
 
@@ -118,9 +123,12 @@ class _DaftarKegiatanState extends State<DaftarKegiatan> {
         padding: const EdgeInsets.only(top: 61, left: 22, right: 22),
         child: Column(
           children: [
-            HomeAppBar(
-              userdat: widget.userData,
-            ),
+            if (isLoading && userData == null)
+              SizedBox.shrink()
+            else
+              HomeAppBar(
+                userdat: userData,
+              ),
             const SizedBox(height: 24),
             // Handle loading state or empty data
             if (isLoading) const SizedBox.shrink(),
@@ -152,12 +160,12 @@ class _DaftarKegiatanState extends State<DaftarKegiatan> {
                         kegiatanList.length,
                         (index) => Column(
                           children: [
-                            kegiatanCard(
-                              context,
-                              kegiatan: kegiatanList[index],
-                              isFromHistori: widget.isHistori
-                            ),
-                            SizedBox(height: 10,)
+                            kegiatanCard(context,
+                                kegiatan: kegiatanList[index],
+                                isFromHistori: widget.isHistori),
+                            SizedBox(
+                              height: 10,
+                            )
                           ],
                         ),
                       ),

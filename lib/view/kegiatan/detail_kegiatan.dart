@@ -1,5 +1,6 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import 'package:aplikasi_manajemen_sdm/config/const.dart';
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
@@ -23,26 +24,23 @@ class DetailKegiatan extends StatefulWidget {
 class _DetailKegiatanState extends State<DetailKegiatan> {
   bool isLoading = true;
   bool akuPic = false;
-  bool isAgendaLoad = false;
+  bool isOtherLoad = false;
   String? myUid;
   KegiatanResponse? data;
   final KegiatanService _kegiatanService = KegiatanService();
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
 
-  final TextEditingController _namaAgendaController = TextEditingController();
-  final TextEditingController _deskripsiController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _refreshIndicatorKey.currentState?.show();
-      fetchData();
+      _fetchData();
     });
   }
 
-  bool cariAku(List<User> users) {
+  bool _cariAku(List<User> users) {
     for (var user in users) {
       if (user.userId == myUid) {
         return user.isPic ?? false;
@@ -51,7 +49,7 @@ class _DetailKegiatanState extends State<DetailKegiatan> {
     return false;
   }
 
-  Future<void> fetchData() async {
+  Future<void> _fetchData() async {
     // Trigger the swipe refresh animation programmatically
     _refreshIndicatorKey.currentState?.show();
     setState(() {
@@ -70,20 +68,20 @@ class _DetailKegiatanState extends State<DetailKegiatan> {
           setState(() {
             data = response.data;
             myUid = apa!.userId;
-            akuPic = cariAku(data!.users!);
+            akuPic = _cariAku(data!.users!);
           });
         }
         print("Data fetched successfully");
       } else {
         if (mounted) {
-          _showErrorDialog(context, "Fetch Failed",
+          showErrorDialog(context, "Fetch Failed",
               response.message); // Pass the current valid context
         }
       }
     } catch (e) {
       print("Error during data fetch: $e");
       if (mounted) {
-        _showErrorDialog(context, "Error",
+        showErrorDialog(context, "Error",
             "An error occurred while fetching data: $e"); // Pass the current valid context
       }
     } finally {
@@ -95,9 +93,9 @@ class _DetailKegiatanState extends State<DetailKegiatan> {
     }
   }
 
-  Future<void> _showAgendaCallback(String idAgenda) async {
+  Future<void> _fetchAgenda(String idAgenda) async {
     setState(() {
-      isAgendaLoad = true;
+      isOtherLoad = true;
     });
     _refreshIndicatorKey.currentState?.show();
     try {
@@ -105,27 +103,320 @@ class _DetailKegiatanState extends State<DetailKegiatan> {
           await _kegiatanService.fetchAgendaById(idAgenda);
 
       if (response.success) {
-        showDetailAgenda(context, response.data!);
+        showDetailAgenda(context, response.data!, akuPic,
+            _showCreateOrEditAgenda, _deleteAgenda, _showCreateOrEditProgress);
       } else {
-        _showErrorDialog(context, "Agenda Failed to fetch", response.message);
+        showErrorDialog(context, "Agenda Failed to fetch", response.message);
       }
     } catch (e) {
-      _showErrorDialog(
-          context, "Error", "An error occurred during forgot password: $e");
+      showErrorDialog(
+          context, "Error", "An error occurred during fetch agenda: $e");
     } finally {
       setState(() {
-        isAgendaLoad = false;
+        isOtherLoad = false;
+      });
+    }
+  }
+
+  Future<void> _showCreateOrEditAgenda(
+      String uidKegiatan, Agenda? agenda) async {
+    setState(() {
+      isOtherLoad = true;
+    });
+    _refreshIndicatorKey.currentState?.show();
+
+    try {
+      final BaseResponse<List<User>> response =
+          await _kegiatanService.fetchAnggota(uidKegiatan);
+
+      if (response.success) {
+        createOrEditAgenda(
+            context: context,
+            uidKegiatan: uidKegiatan,
+            anggota: response.data!,
+            agenda: agenda,
+            createOrEditAgendaCallback:
+                agenda != null ? _editAgenda : _createAgenda,
+            onDeleteUserAgendaCallback: _deleteUserFromAgenda);
+      } else {
+        showErrorDialog(context, "Anggota Failed to fetch", response.message);
+      }
+    } catch (e) {
+      showErrorDialog(
+          context, "Error", "An error occurred during fetch anggota: $e");
+    } finally {
+      setState(() {
+        isOtherLoad = false;
+      });
+    }
+  }
+
+  Future<void> _deleteUserFromAgenda(
+      String uidAgenda, String uiduserKegiatan) async {
+    setState(() {
+      isOtherLoad = true;
+    });
+    _refreshIndicatorKey.currentState?.show();
+
+    try {
+      final BaseResponse<KegiatanResponse> response = await _kegiatanService
+          .deleteAnggotaAgenda(uidAgenda, uiduserKegiatan);
+
+      if (response.success) {
+        // Trigger the swipe refresh animation programmatically
+        _refreshIndicatorKey.currentState?.show();
+        setState(() {
+          isLoading = true; // Show loading indicator during initial fetch
+        });
+      } else {
+        showErrorDialog(context, "Agenda Failed to create", response.message);
+      }
+    } catch (e) {
+      showErrorDialog(
+          context, "Error", "An error occurred during create angenda: $e");
+    } finally {
+      setState(() {
+        isOtherLoad = false;
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _createAgenda(String uidKegiatan, String nama, String deskripsi,
+      DateTime datetime, bool isDone, List<User>? anggota) async {
+    setState(() {
+      isOtherLoad = true;
+    });
+    _refreshIndicatorKey.currentState?.show();
+
+    try {
+      final BaseResponse<Agenda> response = await _kegiatanService.createAgenda(
+          uidKegiatan, nama, deskripsi, datetime, isDone, anggota);
+
+      if (response.success) {
+        // Trigger the swipe refresh animation programmatically
+        _refreshIndicatorKey.currentState?.show();
+        setState(() {
+          isLoading = true; // Show loading indicator during initial fetch
+        });
+      } else {
+        showErrorDialog(context, "Agenda Failed to create", response.message);
+      }
+    } catch (e) {
+      showErrorDialog(
+          context, "Error", "An error occurred during create angenda: $e");
+    } finally {
+      setState(() {
+        isOtherLoad = false;
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _editAgenda(String uidAgenda, String nama, String deskripsi,
+      DateTime datetime, bool isDone, List<User>? anggota) async {
+    setState(() {
+      isOtherLoad = true;
+    });
+    _refreshIndicatorKey.currentState?.show();
+
+    try {
+      final BaseResponse<Agenda> response = await _kegiatanService.editAgenda(
+          uidAgenda, nama, deskripsi, datetime, isDone, anggota);
+
+      if (response.success) {
+        // Trigger the swipe refresh animation programmatically
+        _refreshIndicatorKey.currentState?.show();
+        setState(() {
+          isLoading = true; // Show loading indicator during initial fetch
+        });
+      } else {
+        showErrorDialog(context, "Agenda Failed to edit", response.message);
+      }
+    } catch (e) {
+      showErrorDialog(
+          context, "Error", "An error occurred during edit angenda: $e");
+    } finally {
+      setState(() {
+        isOtherLoad = false;
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _deleteAgenda(String uidAgenda) async {
+    setState(() {
+      isOtherLoad = true;
+    });
+    _refreshIndicatorKey.currentState?.show();
+
+    try {
+      final BaseResponse<Agenda> response =
+          await _kegiatanService.deleteAgenda(uidAgenda);
+
+      if (response.success) {
+        // Trigger the swipe refresh animation programmatically
+        _refreshIndicatorKey.currentState?.show();
+        setState(() {
+          isLoading = true; // Show loading indicator during initial fetch
+        });
+      } else {
+        showErrorDialog(context, "Agenda Failed to delete", response.message);
+      }
+    } catch (e) {
+      showErrorDialog(
+          context, "Error", "An error occurred during delete angenda: $e");
+    } finally {
+      setState(() {
+        isOtherLoad = false;
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _showCreateOrEditProgress(
+      String uidAgenda, Progress? progress) async {
+    createOrEditProgress(
+      progress != null ? _editProgress : _createProgress,
+      _deleteProgressAttachment,
+      _deleteProgress,
+      context: context,
+      uidAgenda: uidAgenda,
+      progress: progress,
+    );
+  }
+
+  Future<void> _createProgress(
+      String uidAgenda, String deskripsiProgress, List<File>? files) async {
+    setState(() {
+      isOtherLoad = true;
+    });
+    _refreshIndicatorKey.currentState?.show();
+
+    try {
+      final BaseResponse<Agenda> response = await _kegiatanService
+          .createProgressAgenda(uidAgenda, deskripsiProgress, files);
+
+      if (response.success) {
+        // Trigger the swipe refresh animation programmatically
+        _refreshIndicatorKey.currentState?.show();
+        setState(() {
+          isLoading = true; // Show loading indicator during initial fetch
+        });
+      } else {
+        showErrorDialog(context, "Progress Failed to create", response.message);
+      }
+    } catch (e) {
+      showErrorDialog(
+          context, "Error", "An error occurred during create progress: $e");
+    } finally {
+      setState(() {
+        isOtherLoad = false;
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _editProgress(
+      String uidProgress, String deskripsiProgress, List<File>? files) async {
+    setState(() {
+      isOtherLoad = true;
+    });
+    _refreshIndicatorKey.currentState?.show();
+
+    try {
+      final BaseResponse<Agenda> response = await _kegiatanService
+          .editProgressAgenda(uidProgress, deskripsiProgress, files);
+
+      if (response.success) {
+        // Trigger the swipe refresh animation programmatically
+        _refreshIndicatorKey.currentState?.show();
+        setState(() {
+          isLoading = true; // Show loading indicator during initial fetch
+        });
+      } else {
+        showErrorDialog(context, "Progress Failed to edit ", response.message);
+      }
+    } catch (e) {
+      showErrorDialog(
+          context, "Error", "An error occurred during edit progress: $e");
+    } finally {
+      setState(() {
+        isOtherLoad = false;
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _deleteProgress(String uidProgress) async {
+    setState(() {
+      isOtherLoad = true;
+    });
+    _refreshIndicatorKey.currentState?.show();
+
+    try {
+      final BaseResponse<Progress> response =
+          await _kegiatanService.deleteProgressAgenda(uidProgress);
+
+      if (response.success) {
+        // Trigger the swipe refresh animation programmatically
+        _refreshIndicatorKey.currentState?.show();
+        setState(() {
+          isLoading = true; // Show loading indicator during initial fetch
+        });
+      } else {
+        showErrorDialog(context, "Progress Failed to delete", response.message);
+      }
+    } catch (e) {
+      showErrorDialog(
+          context, "Error", "An error occurred during delete Progress: $e");
+    } finally {
+      setState(() {
+        isOtherLoad = false;
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _deleteProgressAttachment(
+      String uidProgress, String uidAttachment) async {
+    setState(() {
+      isOtherLoad = true;
+    });
+    _refreshIndicatorKey.currentState?.show();
+
+    try {
+      final BaseResponse<Progress> response = await _kegiatanService
+          .deleteProgressAttachmentAgenda(uidProgress, uidAttachment);
+
+      if (response.success) {
+        // Trigger the swipe refresh animation programmatically
+        _refreshIndicatorKey.currentState?.show();
+        setState(() {
+          isLoading = true; // Show loading indicator during initial fetch
+        });
+      } else {
+        showErrorDialog(
+            context, "Progress attachemnt Failed to delete", response.message);
+      }
+    } catch (e) {
+      showErrorDialog(context, "Error",
+          "An error occurred during delete Progress attachemnt: $e");
+    } finally {
+      setState(() {
+        isOtherLoad = false;
+        isLoading = false;
       });
     }
   }
 
   Future<void> _refreshData() async {
-    if (!isAgendaLoad) {
-      await fetchData(); // Refresh data using the existing fetchData method
+    if (!isOtherLoad) {
+      await _fetchData(); // Refresh data using the existing fetchData method
     }
   }
 
-  void _showErrorDialog(
+  void showErrorDialog(
       BuildContext dialogContext, String title, String message) {
     showDialog(
       context: dialogContext, // Use the passed-in parent context
@@ -233,7 +524,13 @@ class _DetailKegiatanState extends State<DetailKegiatan> {
                     if (!isLoading && data!.agenda!.isNotEmpty)
                       Column(
                         children: [
-                          agendaContainer(context, data!.agenda!),
+                          agendaContainer(
+                              context,
+                              data!.agenda!,
+                              akuPic,
+                              _fetchAgenda,
+                              _showCreateOrEditAgenda,
+                              data!.kegiatanId!),
                           const SizedBox(height: 10),
                         ],
                       ),
@@ -256,296 +553,6 @@ class _DetailKegiatanState extends State<DetailKegiatan> {
                   ],
                 ),
         ),
-      ),
-    );
-  }
-
-  CustomCardContent agendaContainer(BuildContext context, List<Agenda> agenda) {
-    return CustomCardContent(
-      colorBackground: ColorNeutral.white,
-      header: [
-        Text(
-          "Agenda kegiatan ini",
-          style:
-              Theme.of(context).textTheme.displayMedium!.copyWith(fontSize: 16),
-        )
-      ],
-      otherWidget: [
-        ...List.generate(
-          2,
-          (index) => Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              agendasCard(context, agenda[index]),
-              SizedBox(
-                height: 8,
-              ),
-              if (index == 1 && agenda.length > 2)
-                TextButton(
-                  child: Text(
-                    '${agenda.length - 1} agenda lainnya',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                          fontSize: 11,
-                          decoration: TextDecoration.underline,
-                        ),
-                  ),
-                  onPressed: () => _showListOfAgenda(context, agenda),
-                ),
-            ],
-          ),
-        ),
-        if (!akuPic)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              CustomIconButton(
-                Icons.add,
-                colorBackground: ColorNeutral.black,
-                iconColorCustom: ColorNeutral.white,
-              ),
-            ],
-          )
-      ],
-    );
-  }
-
-  CustomBigButton agendasCard(BuildContext context, Agenda agenda) {
-    double maxWidth = MediaQuery.of(context).size.width - 220;
-    return CustomBigButton(
-      wasIconOnRight: true,
-      padding: EdgeInsets.all(24),
-      otherWidget: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Container(
-              width: 6,
-              height: 41,
-              clipBehavior: Clip.antiAlias,
-              decoration: ShapeDecoration(
-                color: Color(0xFF13AE85),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(40),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: maxWidth),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      agenda.namaAgenda!,
-                      style: Theme.of(context)
-                          .textTheme
-                          .displayMedium!
-                          .copyWith(fontSize: 24, color: ColorNeutral.white),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: true,
-                    ),
-                    SizedBox(
-                      height: 4,
-                    ),
-                    Text(
-                      DateFormat.yMMMd().add_jm().format(agenda.jadwalAgenda!),
-                      style: Theme.of(context)
-                          .textTheme
-                          .displayMedium!
-                          .copyWith(fontSize: 12, color: ColorNeutral.white),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: true,
-                    ),
-                    // _crumbWidget(user.namaJabatan ?? "", Theme.of(context))
-                  ],
-                ),
-              ),
-            ),
-            CustomIconButton(
-              "assets/icon/centang.svg",
-              colorBackground:
-                  agenda.isDone! ? ColorPrimary.green : ColorNeutral.gray,
-              iconColorCustom:
-                  agenda.isDone! ? ColorNeutral.white : ColorNeutral.black,
-              size: IconSize.small,
-            )
-          ],
-        ),
-      ],
-      onPressed: () => _showAgendaCallback(agenda.agendaId!),
-    );
-  }
-
-  CustomBigButton progressCard(BuildContext context, Progress progress) {
-    double maxWidth = MediaQuery.of(context).size.width - 170;
-    return CustomBigButton(
-      wasIconOnRight: true,
-      padding: EdgeInsets.all(24),
-      otherWidget: [
-        Wrap(
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            Container(
-              width: 6,
-              height: 41,
-              clipBehavior: Clip.antiAlias,
-              decoration: ShapeDecoration(
-                color: Color(0xFF13AE85),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(40),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: maxWidth),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: maxWidth - 50),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            progress.deskripsiProgress!,
-                            style: Theme.of(context)
-                                .textTheme
-                                .displayMedium!
-                                .copyWith(
-                                    fontSize: 24, color: ColorNeutral.white),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: true,
-                          ),
-                          SizedBox(
-                            height: 4,
-                          ),
-                          Text(
-                            DateFormat.yMMMd()
-                                .add_jm()
-                                .format(progress.createdAt!),
-                            style: Theme.of(context)
-                                .textTheme
-                                .displayMedium!
-                                .copyWith(
-                                    fontSize: 12, color: ColorNeutral.white),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: true,
-                          ),
-                          // _crumbWidget(user.namaJabatan ?? "", Theme.of(context))
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          ],
-        ),
-      ],
-      // onPressed: () => _showAgendaCallback(agenda.agendaId!),
-      onPressed: () {},
-    );
-  }
-
-  void _showListOfAgenda(BuildContext context, List<Agenda> agenda) {
-    callBottomSheet(
-      context,
-      button: [],
-      title: Text(
-        "Daftar agenda pada kegiatan ini",
-        textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.displayLarge!.copyWith(
-              fontSize: 20,
-            ),
-      ),
-      child: Column(
-        children: [
-          ...List.generate(
-            agenda.length,
-            (index) => agendasCard(context, agenda[index]),
-          )
-        ],
-      ),
-    );
-  }
-
-  void showDetailAgenda(BuildContext context, Agenda agenda) {
-    callBottomSheet(
-      context,
-      button: [],
-      title: Text(
-        agenda.namaAgenda!,
-        textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.displayLarge!.copyWith(
-              fontSize: 20,
-            ),
-      ),
-      description: agenda.deskripsiAgenda!,
-      child: Column(
-        children: [
-          Text(
-            "Jadwal mulai ${DateFormat.yMMMd().add_jm().format(agenda.jadwalAgenda!)}",
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                  fontSize: 20,
-                ),
-          ),
-          SizedBox(
-            height: 24,
-          ),
-          ...List.generate(
-            agenda.progress!.length,
-            (index) => progressCard(context, agenda.progress![index]),
-          ),
-          SizedBox(
-            height: 32,
-          ),
-          CustomBigButton(
-            onPressed: () {},
-            buttonLabel: "Tambah Progress",
-            buttonColor: ColorPrimary.orange,
-            customLabelColor: ColorNeutral.white,
-            padding: EdgeInsets.all(24),
-          )
-        ],
-      ),
-    );
-  }
-
-  void cerateAgenda(BuildContext context) {
-    callBottomSheet(
-      context,
-      button: [],
-      title: Text(
-        "Input Agenda",
-        textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.displayLarge!.copyWith(
-              fontSize: 20,
-            ),
-      ),
-      child: Column(
-        children: [
-          SizedBox(
-            height: 16,
-          ),
-          CustomTextField(
-            // controller: _passwordBaruController,
-            label: "Password baru",
-            hint: "Password baru",
-            isPassword: true, // or true for password fields
-            inputType: TextInputType.text, // For numeric input
-          ),
-          
-        ],
       ),
     );
   }

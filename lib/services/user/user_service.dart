@@ -170,10 +170,6 @@ class UserService {
         },
       );
 
-      for (var element in formData.files) {
-        print(" ini field ${element.key} ${element.value.contentType}");
-      }
-
       // Making the GET request
       final response = await dio.put(
         '/api/user',

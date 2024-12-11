@@ -5,6 +5,7 @@ import 'package:aplikasi_manajemen_sdm/services/dio_client.dart';
 import 'package:aplikasi_manajemen_sdm/services/shared_prefrences.dart';
 import 'package:aplikasi_manajemen_sdm/view/auth/auth_widgets.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
+import 'package:aplikasi_manajemen_sdm/view/home/homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -20,21 +21,30 @@ class _AuthPageState extends State<AuthPage> {
   final TextEditingController _nipLupaController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final AuthService _authService = AuthService();
+  bool _isLoading = true;
 
   final GlobalKey<RefreshIndicatorState> _refreshKey =
       GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
-    _checkToken();
     super.initState();
+    _checkToken();
   }
 
   void _checkToken() async {
     final token = await Storage.getToken();
-
-    if (token != null) {
-      Navigator.pushReplacementNamed(context, '/home');
+    if (token != null && context.mounted) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+            builder: (context) =>
+                HomePage()), // Replace HomePage with your widget
+        (Route<dynamic> route) => false,
+      );
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -225,6 +235,10 @@ class _AuthPageState extends State<AuthPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold();
+    }
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: RefreshIndicator(

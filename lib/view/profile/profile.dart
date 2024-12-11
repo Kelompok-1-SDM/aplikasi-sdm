@@ -8,6 +8,7 @@ import 'package:aplikasi_manajemen_sdm/services/shared_prefrences.dart';
 import 'package:aplikasi_manajemen_sdm/services/user/user_model.dart';
 import 'package:aplikasi_manajemen_sdm/services/user/user_service.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
+import 'package:aplikasi_manajemen_sdm/view/home/homepage_widgets.dart';
 import 'package:aplikasi_manajemen_sdm/view/profile/profile_widgets.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,7 @@ class _ProfilePageState extends State<ProfilePage> {
   final TextEditingController _passwordKonfirmasiController =
       TextEditingController();
   final UserService _userService = UserService();
+  final GlobalKey _statsCard = GlobalKey();
 
   UserData? userData;
   Statistik? statsData;
@@ -58,7 +60,8 @@ class _ProfilePageState extends State<ProfilePage> {
             userData = response.data;
           });
         } else {
-          _showErrorDialog(context, "Fetch Failed (User Info)", response.message);
+          _showErrorDialog(
+              context, "Fetch Failed (User Info)", response.message);
         }
 
         // Fetch statistics
@@ -120,6 +123,7 @@ class _ProfilePageState extends State<ProfilePage> {
           await _userService.updateProfile(file);
 
       if (response.success) {
+        await fetchData();
         _afterChangeProfile();
       } else {
         _showErrorDialog(context, "Update failed", response.message);
@@ -180,8 +184,6 @@ class _ProfilePageState extends State<ProfilePage> {
         CustomBigButton(
           onPressed: () => {
             Navigator.pop(context),
-            Navigator.pop(context),
-            Navigator.pop(context)
           },
           padding: EdgeInsets.all(
             24,
@@ -214,7 +216,7 @@ class _ProfilePageState extends State<ProfilePage> {
     callBottomSheet(context,
         button: [
           CustomBigButton(
-            onPressed: () => {Navigator.pop(context)},
+            onPressed: () => {Navigator.pop(context), _changePassword()},
             padding: EdgeInsets.all(
               24,
             ),
@@ -223,7 +225,8 @@ class _ProfilePageState extends State<ProfilePage> {
             customLabelColor: ColorNeutral.white,
           ),
           CustomBigButton(
-            onPressed: () => {_changePasswordCallback(baruKonfirm)},
+            onPressed: () =>
+                {Navigator.pop(context), _changePasswordCallback(baruKonfirm)},
             padding: EdgeInsets.all(
               24,
             ),
@@ -256,7 +259,7 @@ class _ProfilePageState extends State<ProfilePage> {
           customLabelColor: ColorNeutral.white,
         ),
         CustomBigButton(
-          onPressed: () => {_doConfirmation()},
+          onPressed: () => {Navigator.pop(context), _doConfirmation()},
           padding: EdgeInsets.all(
             24,
           ),
@@ -382,11 +385,18 @@ class _ProfilePageState extends State<ProfilePage> {
                     const SizedBox(height: 13),
                     profileCard(Theme.of(context), userData!, average, color),
                     if (!isLoading && statsData != null)
-                      statsCardProfile(
-                        Theme.of(context),
-                        userData!.profileImage,
-                        color: color,
-                        stats: statsData!,
+                      RepaintBoundary(
+                        key: _statsCard,
+                        child: statsCardProfile(
+                          Theme.of(context),
+                          userData!.profileImage,
+                          () async {
+                            await shareCardImage(_statsCard,
+                                "Statistik penugasan ${userData!.nama}");
+                          },
+                          color: color,
+                          stats: statsData!,
+                        ),
                       ),
                     CustomBigButton(
                       wasIconOnRight: true,

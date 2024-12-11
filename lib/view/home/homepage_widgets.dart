@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/config/const.dart';
 import 'package:aplikasi_manajemen_sdm/services/home/home_model.dart';
@@ -7,9 +10,13 @@ import 'package:aplikasi_manajemen_sdm/services/user/user_model.dart';
 import 'package:aplikasi_manajemen_sdm/view/global_widgets.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 
-import 'dart:ui' as ui; // Alias the dart:ui import
+import 'dart:ui' as ui;
+
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart'; // Alias the dart:ui import
 
 class HomeAppBar extends StatefulWidget {
   final UserData? userdat;
@@ -21,8 +28,8 @@ class HomeAppBar extends StatefulWidget {
 }
 
 class _HomeAppBarState extends State<HomeAppBar> {
-  OverlayEntry? _overlayEntry;
-  final _layerLink = LayerLink();
+  // OverlayEntry? _overlayEntry;
+  // final _layerLink = LayerLink();
   double statistik = 0;
 
   @override
@@ -43,45 +50,45 @@ class _HomeAppBarState extends State<HomeAppBar> {
     }
   }
 
-  void _showOverlay(BuildContext context) {
-    final overlay = Overlay.of(context);
-    final renderBox = context.findRenderObject() as RenderBox;
-    final offset = renderBox.localToGlobal(Offset.zero);
+  // void _showOverlay(BuildContext context) {
+  //   final overlay = Overlay.of(context);
+  //   final renderBox = context.findRenderObject() as RenderBox;
+  //   final offset = renderBox.localToGlobal(Offset.zero);
 
-    _overlayEntry = OverlayEntry(
-      builder: (context) => Positioned(
-        right: offset.dx + 90,
-        top: offset.dy + 20,
-        child: CompositedTransformFollower(
-          link: _layerLink,
-          showWhenUnlinked: false,
-          offset: const Offset(-270, 30),
-          child: Stack(
-            children: [
-              const NotificationWidgetOverlay(),
-              Positioned(
-                right: 10,
-                top: 10,
-                child: CustomIconButton(
-                  Icons.cancel,
-                  colorBackground: ColorNeutral.background,
-                  iconColorCustom: ColorNeutral.black,
-                  onPressed: _hideOverlay,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+  //   _overlayEntry = OverlayEntry(
+  //     builder: (context) => Positioned(
+  //       right: offset.dx + 90,
+  //       top: offset.dy + 20,
+  //       child: CompositedTransformFollower(
+  //         link: _layerLink,
+  //         showWhenUnlinked: false,
+  //         offset: const Offset(-270, 30),
+  //         child: Stack(
+  //           children: [
+  //             const NotificationWidgetOverlay(),
+  //             Positioned(
+  //               right: 10,
+  //               top: 10,
+  //               child: CustomIconButton(
+  //                 Icons.cancel,
+  //                 colorBackground: ColorNeutral.background,
+  //                 iconColorCustom: ColorNeutral.black,
+  //                 onPressed: _hideOverlay,
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
 
-    overlay.insert(_overlayEntry!);
-  }
+  //   overlay.insert(_overlayEntry!);
+  // }
 
-  void _hideOverlay() {
-    _overlayEntry?.remove();
-    _overlayEntry = null;
-  }
+  // void _hideOverlay() {
+  //   _overlayEntry?.remove();
+  //   _overlayEntry = null;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -95,19 +102,19 @@ class _HomeAppBarState extends State<HomeAppBar> {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        CompositedTransformTarget(
-          link: _layerLink,
-          child: CustomIconButton(
-            "assets/icon/notification.svg",
-            colorBackground: ColorNeutral.white,
-            onPressed: () {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                _showOverlay(context);
-              });
-            },
-            size: IconSize.medium,
-          ),
-        ),
+        // CompositedTransformTarget(
+        //   link: _layerLink,
+        //   child: CustomIconButton(
+        //     "assets/icon/notification.svg",
+        //     colorBackground: ColorNeutral.white,
+        //     onPressed: () {
+        //       WidgetsBinding.instance.addPostFrameCallback((_) {
+        //         _showOverlay(context);
+        //       });
+        //     },
+        //     size: IconSize.medium,
+        //   ),
+        // ),
         const SizedBox(width: 16),
         ProfileIcon(
           widget.userdat?.profileImage ?? 'assets/images/default_profile.png',
@@ -368,7 +375,7 @@ CustomCardContent currentTask(ThemeData theme, KegiatanResponse? tugas) {
 }
 
 CustomCardContent homeCard(BuildContext context, JumlahTugasBulanSekarang? data,
-    Function(int) onItemTapped) {
+    Function(int) onItemTapped, VoidCallback share) {
   return CustomCardContent(
     header: [
       CustomIconButton(
@@ -384,7 +391,7 @@ CustomCardContent homeCard(BuildContext context, JumlahTugasBulanSekarang? data,
     actionIcon: [
       CustomIconButton(
         Icons.share,
-        onPressed: () => {},
+        onPressed: share,
         colorBackground: ColorNeutral.white,
       ),
       CustomIconButton(
@@ -415,8 +422,8 @@ CustomCardContent homeCard(BuildContext context, JumlahTugasBulanSekarang? data,
   );
 }
 
-CustomCardContent statsCard(
-    BuildContext context, Statistik? data, UserData userInfo, double avg) {
+CustomCardContent statsCard(BuildContext context, Statistik? data,
+    UserData userInfo, double avg, VoidCallback share) {
   Color color = avg > 5
       ? ColorPrimary.green
       : avg < 5 && avg > 3
@@ -449,7 +456,7 @@ CustomCardContent statsCard(
     actionIcon: [
       CustomIconButton(
         Icons.share,
-        onPressed: () => {},
+        onPressed: share,
         colorBackground: ColorNeutral.background,
       )
     ],
@@ -617,5 +624,27 @@ class _NotificationWidgetOverlayState extends State<NotificationWidgetOverlay> {
         )
       ],
     );
+  }
+}
+
+Future<void> shareCardImage(GlobalKey cardKey, String title) async {
+  try {
+    // Wait for the end of the frame to ensure the widget is painted
+    await Future.delayed(Duration.zero);
+    await WidgetsBinding.instance.endOfFrame;
+
+    RenderRepaintBoundary boundary =
+        cardKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+    ui.Image image = await boundary.toImage(pixelRatio: 2.0);
+    ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    Uint8List pngBytes = byteData!.buffer.asUint8List();
+
+    final directory = await getTemporaryDirectory();
+    final file = File('${directory.path}/shared_card.png');
+    await file.writeAsBytes(pngBytes);
+
+    await Share.shareXFiles([XFile(file.path)], text: title);
+  } catch (e) {
+    print('Error sharing card: $e');
   }
 }

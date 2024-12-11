@@ -485,7 +485,9 @@ class CustomTextField extends StatefulWidget {
   final bool isPassword;
   final TextInputType inputType;
   final IconData? customIcon;
+  final VoidCallback? onTap;
   final TextEditingController? controller;
+  final bool isResizable; // New parameter for resizeable height
 
   const CustomTextField({
     super.key,
@@ -493,8 +495,10 @@ class CustomTextField extends StatefulWidget {
     this.isPassword = false,
     this.inputType = TextInputType.text,
     this.customIcon,
+    this.onTap,
     required this.hint,
-    this.controller, // Default icon for password
+    this.controller,
+    this.isResizable = false, // Default to false
   });
 
   @override
@@ -536,9 +540,12 @@ class _CustomTextFieldState extends State<CustomTextField> {
         ),
         SizedBox(height: 8),
         TextField(
+          onTap: widget.onTap,
+          readOnly: widget.onTap == null ? false : true,
           obscureText: widget.isPassword ? _obscureText : false,
           keyboardType: widget.inputType,
-          controller: widget.controller,
+          controller: _controller,
+          maxLines: widget.isResizable ? null : 1, // Allow resizing if true
           decoration: InputDecoration(
             contentPadding: EdgeInsets.symmetric(
               horizontal: 20,
@@ -1091,15 +1098,15 @@ void callBottomSheet(
             child: DraggableScrollableSheet(
               initialChildSize: isContentMinimal ? 0.5 : 0.6,
               minChildSize: isContentMinimal ? 0.5 : 0.6,
-              maxChildSize: isContentMinimal ? 0.8 : 1.0,
+              maxChildSize: isContentMinimal ? 0.9 : 1.0,
               expand: false,
               builder: (context, scrollController) {
                 return CustomBottomSheet(
                   title: title,
                   desc: description,
                   button: button,
-                  child: child,
                   scrollController: scrollController,
+                  child: child,
                 );
               },
             ),
@@ -1127,7 +1134,7 @@ CustomCardContent kegiatanCard(BuildContext context,
   if (normalizedDay.isBefore(nowNormalized) && kegiatan.isDone!) {
     title = "Kamu telah melaksanakan kegiatan";
     color = ColorCard.done;
-  } else if (normalizedDay.isAfter(nowNormalized)) {
+  } else if (normalizedDay.isAfter(nowNormalized) && !kegiatan.isDone!) {
     title = "Kamu akan menghadiri kegiatan";
     List<Color> colors = [ColorCard.tasked1, ColorCard.tasked2];
     Random random = Random();
@@ -1137,6 +1144,7 @@ CustomCardContent kegiatanCard(BuildContext context,
     title = "Kamu sedang melaksanakan";
     color = ColorCard.working;
   }
+  
   return CustomCardContent(
     header: [Text(title)],
     title: kegiatan.judul,
