@@ -187,7 +187,7 @@ class _CustomTableCalendarState extends State<CustomTableCalendar>
                   ),
                   _buildColorIndicator(
                     ColorPrimary.blue,
-                    'Acara yang sudah dilaksanakan',
+                    'Acara yang sudah selesai',
                   ),
                 ],
               ),
@@ -256,15 +256,15 @@ CustomCardContent seminarCard(
 
   Color color = colors[randomIndex];
   return CustomCardContent(
-    colorBackground: kegiatan.tanggalMulai!.isAfter(DateTime.now())
+    colorBackground: kegiatan.tanggalMulai!.isAfter(DateTime.now()) && !kegiatan.isDone!
         ? color
-        : kegiatan.tanggalAkhir!.isBefore(DateTime.now())
+        : kegiatan.tanggalAkhir!.isBefore(DateTime.now()) && kegiatan.isDone!
             ? ColorCard.done
             : ColorCard.working,
     header: [
-      Text(kegiatan.tanggalMulai!.isAfter(DateTime.now())
+      Text(kegiatan.tanggalMulai!.isAfter(DateTime.now()) && !kegiatan.isDone!
           ? "Kegiatan yang akan datang"
-          : kegiatan.tanggalAkhir!.isBefore(DateTime.now())
+          : kegiatan.tanggalAkhir!.isBefore(DateTime.now()) && kegiatan.isDone!
               ? "Kegiatan yang sudah dilaksanakan"
               : "Kegiatan yang sedang berlangsung")
     ],

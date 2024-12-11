@@ -70,7 +70,8 @@ GenericCard profileCard(
   );
 }
 
-CustomCardContent statsCardProfile(ThemeData theme, String? imageProfile,
+CustomCardContent statsCardProfile(
+    ThemeData theme, String? imageProfile, VoidCallback share,
     {required Color color, required Statistik stats}) {
   double measureTextWidth(String text, TextStyle style) {
     final textPainter = TextPainter(
@@ -97,7 +98,7 @@ CustomCardContent statsCardProfile(ThemeData theme, String? imageProfile,
     actionIcon: [
       CustomIconButton(
         Icons.share,
-        onPressed: () => {},
+        onPressed: share,
         colorBackground: ColorNeutral.background,
       )
     ],
@@ -131,13 +132,8 @@ CustomCardContent statsCardProfile(ThemeData theme, String? imageProfile,
                         .copyWith(fontSize: 36, fontWeight: FontWeight.bold),
                   ),
                   TextSpan(
-                    text: "di ",
+                    text: "selama ini ",
                     style: theme.textTheme.bodyMedium!.copyWith(fontSize: 36),
-                  ),
-                  TextSpan(
-                    text: "tahun ${DateTime.now().year} ",
-                    style: theme.textTheme.bodyMedium!
-                        .copyWith(fontSize: 36, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),

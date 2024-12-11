@@ -1,4 +1,3 @@
-import 'package:animations/animations.dart';
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
 import 'package:aplikasi_manajemen_sdm/config/const.dart';
 import 'package:aplikasi_manajemen_sdm/services/dio_client.dart';
@@ -21,98 +20,66 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 1;
-  bool _isForward = true;
-  UserData? userdat;
-  List<Widget>? _pages;
-  bool _isLoading = true;
+  late PageController _pageController;
 
   @override
   void initState() {
     super.initState();
-    _fetchUserData(); // Fetch user data on initial load
+    _pageController = PageController(initialPage: _selectedIndex);
   }
 
-  // Fetch user data and update the pages
-  Future<void> _fetchUserData() async {
-    setState(() {
-      _isLoading = true; // Show loading indicator while fetching
-    });
-
-    try {
-      userdat = await Storage.getMyInfo();
-      if (userdat == null) {
-        throw Exception("User data not found");
-      }
-
-      setState(() {
-        _pages = [
-          Kalender(key: ValueKey('kalender'), userData: userdat!),
-          HomeScreen(
-            key: ValueKey('home'),
-            onItemTapped: _onItemTapped,
-            userData: userdat!,
-          ),
-          DaftarKegiatan(
-            key: ValueKey('tasks-1'),
-            userData: userdat!,
-            isHistori: false,
-          ),
-          DaftarKegiatan(
-            key: ValueKey('tasks-2'),
-            userData: userdat!,
-            isHistori: true,
-          ),
-        ];
-      });
-    } catch (e) {
-      print("Error loading user data: $e");
-    } finally {
-      setState(() {
-        _isLoading = false; // Stop loading indicator
-      });
-    }
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   void _onItemTapped(int index) {
     setState(() {
-      _isForward = index > _selectedIndex;
       _selectedIndex = index;
     });
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      onPopInvokedWithResult: (didPop, result) async =>
-          {await _fetchUserData()},
-      child: Scaffold(
-        floatingActionButton: Navbar(
-          state: NavbarState.values[_selectedIndex],
-          onItemSelected: _onItemTapped,
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        body: _isLoading
-            ? Center(
-                child: CircularProgressIndicator()) // Show loading indicator
-            : _pages == null
-                ? Center(child: Text("No pages available")) // Error fallback
-                : PageTransitionSwitcher(
-                    duration: const Duration(milliseconds: 500),
-                    reverse: !_isForward,
-                    transitionBuilder: (
-                      Widget child,
-                      Animation<double> primaryAnimation,
-                      Animation<double> secondaryAnimation,
-                    ) {
-                      return SharedAxisTransition(
-                        animation: primaryAnimation,
-                        secondaryAnimation: secondaryAnimation,
-                        transitionType: SharedAxisTransitionType.horizontal,
-                        child: child,
-                      );
-                    },
-                    child: _pages![_selectedIndex],
-                  ),
+    final pages = [
+      Kalender(key: const ValueKey('kalender')),
+      HomeScreen(
+        key: const ValueKey('home'),
+        onItemTapped: _onItemTapped,
+      ),
+      DaftarKegiatan(
+        key: const ValueKey('tasks-1'),
+        isHistori: false,
+      ),
+      DaftarKegiatan(
+        key: const ValueKey('tasks-2'),
+        isHistori: true,
+      ),
+    ];
+
+    return Scaffold(
+      floatingActionButton: Navbar(
+        state: NavbarState.values[_selectedIndex],
+        onItemSelected: _onItemTapped,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      body: PageView.builder(
+        controller: _pageController,
+        itemCount: pages.length,
+        onPageChanged: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        itemBuilder: (context, index) {
+          return pages[index];
+        },
       ),
     );
   }
@@ -120,10 +87,8 @@ class _HomePageState extends State<HomePage> {
 
 class HomeScreen extends StatefulWidget {
   final Function(int) onItemTapped;
-  final UserData userData;
 
-  const HomeScreen(
-      {super.key, required this.onItemTapped, required this.userData});
+  const HomeScreen({super.key, required this.onItemTapped});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -131,11 +96,15 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   HomeResponse? data;
+  UserData? dataUser;
+
   bool isLoading = true;
   double avg = 0;
   final HomeService _homeService = HomeService();
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>(); // Key to trigger the RefreshIndicator
+  final GlobalKey _homeCard = GlobalKey();
+  final GlobalKey _statsCard = GlobalKey();
 
   @override
   void initState() {
@@ -154,6 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     try {
       // Fetch home data from the API
+      final UserData? user = await Storage.getMyInfo();
       final BaseResponse<HomeResponse> response =
           await _homeService.fetchDataHome();
       double? apa = await Storage.getAvg();
@@ -162,6 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
         if (mounted) {
           // Check if the widget is still mounted
           setState(() {
+            dataUser = user;
             data = response.data;
             avg = apa!;
           });
@@ -224,22 +195,24 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 61),
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: SizedBox(
-                width: double.infinity,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    HomeAppBar(
-                      userdat: widget.userData,
-                    ),
-                    headline(
-                        Theme.of(context), widget.userData.nama.split(' ')[0])
-                  ],
+            if (isLoading)
+              SizedBox.shrink()
+            else
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      HomeAppBar(
+                        userdat: dataUser,
+                      ),
+                      headline(Theme.of(context), dataUser!.nama.split(' ')[0])
+                    ],
+                  ),
                 ),
               ),
-            ),
             const SizedBox(height: 13),
             if (isLoading)
               // No need for loading indicator, RefreshIndicator is already shown
@@ -247,12 +220,19 @@ class _HomeScreenState extends State<HomeScreen> {
             else
               Column(
                 children: [
-                  homeCard(
+                  RepaintBoundary(
+                    key: _homeCard,
+                    child: homeCard(
                       context,
                       data?.jumlahTugasBulanSekarang ??
                           JumlahTugasBulanSekarang(count: 0),
-                      widget.onItemTapped // Display home card with data
-                      ),
+                      widget.onItemTapped, // Display home card with data
+                      () async {
+                        await shareCardImage(_homeCard,
+                            "Penugasan ${dataUser!.nama} pada bulan ini");
+                      },
+                    ),
+                  ),
                   const SizedBox(height: 13),
                   if (data?.tugasBerlangsung != null)
                     Column(
@@ -280,8 +260,18 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                  statsCard(context, data?.statistik, widget.userData,
-                      avg), // Always show stats card
+                  RepaintBoundary(
+                    key: _statsCard,
+                    child: statsCard(
+                      context,
+                      data?.statistik,
+                      dataUser!,
+                      avg,
+                      () async {
+                        await shareCardImage(_statsCard, "Statistik ${dataUser!.nama} pada tahun ini");
+                      },
+                    ),
+                  ), // Always show stats card
                   const SizedBox(height: 13),
                   const Text(
                     "Kamu sudah terkini",

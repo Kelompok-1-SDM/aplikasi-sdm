@@ -234,22 +234,28 @@ class Progress {
 }
 
 class Attachment {
-  final String? progressId;
   final String? attachmentId;
+  final String? nama;
+  final String? hash;
+  final String? url;
   final DateTime? updatedAt;
   final DateTime? createdAt;
 
   Attachment({
-    this.progressId,
     this.attachmentId,
+    this.nama,
+    this.hash,
+    this.url,
     this.updatedAt,
     this.createdAt,
   });
 
   factory Attachment.fromJson(Map<String, dynamic> json) {
     return Attachment(
-      progressId: json['progressId'],
       attachmentId: json['attachmentId'],
+      nama: json['nama'],
+      hash: json['hash'],
+      url: json['url'],
       updatedAt:
           json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
       createdAt:
@@ -259,8 +265,10 @@ class Attachment {
 
   Map<String, dynamic> toJson() {
     return {
-      'progressId': progressId,
       'attachmentId': attachmentId,
+      'nama': nama,
+      'hash': hash,
+      'url': url,
       'updatedAt': updatedAt?.toIso8601String(),
       'createdAt': createdAt?.toIso8601String(),
     };
@@ -269,6 +277,7 @@ class Attachment {
 
 class User {
   final String? userId;
+  final String? userToKegiatanId;
   final String? nip;
   final String? nama;
   final String? email;
@@ -281,6 +290,7 @@ class User {
 
   User(
       {this.userId,
+      this.userToKegiatanId,
       this.nip,
       this.nama,
       this.email,
@@ -294,6 +304,7 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
         userId: json['userId'],
+        userToKegiatanId: json['userToKegiatanId'],
         nip: json['nip'],
         nama: json['nama'],
         email: json['email'],
@@ -313,6 +324,7 @@ class User {
     return {
       'userId': userId,
       'nip': nip,
+      'userToKegiatanId': userToKegiatanId,
       'nama': nama,
       'email': email,
       'role': role,

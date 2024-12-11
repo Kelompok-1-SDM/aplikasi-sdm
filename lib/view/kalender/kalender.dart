@@ -1,3 +1,4 @@
+import 'package:aplikasi_manajemen_sdm/services/shared_prefrences.dart';
 import 'package:flutter/material.dart';
 
 import 'package:aplikasi_manajemen_sdm/config/theme/color.dart';
@@ -9,8 +10,7 @@ import 'package:aplikasi_manajemen_sdm/view/home/homepage_widgets.dart';
 import 'package:aplikasi_manajemen_sdm/view/kalender/kalender_widget.dart';
 
 class Kalender extends StatefulWidget {
-  final UserData? userData;
-  const Kalender({super.key, this.userData});
+  const Kalender({super.key});
 
   @override
   State<Kalender> createState() => _KalenderState();
@@ -19,6 +19,8 @@ class Kalender extends StatefulWidget {
 class _KalenderState extends State<Kalender> {
   final Map<DateTime, EventData> _events = {};
   List<KegiatanResponse>? kegiatanDat;
+  UserData? userData;
+
   bool isLoading = true;
   List<KegiatanResponse>? filteredKegiatan;
   final KegiatanService _kegiatanService = KegiatanService();
@@ -44,11 +46,13 @@ class _KalenderState extends State<Kalender> {
       // Fetch home data from the API
       final BaseResponse<List<KegiatanResponse>> response =
           await _kegiatanService.fetchListKegiatanByUser();
+      final UserData? user = await Storage.getMyInfo();
 
       if (response.success && response.data != null) {
         if (mounted) {
           // Check if the widget is still mounted
           setState(() {
+            userData = user;
             kegiatanDat = response.data!;
             for (var apa in response.data!) {
               DateTime pop = DateTime(apa.tanggalMulai!.year,
@@ -131,13 +135,18 @@ class _KalenderState extends State<Kalender> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                HomeAppBar(userdat: widget.userData),
+                if (userData == null)
+                  SizedBox(
+                    height: 60,
+                  )
+                else
+                  HomeAppBar(userdat: userData),
                 const SizedBox(height: 24),
-                // if (_events.isNotEmpty)
-                CustomTableCalendar(
-                  events: _events,
-                  onDateSelected: onDateSelected,
-                )
+                if (_events.isNotEmpty)
+                  CustomTableCalendar(
+                    events: _events,
+                    onDateSelected: onDateSelected,
+                  )
               ],
             ),
           ),
