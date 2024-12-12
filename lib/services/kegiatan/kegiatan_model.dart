@@ -287,6 +287,7 @@ class User {
   final DateTime? createdAt;
   final String? namaJabatan;
   final bool? isPic;
+  int? agendaCount;
 
   User(
       {this.userId,
@@ -299,7 +300,8 @@ class User {
       this.updatedAt,
       this.createdAt,
       this.namaJabatan,
-      this.isPic});
+      this.isPic,
+      this.agendaCount});
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
@@ -317,7 +319,8 @@ class User {
             ? DateTime.parse(json['createdAt'])
             : null,
         namaJabatan: json['namaJabatan'],
-        isPic: json['isPic']);
+        isPic: json['isPic'],
+        agendaCount: json['agendaCount']);
   }
 
   Map<String, dynamic> toJson() {
@@ -332,7 +335,8 @@ class User {
       'updatedAt': updatedAt?.toIso8601String(),
       'createdAt': createdAt?.toIso8601String(),
       'namaJabatan': namaJabatan,
-      'isPic': isPic
+      'isPic': isPic,
+      'agendaCount': agendaCount
     };
   }
 }
