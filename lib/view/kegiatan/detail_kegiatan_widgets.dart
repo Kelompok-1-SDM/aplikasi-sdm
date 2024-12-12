@@ -921,7 +921,7 @@ void createOrEditProgress(
                               Navigator.pop(ctx); // Close the dialog
                             },
                             child: Text("Batal",
-                                style: TextStyle(color: Colors.grey)),
+                                style: TextStyle(color: ColorNeutral.gray)),
                           ),
                           TextButton(
                             onPressed: () {
@@ -932,7 +932,7 @@ void createOrEditProgress(
                               );
                             },
                             child: Text("Hapus",
-                                style: TextStyle(color: Colors.red)),
+                                style: TextStyle(color: ColorPrimary.orange)),
                           ),
                         ],
                       );
@@ -1014,7 +1014,8 @@ void createOrEditProgress(
                                             .pop(); // Close the dialog
                                       },
                                       child: Text("Batal",
-                                          style: TextStyle(color: Colors.grey)),
+                                          style: TextStyle(
+                                              color: ColorNeutral.gray)),
                                     ),
                                     TextButton(
                                       onPressed: () {
@@ -1030,7 +1031,8 @@ void createOrEditProgress(
                                         });
                                       },
                                       child: Text("Hapus",
-                                          style: TextStyle(color: Colors.red)),
+                                          style: TextStyle(
+                                              color: ColorPrimary.orange)),
                                     ),
                                   ],
                                 );
@@ -1185,9 +1187,11 @@ void createOrEditAgenda({
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: anggota.map((user) {
-                  bool isSelected = selectedUsers.contains(user);
+                  bool isSelected = selectedUsers.any(
+                      (selectedUser) => selectedUser.userId == user.userId);
                   return CheckboxListTile(
-                    title: Text(user.nama!),
+                    title: Text(
+                        "${user.nama!} - Jumlah agenda ${user.agendaCount}"),
                     value: isSelected,
                     onChanged: (value) {
                       setState(() {
@@ -1351,7 +1355,6 @@ void createOrEditAgenda({
                             TextButton(
                               onPressed: () {
                                 Navigator.pop(ctx, false); // Cancel deletion
-                                return;
                               },
                               child: Text("Batal"),
                             ),
@@ -1368,12 +1371,12 @@ void createOrEditAgenda({
                       if (confirmDelete == true) {
                         // Run the callback after confirmation
                         onDeleteUserAgendaCallback(
-                            agenda.agendaId!, user.userToKegiatanId!);
+                            agenda.agendaId!, user.userId!);
+                        setState(() {
+                          selectedUsers.remove(user);
+                        });
                       }
                     }
-                    setState(() {
-                      selectedUsers.remove(user);
-                    });
                   },
                   colorBackground: ColorNeutral.black,
                 ),
