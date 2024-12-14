@@ -1,4 +1,4 @@
-package com.example.aplikasi_manajemen_sdm
+package com.kelompok1.aplikasi_manajemen_sdm
 
 import io.flutter.embedding.android.FlutterActivity
 
