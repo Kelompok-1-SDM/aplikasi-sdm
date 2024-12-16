@@ -172,6 +172,127 @@ class KegiatanService {
     }
   }
 
+  Future<BaseResponse<KegiatanResponse>> editProgress(
+      String uid, String progress) async {
+    try {
+      // Make the GET request
+      final response = await dio.put('/api/kegiatan/',
+          queryParameters: {'uid': uid}, data: {'progress': progress});
+
+      // Use a custom `fromJsonT` function for a list of KegiatanResponse
+      final BaseResponse<KegiatanResponse> data =
+          BaseResponse<KegiatanResponse>.fromJson(
+              response.data, (json) => KegiatanResponse.fromJson(json));
+
+      // Return the data if successful
+      if (response.statusCode == 200 && data.success) {
+        return data;
+      } else {
+        throw Exception(
+            "Failed to create agenda. Status code: ${response.statusCode}");
+      }
+    } on DioException catch (error) {
+      // Handle Dio-specific errors
+      print(error.response!.data);
+      return BaseResponse<KegiatanResponse>(
+        success: false,
+        message: error.response?.data['message'] ?? 'An error occurred',
+      );
+    } catch (e) {
+      // Handle unexpected errors
+      return BaseResponse<KegiatanResponse>(
+        success: false,
+        message: 'An unexpected error occurred: $e',
+      );
+    }
+  }
+
+  Future<BaseResponse<KegiatanResponse>> createLampiran(
+      String uidKegiatan, List<File> files) async {
+    try {
+      // Prepare FormData
+      final formData = FormData.fromMap({
+        'files': files.map((file) {
+          final fileExtension = file.path.split('.').last;
+          final mimeType = _getMimeType(fileExtension); // Get MIME type
+          return MultipartFile.fromFileSync(
+            file.path,
+            contentType: mimeType, // Add contentType
+          );
+        }).toList(),
+      });
+
+      // Make the POST request
+      final response = await dio.post(
+        '/api/lampiran',
+        queryParameters: {'uid_kegiatan': uidKegiatan},
+        data: formData,
+      );
+
+      // Parse response
+      final BaseResponse<KegiatanResponse> data =
+          BaseResponse<KegiatanResponse>.fromJson(
+              response.data, (json) => KegiatanResponse.fromJson(json));
+
+      // Return data if successful
+      if (response.statusCode == 200 && data.success) {
+        return data;
+      } else {
+        throw Exception(
+            "Failed to create progress. Status code: ${response.statusCode}");
+      }
+    } on DioException catch (error) {
+      // Handle Dio-specific errors
+      print(error.response?.data);
+      return BaseResponse<KegiatanResponse>(
+        success: false,
+        message: error.response?.data['message'] ?? 'An error occurred',
+      );
+    } catch (e) {
+      // Handle unexpected errors
+      return BaseResponse<KegiatanResponse>(
+        success: false,
+        message: 'An unexpected error occurred: $e',
+      );
+    }
+  }
+
+  Future<BaseResponse<KegiatanResponse>> deleteLampiran(
+      String uidLampiran) async {
+    try {
+      // Make the POST request
+      final response = await dio.delete('/api/lampiran', queryParameters: {
+        'uid': uidLampiran
+      });
+
+      // Parse response
+      final BaseResponse<KegiatanResponse> data =
+          BaseResponse<KegiatanResponse>.fromJson(
+              response.data, (json) => KegiatanResponse.fromJson(json));
+
+      // Return data if successful
+      if (response.statusCode == 200 && data.success) {
+        return data;
+      } else {
+        throw Exception(
+            "Failed to create progress. Status code: ${response.statusCode}");
+      }
+    } on DioException catch (error) {
+      // Handle Dio-specific errors
+      print(error.response?.data);
+      return BaseResponse<KegiatanResponse>(
+        success: false,
+        message: error.response?.data['message'] ?? 'An error occurred',
+      );
+    } catch (e) {
+      // Handle unexpected errors
+      return BaseResponse<KegiatanResponse>(
+        success: false,
+        message: 'An unexpected error occurred: $e',
+      );
+    }
+  }
+
   Future<BaseResponse<Agenda>> editAgenda(
       String uid,
       String nama,

@@ -349,30 +349,70 @@ Future<void> _openBrowserWithDownloadLink(String fileUrl) async {
   }
 }
 
-CustomBigButton fileButton(BuildContext context, Lampiran lampiran) {
+CustomBigButton fileButton(BuildContext context, Lampiran lampiran,
+    Function(String uidLampiran) deleteCallback) {
   String nama = lampiran.nama!.toLowerCase();
   Color color = nama.contains('sertifikat') || nama.contains('tugas')
       ? ColorPrimary.orange
       : ColorNeutral.black;
 
-  double maxWidth = MediaQuery.of(context).size.width - 240;
+  double maxWidth = MediaQuery.of(context).size.width - 260;
   return CustomBigButton(
     wasIconOnRight: true,
     padding: EdgeInsets.only(top: 8, right: 8, bottom: 8, left: 32),
     buttonColor: color,
     otherWidget: [
-      ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: maxWidth),
-        child: Text(
-          lampiran.nama!,
-          style: Theme.of(context)
-              .textTheme
-              .displayLarge!
-              .copyWith(fontSize: 20, color: ColorNeutral.white),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          softWrap: true,
-        ),
+      Row(
+        children: [
+          ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxWidth),
+            child: Text(
+              lampiran.nama!,
+              style: Theme.of(context)
+                  .textTheme
+                  .displayLarge!
+                  .copyWith(fontSize: 20, color: ColorNeutral.white),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              softWrap: true,
+            ),
+          ),
+          CustomIconButton(
+            Icons.delete,
+            colorBackground: ColorNeutral.gray,
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (ctx) {
+                  return AlertDialog(
+                    title: Text("Konfirmasi"),
+                    content:
+                        Text("Apakah Anda yakin ingin menghapus lampiran ini?"),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(ctx).pop(); // Close the dialog
+                        },
+                        child: Text("Batal",
+                            style: TextStyle(color: ColorNeutral.gray)),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(ctx).pop(); // Close the dialog
+                          deleteCallback(
+                            lampiran.lampiranId!,
+                          );
+                        },
+                        child: Text("Hapus",
+                            style: TextStyle(color: ColorPrimary.orange)),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ],
       )
     ],
     icon: CustomIconButton(
@@ -385,8 +425,58 @@ CustomBigButton fileButton(BuildContext context, Lampiran lampiran) {
   );
 }
 
-CustomCardContent fileCard(BuildContext context,
-    {required List<Lampiran> lampirans}) {
+CustomCardContent fileCard(
+  BuildContext context, {
+  required String uidKegiatan,
+  required List<Lampiran> lampirans,
+  required bool akuPic,
+  required Function(String uidKegiatan, List<File> lampiran)
+      callbackCreateLampiran,
+  required Function(String uidLampiran)
+      callbackDeleteLampiran,
+}) {
+  List<PlatformFile> selectedFiles = [];
+  Future<void> _pickFiles() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      allowMultiple: true,
+      type: FileType.custom,
+      allowedExtensions: [
+        'jpg',
+        'png',
+        'jpeg',
+        'pdf',
+        'doc',
+        'docx',
+        'xlsx',
+        'xls',
+        'gif',
+        'bmp',
+        'webp',
+        'svg',
+      ],
+    );
+    if (result != null) {
+      selectedFiles.addAll(result.files);
+
+      if (selectedFiles.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "Minimal upload 1 file lampiran",
+            ),
+            backgroundColor: ColorPrimary.orange,
+          ),
+        );
+
+        return;
+      }
+      await callbackCreateLampiran(
+        uidKegiatan,
+        selectedFiles.map((e) => File(e.path!)).toList(),
+      );
+    }
+  }
+
   return CustomCardContent(
     colorBackground: ColorNeutral.white,
     header: [
@@ -396,17 +486,36 @@ CustomCardContent fileCard(BuildContext context,
             Theme.of(context).textTheme.displayMedium!.copyWith(fontSize: 16),
       )
     ],
-    otherWidget: List.generate(
-      lampirans.length,
-      (index) => Column(
-        children: [
-          fileButton(context, lampirans[index]),
-          const SizedBox(
-            height: 8,
-          )
-        ],
+    otherWidget: [
+      ...List.generate(
+        lampirans.length,
+        (index) => Column(
+          children: [
+            fileButton(
+              context,
+              lampirans[index],
+              callbackDeleteLampiran,
+            ),
+            const SizedBox(
+              height: 8,
+            )
+          ],
+        ),
       ),
-    ),
+      if (akuPic)
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            CustomIconButton(
+              Icons.add,
+              colorBackground: ColorNeutral.black,
+              onPressed: () async {
+                await _pickFiles();
+              },
+            ),
+          ],
+        )
+    ],
   );
 }
 
@@ -1390,6 +1499,71 @@ void createOrEditAgenda({
           ],
         );
       },
+    ),
+  );
+}
+
+void updateProgress(BuildContext context,
+    {required String uidKegiatan,
+    required String? progressSekarang,
+    required Function(String uidKegiatan, String progres)
+        updateProgressCallback}) {
+  final TextEditingController progress =
+      TextEditingController(text: progressSekarang ?? "");
+  callBottomSheet(
+    context,
+    title: Text(
+      "Edit Progress",
+      textAlign: TextAlign.center,
+      style: Theme.of(context).textTheme.displayLarge!.copyWith(
+            fontSize: 20,
+          ),
+    ),
+    button: [
+      CustomBigButton(
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        buttonLabel: "Batal",
+        buttonColor: ColorNeutral.black,
+        customLabelColor: ColorNeutral.white,
+        padding: EdgeInsets.all(24),
+      ),
+      CustomBigButton(
+        onPressed: () {
+          if (progress.text.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  "Progress tidak boleh kosong",
+                ),
+                backgroundColor: ColorPrimary.orange,
+              ),
+            );
+            return;
+          }
+          updateProgressCallback(uidKegiatan, progress.text.trim());
+          Navigator.pop(context);
+        },
+        buttonLabel: "Simpan",
+        buttonColor: ColorPrimary.orange,
+        customLabelColor: ColorNeutral.white,
+        padding: EdgeInsets.all(24),
+      ),
+    ],
+    description: "Update progress kegiatan",
+    child: Column(
+      children: [
+        SizedBox(height: 16),
+        CustomTextField(
+          label: "Progress kegiatan",
+          hint: "Progress",
+          controller: progress,
+          isPassword: false,
+          isResizable: true,
+          inputType: TextInputType.text,
+        ),
+      ],
     ),
   );
 }

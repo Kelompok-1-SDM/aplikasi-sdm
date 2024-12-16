@@ -358,7 +358,7 @@ class GenericCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: BorderRadius.all(
-        Radius.circular(60),
+        Radius.circular(42),
       ),
       onTap: onPressed,
       child: Card.filled(

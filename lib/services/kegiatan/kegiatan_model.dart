@@ -7,6 +7,8 @@ class KegiatanResponse {
   final bool? isDone;
   final String? lokasi;
   final String? deskripsi;
+  final String? progress;
+  final bool? isJti;
   final DateTime? updatedAt;
   final DateTime? createdAt;
   final List<Lampiran>? lampiran;
@@ -22,6 +24,8 @@ class KegiatanResponse {
     this.isDone,
     this.lokasi,
     this.deskripsi,
+    this.isJti,
+    this.progress,
     this.updatedAt,
     this.createdAt,
     this.lampiran,
@@ -41,6 +45,8 @@ class KegiatanResponse {
             : null,
         tipeKegiatan: json['tipeKegiatan'],
         isDone: json['isDone'],
+        isJti: json['isJti'],
+        progress: json['progress'],
         lokasi: json['lokasi'],
         deskripsi: json['deskripsi'],
         updatedAt: json['updatedAt'] != null
@@ -68,6 +74,8 @@ class KegiatanResponse {
       'tanggalAkhir': tanggalAkhir?.toIso8601String(),
       'tipeKegiatan': tipeKegiatan,
       'isDone': isDone,
+      'isJti': isJti,
+      'progress': progress,
       'lokasi': lokasi,
       'deskripsi': deskripsi,
       'updatedAt': updatedAt?.toIso8601String(),
