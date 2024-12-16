@@ -426,6 +426,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         iconColorCustom: ColorNeutral.white,
                         size: IconSize.large,
                       ),
+                      wasElevated: true,
                       padding: EdgeInsets.only(
                           right: 6, top: 6, bottom: 6, left: 34),
                       buttonColor: ColorPrimary.orange,

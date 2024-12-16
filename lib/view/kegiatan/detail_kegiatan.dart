@@ -277,7 +277,7 @@ class _DetailKegiatanState extends State<DetailKegiatan> {
   Future<void> _showCreateOrEditProgress(
       String uidAgenda, Progress? progress) async {
     createOrEditProgress(
-      progress != null ? _editProgress : _createProgress,
+      progress != null ? _editProgressAgenda : _createProgress,
       _deleteProgressAttachment,
       _deleteProgress,
       context: context,
@@ -317,7 +317,101 @@ class _DetailKegiatanState extends State<DetailKegiatan> {
     }
   }
 
-  Future<void> _editProgress(
+  Future<void> _editProgressKegiatan(
+      String uidKegiatan, String progress) async {
+    setState(() {
+      isOtherLoad = true;
+    });
+    _refreshIndicatorKey.currentState?.show();
+
+    try {
+      final BaseResponse<KegiatanResponse> response =
+          await _kegiatanService.editProgress(uidKegiatan, progress);
+
+      if (response.success) {
+        // Trigger the swipe refresh animation programmatically
+        _refreshIndicatorKey.currentState?.show();
+        setState(() {
+          isLoading = true; // Show loading indicator during initial fetch
+        });
+      } else {
+        showErrorDialog(
+            context, "Progress Failed to edit progress", response.message);
+      }
+    } catch (e) {
+      showErrorDialog(
+          context, "Error", "An error occurred during edit progress: $e");
+    } finally {
+      setState(() {
+        isOtherLoad = false;
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _createLampiran(String uidKegiatan, List<File> files) async {
+    setState(() {
+      isOtherLoad = true;
+    });
+    _refreshIndicatorKey.currentState?.show();
+
+    try {
+      final BaseResponse<KegiatanResponse> response =
+          await _kegiatanService.createLampiran(uidKegiatan, files);
+
+      if (response.success) {
+        // Trigger the swipe refresh animation programmatically
+        _refreshIndicatorKey.currentState?.show();
+        setState(() {
+          isLoading = true; // Show loading indicator during initial fetch
+        });
+      } else {
+        showErrorDialog(
+            context, "Progress Failed to edit progress", response.message);
+      }
+    } catch (e) {
+      showErrorDialog(
+          context, "Error", "An error occurred during edit progress: $e");
+    } finally {
+      setState(() {
+        isOtherLoad = false;
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _deleteLampiran(String uidLampiran) async {
+    setState(() {
+      isOtherLoad = true;
+    });
+    _refreshIndicatorKey.currentState?.show();
+
+    try {
+      final BaseResponse<KegiatanResponse> response =
+          await _kegiatanService.deleteLampiran(uidLampiran);
+
+      if (response.success) {
+        // Trigger the swipe refresh animation programmatically
+        _refreshIndicatorKey.currentState?.show();
+        setState(() {
+          isLoading = true; // Show loading indicator during initial fetch
+        });
+      } else {
+        showErrorDialog(
+            context, "Progress Failed to edit progress", response.message);
+      }
+    } catch (e) {
+      showErrorDialog(
+          context, "Error", "An error occurred during edit progress: $e");
+    } finally {
+      setState(() {
+        isOtherLoad = false;
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _editProgressAgenda(
       String uidProgress, String deskripsiProgress, List<File>? files) async {
     setState(() {
       isOtherLoad = true;
@@ -335,11 +429,12 @@ class _DetailKegiatanState extends State<DetailKegiatan> {
           isLoading = true; // Show loading indicator during initial fetch
         });
       } else {
-        showErrorDialog(context, "Progress Failed to edit ", response.message);
+        showErrorDialog(context, "Progress Failed to edit progress agenda ",
+            response.message);
       }
     } catch (e) {
-      showErrorDialog(
-          context, "Error", "An error occurred during edit progress: $e");
+      showErrorDialog(context, "Error",
+          "An error occurred during edit progress agenda: $e");
     } finally {
       setState(() {
         isOtherLoad = false;
@@ -521,6 +616,41 @@ class _DetailKegiatanState extends State<DetailKegiatan> {
                           ),
                         ],
                       ),
+                    if (!isLoading)
+                      Column(
+                        children: [
+                          CustomCardContent(
+                            header: [
+                              Text(
+                                "Progress Kegiatan",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .displayMedium!
+                                    .copyWith(fontSize: 16),
+                              )
+                            ],
+                            actionIcon: [
+                              if (akuPic)
+                                CustomIconButton(
+                                  Icons.edit,
+                                  colorBackground: ColorNeutral.black,
+                                  onPressed: () => {
+                                    updateProgress(
+                                      context,
+                                      uidKegiatan: data!.kegiatanId!,
+                                      progressSekarang: data!.progress,
+                                      updateProgressCallback:
+                                          _editProgressKegiatan,
+                                    )
+                                  },
+                                ),
+                            ],
+                            colorBackground: Colors.white,
+                            description: data?.progress,
+                          ),
+                          const SizedBox(height: 10),
+                        ],
+                      ),
                     if (!isLoading && data!.agenda!.isNotEmpty)
                       Column(
                         children: [
@@ -544,7 +674,14 @@ class _DetailKegiatanState extends State<DetailKegiatan> {
                     if (!isLoading && data!.lampiran!.isNotEmpty)
                       Column(
                         children: [
-                          fileCard(context, lampirans: data!.lampiran!),
+                          fileCard(
+                            context,
+                            uidKegiatan: data!.kegiatanId!,
+                            lampirans: data!.lampiran!,
+                            akuPic: akuPic,
+                            callbackCreateLampiran: _createLampiran,
+                            callbackDeleteLampiran: _deleteLampiran,
+                          ),
                           const SizedBox(
                             height: 64,
                           ),
