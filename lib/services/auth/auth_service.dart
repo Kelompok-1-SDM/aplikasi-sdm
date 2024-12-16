@@ -24,6 +24,10 @@ class AuthService {
 
       // Check if the response is successful
       if (response.statusCode == 200 && data.success) {
+        if (data.data?.role != 'dosen') {
+          throw Exception("Kamu bukan dosen");
+        }
+
         final String? token = data.data?.token;
 
         if (token != null) {
@@ -66,7 +70,7 @@ class AuthService {
       print("Unexpected error: $e");
       return BaseResponse<LoginResponse>(
         success: false,
-        message: 'An unexpected error occurred',
+        message: 'An unexpected error occurred, $e',
       );
     }
   }
