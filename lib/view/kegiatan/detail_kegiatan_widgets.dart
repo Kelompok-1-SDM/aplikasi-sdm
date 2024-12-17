@@ -350,7 +350,7 @@ Future<void> _openBrowserWithDownloadLink(String fileUrl) async {
 }
 
 CustomBigButton fileButton(BuildContext context, Lampiran lampiran,
-    Function(String uidLampiran) deleteCallback) {
+    Function(String uidLampiran) deleteCallback, bool akuPic) {
   String nama = lampiran.nama!.toLowerCase();
   Color color = nama.contains('sertifikat') || nama.contains('tugas')
       ? ColorPrimary.orange
@@ -377,41 +377,42 @@ CustomBigButton fileButton(BuildContext context, Lampiran lampiran,
               softWrap: true,
             ),
           ),
-          CustomIconButton(
-            Icons.delete,
-            colorBackground: ColorNeutral.gray,
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (ctx) {
-                  return AlertDialog(
-                    title: Text("Konfirmasi"),
-                    content:
-                        Text("Apakah Anda yakin ingin menghapus lampiran ini?"),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(ctx).pop(); // Close the dialog
-                        },
-                        child: Text("Batal",
-                            style: TextStyle(color: ColorNeutral.gray)),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(ctx).pop(); // Close the dialog
-                          deleteCallback(
-                            lampiran.lampiranId!,
-                          );
-                        },
-                        child: Text("Hapus",
-                            style: TextStyle(color: ColorPrimary.orange)),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-          ),
+          if (akuPic)
+            CustomIconButton(
+              Icons.delete,
+              colorBackground: ColorNeutral.gray,
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (ctx) {
+                    return AlertDialog(
+                      title: Text("Konfirmasi"),
+                      content: Text(
+                          "Apakah Anda yakin ingin menghapus lampiran ini?"),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(ctx).pop(); // Close the dialog
+                          },
+                          child: Text("Batal",
+                              style: TextStyle(color: ColorNeutral.gray)),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(ctx).pop(); // Close the dialog
+                            deleteCallback(
+                              lampiran.lampiranId!,
+                            );
+                          },
+                          child: Text("Hapus",
+                              style: TextStyle(color: ColorPrimary.orange)),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
         ],
       )
     ],
@@ -432,8 +433,7 @@ CustomCardContent fileCard(
   required bool akuPic,
   required Function(String uidKegiatan, List<File> lampiran)
       callbackCreateLampiran,
-  required Function(String uidLampiran)
-      callbackDeleteLampiran,
+  required Function(String uidLampiran) callbackDeleteLampiran,
 }) {
   List<PlatformFile> selectedFiles = [];
   Future<void> _pickFiles() async {
@@ -470,10 +470,8 @@ CustomCardContent fileCard(
 
         return;
       }
-      await callbackCreateLampiran(
-        uidKegiatan,
-        selectedFiles.map((e) => File(e.path!)).toList(),
-      );
+      await callbackCreateLampiran(uidKegiatan,
+          selectedFiles.map((e) => File(e.path!)).toList());
     }
   }
 
@@ -495,6 +493,7 @@ CustomCardContent fileCard(
               context,
               lampirans[index],
               callbackDeleteLampiran,
+              akuPic
             ),
             const SizedBox(
               height: 8,
