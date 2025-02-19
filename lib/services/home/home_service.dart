@@ -25,7 +25,7 @@ class HomeService {
       if (response.statusCode == 200 && data.success) {
         // Save statistik to shared session
         double average = 0;
-        if (data.data?.statistik?.jumlahKegiatan != null) {
+        if (data.data?.statistik?.jumlahKegiatan?.isNotEmpty == true) {
           var sum = data.data!.statistik!.jumlahKegiatan!
               .map(
                   (it) => it.jumlahKegiatan ?? 0) // Replace null 'count' with 0
